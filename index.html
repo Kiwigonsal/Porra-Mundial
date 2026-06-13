@@ -391,7 +391,8 @@ function hayPartidoEnVentana(){
   return partidos.some(p => {
     if (!p.fecha_utc) return false;
     const t = new Date(p.fecha_utc).getTime();
-    return ahora >= t - 5*60e3 && ahora <= t + 3*3600e3;
+    // Allungato da 3 a 5 ore per evitare che le partite si congelino
+    return ahora >= t - 5*60e3 && ahora <= t + 5*3600e3; 
   });
 }
 async function llamarSync(forzado){

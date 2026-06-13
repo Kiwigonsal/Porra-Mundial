@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B1120">
 <meta name="description" content="La porra del Mundial 2026 entre amigos.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>La Porra del Mundial 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,6 +180,8 @@
   .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center;}
   .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
   .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
+  .rank-pts-box.has-trend { position: relative; }
+  .rank-pts-trend { font-size: 10px; color: var(--cesped); font-weight: 800; margin-top: 2px; line-height: 1;}
 
   /* Perfil UI */
   .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; margin-bottom: 14px; position: relative; overflow: hidden; }
@@ -222,7 +227,7 @@
   input[type=text],input[type=password],input[type=datetime-local],select{ width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); font-size:16px; font-family:var(--body); }
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
-  .btn{ width:100%; margin-top:14px; padding:14px; border-radius:12px; border:0; cursor:pointer; background:var(--cesped); color:#fff; font-weight:800; font-size:14px; }
+  .btn{ width:100%; margin-top:14px; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#fff; font-weight:800; font-size:14px; }
   .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal)}
   .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja)}
   .btn.oro{background:var(--trofeo); color:#0B1120}
@@ -300,8 +305,8 @@ function avatarHtmlMini(u){
   return esc(u.emoji || '⚽');
 }
 
-function esVivo(estado) { return ["IN_PLAY", "PAUSED", "EXTRA_TIME", "PENALTY_SHOOTOUT"].includes(estado); }
-function esFin(estado) { return ["FINISHED", "AWARDED"].includes(estado); }
+function esVivo(estado) { return ["IN_PLAY", "PAUSED", "EXTRA_TIME", "PENALTY_SHOOTOUT", "LIVE", "1H", "2H", "HT", "ET", "BT", "P"].includes(estado); }
+function esFin(estado) { return ["FINISHED", "AWARDED", "FT", "AET", "PEN"].includes(estado); }
 
 function pintarTitulo(){
   document.title = (porra ? porra.nombre : "La Porra") + " — Mundial 2026";
@@ -315,19 +320,23 @@ async function sha256(texto){
 
 init();
 async function init(){
-  db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const porraGuardada = localStorage.getItem("porra_actual");
-  if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
-  const sesion = localStorage.getItem("porra_usuario");
-  if (sesion) { try { me = JSON.parse(sesion); } catch(e){} }
-  pintarTitulo();
-  $("vista").innerHTML = `<div class="cargando">Saltando al campo…</div>`;
-  await cargarTodo();
-  suscribirRealtime();
-  programarSync();
-  cargado = true;
-  render();
-  setTimeout(scrollToCurrent, 500); 
+  try {
+    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const porraGuardada = localStorage.getItem("porra_actual");
+    if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
+    const sesion = localStorage.getItem("porra_usuario");
+    if (sesion) { try { me = JSON.parse(sesion); } catch(e){} }
+    pintarTitulo();
+    $("vista").innerHTML = `<div class="cargando">Saltando al campo…</div>`;
+    await cargarTodo();
+    suscribirRealtime();
+    programarSync();
+    cargado = true;
+    render();
+    setTimeout(scrollToCurrent, 500); 
+  } catch (e) {
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)"><b>⚠️ Error de carga:</b><br><br>${e.message}<br><br><small>Por favor, borra la caché de tu navegador.</small></div>`;
+  }
 }
 
 async function cargarTodo(){
@@ -341,7 +350,6 @@ async function cargarTodo(){
     pronosticos = pr.data || [];
   } else { pronosticos = []; }
   
-  // SOLUCIÓN BUG: Si el usuario ya no existe o hubo error, limpiar `me` de forma segura
   if (me && !usuarios.find(x => x.id === me.id)) { me = null; localStorage.removeItem("porra_usuario"); }
 }
 
@@ -378,7 +386,6 @@ function programarSync(){
   setInterval(() => { if (cargado) render(); if(partidoAbiertoId) renderModal(partidoAbiertoId); }, 60e3);
 }
 
-/* ---------- Puntuación Oficial ---------- */
 function puntosDe(pred, p){
   if (p.goles_local == null || p.goles_visitante == null) return null;
   const aciertoLocal = pred.goles_local === p.goles_local;
@@ -417,10 +424,11 @@ function clasificacion(){
     }
   }
 
-  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || a.u.nombre.localeCompare(b.u.nombre));
+  // SOLUCION ANTI-CRASH: Garantizamos que .nombre exista siempre
+  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
+  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
       f.tendencia = f.rankAnt - f.rank;
@@ -435,14 +443,19 @@ function irA(t){
 }
 
 function render(){
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("activo", b.dataset.tab === tab));
-  actualizarCabecera();
-  const v = $("vista");
-  if (!porra){ v.innerHTML = vistaCodigo(); return; }
-  if (tab === "partidos") v.innerHTML = vistaPartidos();
-  else if (tab === "torneo") v.innerHTML = vistaTorneo();
-  else if (tab === "tabla") v.innerHTML = vistaTabla();
-  else v.innerHTML = vistaPerfil();
+  try {
+    document.querySelectorAll("nav button").forEach(b => b.classList.toggle("activo", b.dataset.tab === tab));
+    actualizarCabecera();
+    const v = $("vista");
+    if (!porra){ v.innerHTML = vistaCodigo(); return; }
+    if (tab === "partidos") v.innerHTML = vistaPartidos();
+    else if (tab === "torneo") v.innerHTML = vistaTorneo();
+    else if (tab === "tabla") v.innerHTML = vistaTabla();
+    else v.innerHTML = vistaPerfil();
+  } catch (error) {
+    console.error(error);
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)">Ocurrió un error cargando la vista.<br><br>Borra la caché del navegador.</div>`;
+  }
 }
 
 function scrollToCurrent() {
@@ -453,20 +466,23 @@ function scrollToCurrent() {
   }
 }
 
-/* Agrupador de Fecha Lógica (la madrugada cuenta como la noche anterior) */
 function getFechaLogica(isoString) {
   if (!isoString) return "zzz";
-  const d = new Date(isoString);
-  if (d.getHours() < 5) d.setDate(d.getDate() - 1);
-  return d.toDateString();
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getHours())) return "zzz";
+    if (d.getHours() < 5) d.setDate(d.getDate() - 1);
+    return d.toDateString();
+  } catch(e){ return "zzz"; }
 }
 function fmtDiaLogico(clave){
-  if(clave === "zzz") return "Fecha por definir";
-  const txt = new Date(clave).toLocaleDateString("es-ES", {weekday:"long", day:"numeric", month:"long"});
-  return txt.charAt(0).toUpperCase() + txt.slice(1);
+  if(clave === "zzz" || clave === "Invalid Date") return "Fecha por definir";
+  try {
+    const txt = new Date(clave).toLocaleDateString("es-ES", {weekday:"long", day:"numeric", month:"long"});
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
+  } catch(e) { return "Fecha desconocida"; }
 }
 
-/* ---------- Feed de Partidos ---------- */
 function vistaPartidos(){
   if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
   if (!me) return `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
@@ -523,7 +539,6 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-/* ---------- Modal Logic ---------- */
 function abrirModal(id) {
   partidoAbiertoId = id; renderModal(id);
   $("modal-overlay").classList.add("open");
@@ -658,7 +673,6 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
-/* ---------- Torneo (Grupos y Eliminatorias) ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -693,7 +707,7 @@ function tablaGrupo(letra, ps){
     else if (p.goles_local < p.goles_visitante) V.pts += 3;
     else { L.pts++; V.pts++; }
   }
-  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || a.n.localeCompare(b.n));
+  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
   
   let htmlPartidos = ps.sort((a,b)=> new Date(a.fecha_utc) - new Date(b.fecha_utc)).map(p => {
     let score = (p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`;
@@ -814,7 +828,7 @@ function vistaPerfil(){
       </div>`;
   }).join("");
 
-  const esKiwi = me.nombre.toLowerCase() === "kiwi";
+  const esKiwi = (me.nombre || "").toLowerCase() === "kiwi";
 
   return `
   <div class="perfil-header">
@@ -934,6 +948,16 @@ async function iniciarSesion(){
 }
 function cerrarSesion(){ me = null; localStorage.removeItem("porra_usuario"); adminPin = null; sessionStorage.removeItem("adminPin"); render(); }
 
+function actualizarCabecera(){
+  const b = $("btn-yo");
+  if (!me){ b.hidden = true; return; }
+  b.hidden = false;
+  $("yo-emoji").innerHTML = avatarHtml(me);
+  $("yo-nombre").textContent = me.nombre;
+  const fila = clasificacion().find(f => f.u.id === me.id);
+  $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
+}
+
 async function subirNuevaFoto(input) {
   if (!input.files || input.files.length === 0) return;
   const msg = $("msg-foto-perfil"); msg.innerHTML = `<div class="nota">Subiendo nueva foto...</div>`;
@@ -1001,6 +1025,14 @@ async function guardarResultado(id, estado){
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return alert("Error: " + error.message);
   await cargarTodo(); render();
+}
+async function crearPartidoManual(){
+  const local = $("np-local").value.trim(), visit = $("np-visit").value.trim(), fecha = $("np-fecha").value;
+  if (!local || !visit || !fecha) return $("msg-nuevo").innerHTML = `<div class="error">Rellena equipos y fecha.</div>`;
+  const { error } = await db.rpc("crear_partido", { p_local: local, p_visitante: visit, p_fecha: new Date(fecha).toISOString(), p_etapa: "GROUP_STAGE", p_grupo: null, p_porra: porra.id, pin: adminPin });
+  if (error) return $("msg-nuevo").innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  $("msg-nuevo").innerHTML = `<div class="ok">Partido añadido ✓</div>`;
+  await cargarTodo(); setTimeout(render, 700);
 }
 async function sincronizarAhora(){
   $("msg-sync").innerHTML = `<div class="nota">Sincronizando…</div>`;

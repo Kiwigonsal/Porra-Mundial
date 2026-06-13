@@ -121,9 +121,15 @@
     background:var(--campo); border:1px solid var(--cal-tenue); border-radius:999px; color:var(--cal-suave);
   }
   .pick b{color:var(--cal); font-variant-numeric:tabular-nums}
-  .pick .p3{color:var(--trofeo); font-weight:800}
-  .pick .p1{color:var(--cesped); font-weight:800}
+  /* Colores para partido terminado (5, 4, 3, 1 pts) */
+  .pick .p5{color:var(--trofeo); font-weight:800}
+  .pick .p4{color:#b3e6c9; font-weight:800}
+  .pick .p3{color:var(--cesped); font-weight:800}
+  .pick .p1{color:var(--cal-suave); font-weight:800}
   .pick .p0{color:var(--grada)}
+  /* Colores para el partido en directo */
+  .pick.vivo-verde { border-color: var(--cesped); background: rgba(39,160,93,.15); }
+  .pick.vivo-rojo { border-color: var(--tarjeta-roja); background: rgba(226,84,69,.15); opacity: 0.8; }
   .candado{font-size:11.5px; color:var(--grada); margin-top:10px; text-align:center}
 
   /* ---------- Tabla de clasificación ---------- */
@@ -523,6 +529,40 @@ function zonaPronostico(p){
       <div id="msg-${p.id}"></div>
     </div>`;
   }
+
+  // Empezado: se destapan los pronósticos de todos
+  const todos = pronosticos.filter(x => x.partido_id === p.id);
+  if (todos.length === 0) return `<div class="candado">Nadie pronosticó este partido 😶</div>`;
+
+  const vivo = p.estado === "IN_PLAY" || p.estado === "PAUSED";
+
+  const chips = todos.map(pr => {
+    const u = usuarios.find(x => x.id === pr.usuario_id);
+    const pts = puntosDe(pr, p); // Puntos definitivos o virtuales si está en juego
+    
+    let clsPick = "";
+    let sufijo = "";
+    
+    if (vivo) {
+      // Magia en directo: Verde si ahora mismo pillas puntos, Rojo si no
+      clsPick = pts > 0 ? "vivo-verde" : "vivo-rojo";
+      sufijo = pts > 0 ? ` <span style="font-size:10px; opacity:0.8">virt. +${pts}</span>` : "";
+    } else {
+      // Terminado: Asignamos las nuevas clases de CSS según la puntuación
+      let clsPts = "p0";
+      if (pts === 5) clsPts = "p5";
+      else if (pts === 4) clsPts = "p4";
+      else if (pts === 3) clsPts = "p3";
+      else if (pts === 1) clsPts = "p1";
+      
+      sufijo = pts == null ? "" : ` <span class="${clsPts}">${pts===5?"+5 🎯":pts>0?"+"+pts:"0"}</span>`;
+    }
+
+    return `<span class="pick ${clsPick}">${u ? esc(u.emoji+" "+u.nombre) : "?"} <b>${pr.goles_local}-${pr.goles_visitante}</b>${sufijo}</span>`;
+  }).join("");
+
+  return `<div class="picks">${chips}</div>`;
+}
   // Empezado: se destapan los pronósticos de todos
   const todos = pronosticos.filter(x => x.partido_id === p.id);
   if (todos.length === 0) return `<div class="candado">Nadie pronosticó este partido 😶</div>`;

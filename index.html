@@ -745,16 +745,103 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-function abrirModal(id) {
-  partidoAbiertoId = id; renderModal(id);
+function abrirPerfil(uid) {
+  const u = usuarios.find(x => x.id === uid);
+  if(!u) return;
+
+  const filas = clasificacion();
+  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
+  
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  let aciertos = 0;
+  partidosJugados.forEach(p => {
+      if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++;
+  });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts > 0 ? 'forma-verde' : 'forma-roja'}"></div>`;
+      } else {
+          htmlForma += `<div class="forma-box forma-vacia"></div>`;
+      }
+  }
+
+  // Ocultamos los partidos futuros
+  const pasados = partidos.filter(p => empezado(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
+
+  const htmlProns = pasados.length === 0 ? `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico revelado aún.</div>` : pasados.map(p => {
+      const pr = pronsUser.find(x => x.partido_id === p.id);
+      const fin = esFin(p.estado), vivo = esVivo(p.estado);
+      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
+      
+      let badgePts = "", realScore = "", bgClass = "";
+      if (fin) {
+          if (pts === 5) bgClass = "pleno-bg";
+          else if (pts === 3) bgClass = "ok-bg";
+          else bgClass = "bad-bg";
+          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
+      } else if (vivo) {
+          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
+      }
+
+      return `
+      <div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
+          <div class="pron-item-eq">
+              <img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> 
+              <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> 
+              <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;">
+          </div>
+          <div class="pron-item-info">
+              <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
+              <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
+          </div>
+          ${badgePts}
+      </div>`;
+  }).join("");
+
+  const content = `
+      <div class="modal-close" id="btn-cerrar-modal" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="margin-bottom:16px;">
+          <div class="perfil-avatar">${avatarHtml(u)}</div>
+          <h2>${esc(u.nombre)}</h2>
+          <div class="perfil-badges">
+              <span class="badge badge-pos">🏅 #${f.rank}</span>
+              <span class="badge badge-jugados">⚽ ${pronsUser.length}/104</span>
+          </div>
+      </div>
+
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card">
+              <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
+              <div class="k">EFICIENCIA</div>
+          </div>
+          <div class="p-dash-card">
+              <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
+              <div class="forma-row">${htmlForma}</div>
+          </div>
+      </div>
+
+      <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRONÓSTICOS REVELADOS</h4>
+      <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column;">${htmlProns}</div>
+  `;
+
+  $("modal-content").innerHTML = content;
   $("modal-overlay").classList.add("open");
-  document.body.style.overflow = "hidden"; 
-}
-function cerrarModal(e) {
-  if(e && e.target && e.target.id !== "modal-overlay" && e.target.id !== "btn-cerrar-modal") return;
-  $("modal-overlay").classList.remove("open");
-  document.body.style.overflow = "auto";
-  setTimeout(() => { partidoAbiertoId = null; }, 300);
+  document.body.style.overflow = "hidden";
+  history.pushState({modal: true}, ""); // Solución botón atrás del móvil
 }
 
 function renderModal(id) {
@@ -1042,6 +1129,7 @@ function abrirModalMisPronosticos() {
   document.getElementById("modal-content").innerHTML = content;
   document.getElementById("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
+  history.pushState({modal: true}, ""); // Solución botón atrás del móvil
 }
 
 function vistaTorneo(){

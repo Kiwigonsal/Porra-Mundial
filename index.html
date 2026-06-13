@@ -202,6 +202,9 @@
   .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
   .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
 
+  .seccion-titulo { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--grada); margin-bottom: 12px; display:flex; align-items:center; gap:8px;}
+  .seccion-titulo::after { content:""; flex:1; height:1px; background:var(--cal-tenue); }
+
   .grupo-card{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:16px; margin-bottom:24px}
   .grupo-card h3{font-family:var(--display); font-weight:400; letter-spacing:.1em; color:var(--cal-suave); font-size:16px; margin-bottom:12px; text-transform:uppercase}
   .grupo-card table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:16px;}
@@ -248,13 +251,6 @@
 </style>
 </head>
 <body>
-<script>
-  window.onerror = function(msg, url, lineNo, columnNo, error) {
-    document.body.innerHTML = `<div style="padding:40px 20px; text-align:center; color:white; background:#ef4444; font-family:sans-serif;"><b>⚠️ Error Fatal:</b><br><br>${msg}</div>`;
-    return false;
-  };
-</script>
-
 <div id="app">
   <header>
     <div class="marca">
@@ -286,6 +282,20 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ============================================================
+   SISTEMA DE SEGURIDAD GLOBAL (No borrar)
+   ============================================================ */
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error("Error JS:", msg, error);
+  return false; 
+};
+window.onunhandledrejection = function(event) {
+  console.error("Promesa Rechazada:", event.reason);
+};
+
+/* ============================================================
+   CONFIGURACIÓN SUPABASE
+   ============================================================ */
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
@@ -345,8 +355,6 @@ async function sha256(texto){
 init();
 async function init(){
   try {
-    if (typeof supabase === 'undefined') throw new Error("Supabase no se cargó. ¿Tienes un AdBlocker?");
-    
     db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { 
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } 
     });
@@ -381,18 +389,15 @@ async function init(){
 
 async function cargarTodo(){
   const p = await db.from("partidos").select("*").order("fecha_utc");
-  if (p.error) throw new Error("BD Partidos: " + p.error.message);
   partidos = p.data || [];
   
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
   const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra").eq("porra_id", porra.id).order("nombre");
-  if (u.error) throw new Error("BD Usuarios: " + u.error.message);
   usuarios = u.data || [];
   
   if (usuarios.length){
     const pr = await db.from("pronosticos").select("usuario_id,partido_id,goles_local,goles_visitante").in("usuario_id", usuarios.map(x => x.id));
-    if (pr.error) throw new Error("BD Pronósticos: " + pr.error.message);
     pronosticos = pr.data || [];
   } else { pronosticos = []; }
   
@@ -508,6 +513,7 @@ function render(){
     else v.innerHTML = vistaPerfil();
   } catch (error) {
     console.error(error);
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja);"><b>Ocurrió un error:</b><br>${error.message}</div>`;
   }
 }
 
@@ -567,6 +573,49 @@ async function guardarPronostico(partidoId){
   render();
 }
 
+function vistaCodigo(){
+  return `<div class="panel">
+    <h2>¿De qué porra eres?</h2>
+    <p>Escribe el código de invitación que te han pasado por el grupo.</p>
+    <label for="codigo-porra">Código de invitación</label>
+    <input type="text" id="codigo-porra" autocomplete="off" autocapitalize="characters"
+      style="text-transform:uppercase; letter-spacing:.2em; font-weight:800; text-align:center"
+      onkeydown="if(event.key==='Enter')entrarConCodigo()">
+    <button class="btn oro" onclick="entrarConCodigo()">Entrar en la porra</button>
+    <div id="msg-codigo"></div>
+    <p class="nota">Cada porra es un mundo: sus jugadores, sus pronósticos y su tabla no se mezclan con los de otras porras.</p>
+  </div>`;
+}
+
+async function entrarConCodigo(){
+  const codigo = $("codigo-porra").value.trim();
+  const msg = $("msg-codigo");
+  if (!codigo) return msg.innerHTML = `<div class="error">Escribe el código.</div>`;
+  const { data, error } = await db.rpc("entrar_porra", { p_codigo: codigo });
+  if (error) return msg.innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  if (!data || !data.length) return msg.innerHTML = `<div class="error">Ese código no existe. Revisa mayúsculas y espacios.</div>`;
+  
+  porra = data[0];
+  try { localStorage.setItem("porra_actual", JSON.stringify(porra)); } catch(e){}
+  
+  me = null; adminPin = null; 
+  try { localStorage.removeItem("porra_usuario"); sessionStorage.removeItem("adminPin"); } catch(e){}
+  
+  pintarTitulo();
+  await cargarTodo();
+  irA("perfil");
+}
+
+function cambiarPorra(){
+  porra = null; me = null; adminPin = null; 
+  try { 
+    localStorage.removeItem("porra_actual"); 
+    localStorage.removeItem("porra_usuario"); 
+    sessionStorage.removeItem("adminPin"); 
+  } catch(e){}
+  pintarTitulo(); render();
+}
+
 function vistaPartidos(){
   if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
   if (!me) return `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
@@ -599,7 +648,7 @@ function tarjetaFeed(p, conPron){
 
   let footer = "";
   if(conPron){
-    const mio = pronosticos.find(x => x.usuario_id === (me ? me.id : null) && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
     if (!empezado(p)){
       footer = mio ? `<span>Tu pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span>✏️</span>` : `<span>Sin pronóstico</span> <span style="color:var(--cesped)">Pronosticar 👉</span>`;
     } else {
@@ -647,7 +696,7 @@ function renderModal(id) {
   
   let bannerMio = "";
   if (me) {
-    const mio = pronosticos.find(x => x.usuario_id === me.id && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
     if (!empezado(p)){
       const d = borradores[p.id] || { gl: mio ? mio.goles_local : 0, gv: mio ? mio.goles_visitante : 0 };
       borradores[p.id] = d;
@@ -995,7 +1044,7 @@ function vistaAcceso(){
   return `
   <div class="panel">
     <h2>Inicia sesión</h2>
-    <p>Estás en <b style="color:var(--trofeo)">${esc(porra.nombre)}</b>. Elige tu nombre y mete tu PIN.
+    <p>Estás en <b style="color:var(--trofeo)">${esc(porra?.nombre || "")}</b>. Elige tu nombre y mete tu PIN.
        <a href="#" onclick="cambiarPorra();return false" style="color:var(--grada)">¿No es tu porra?</a></p>
     <label for="sel-usuario">¿Quién eres?</label>
     <select id="sel-usuario">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join("")}</select>

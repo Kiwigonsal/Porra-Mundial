@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B1120">
 <meta name="description" content="La porra del Mundial 2026 entre amigos.">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>La Porra del Mundial 2026</title>
@@ -14,7 +14,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* Paleta Pibardos (Dark Navy) */
     --campo:#0f172a;          
     --campo-2:#1e293b;        
     --campo-3:#334155;        
@@ -39,6 +38,9 @@
       repeating-linear-gradient(90deg, transparent 0 72px, rgba(248,250,252,.015) 72px 144px);
   }
   #app{max-width:560px; margin:0 auto; padding:0 14px calc(86px + env(safe-area-inset-bottom)); }
+
+  /* Forzar hidden para evitar bugs visuales */
+  [hidden] { display: none !important; }
 
   /* ---------- Cabecera ---------- */
   header{
@@ -257,7 +259,9 @@
       <div class="yo-emoji-container" id="yo-emoji">⚽</div><span id="yo-nombre"></span><span class="pts" id="yo-pts">0</span>
     </button>
   </header>
-  <main id="vista"></main>
+  <main id="vista">
+    <div class="cargando">Saltando al campo…</div>
+  </main>
 </div>
 
 <div id="modal-overlay" class="modal-overlay" onclick="cerrarModal(event)">
@@ -277,30 +281,43 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
-   CONFIGURACIÓN — pega aquí tus datos de Supabase
+   SISTEMA DE SEGURIDAD GLOBAL (Captura cualquier error silencioso)
+   ============================================================ */
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  document.getElementById("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja); background:var(--campo-2); border-radius:12px; margin:20px;"><b>⚠️ Error Fatal JS:</b><br><br>${msg}</div>`;
+  return false;
+};
+window.onunhandledrejection = function(event) {
+  document.getElementById("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja); background:var(--campo-2); border-radius:12px; margin:20px;"><b>⚠️ Promesa Rechazada:</b><br><br>${event.reason}</div>`;
+};
+
+/* ============================================================
+   CONFIGURACIÓN SUPABASE
    ============================================================ */
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
-const ORDEN_ETAPAS = ["GROUP_STAGE","LAST_32","LAST_16","QUARTER_FINALS","SEMI_FINALS","THIRD_PLACE","FINAL"];
 const EMOJIS = ["⚽","🔥","🦁","🐙","🍺","🎯","👑","🧉","🌵","🦅","🤖","🍕"];
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
-let porra = null, me = null, adminPin = sessionStorage.getItem("adminPin") || null;
+let porra = null, me = null, adminPin = null;
 let tab = "partidos", borradores = {}, cargado = false, partidoAbiertoId = null;
 
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = (s) => {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+};
 
 function avatarHtml(u){
-  if (!u) return '?';
+  if (!u) return '⚽';
   if (u.avatar_url) return `<img src="${esc(u.avatar_url)}" alt="avatar" style="width:100%;height:100%;object-fit:cover;">`;
   return esc(u.emoji || '⚽');
 }
 function avatarHtmlMini(u){
-  if (!u) return '?';
+  if (!u) return '⚽';
   if (u.avatar_url) return `<img src="${esc(u.avatar_url)}" alt="" style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:2px">`;
   return esc(u.emoji || '⚽');
 }
@@ -312,6 +329,7 @@ function pintarTitulo(){
   document.title = (porra ? porra.nombre : "La Porra") + " — Mundial 2026";
   $("titulo-porra").textContent = porra ? porra.nombre : "La Porra";
 }
+
 async function sha256(texto){
   const data = new TextEncoder().encode(texto);
   const hash = await crypto.subtle.digest("SHA-256", data);
@@ -321,36 +339,63 @@ async function sha256(texto){
 init();
 async function init(){
   try {
-    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const porraGuardada = localStorage.getItem("porra_actual");
-    if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
-    const sesion = localStorage.getItem("porra_usuario");
-    if (sesion) { try { me = JSON.parse(sesion); } catch(e){} }
+    if (typeof supabase === 'undefined') throw new Error("Supabase no se ha cargado. Verifica tu conexión o deshabilita los bloqueadores de anuncios (AdBlock).");
+    
+    // Desactivar persistSession para evitar bugs con la caché local de Supabase
+    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+    
+    // Lectura segura de LocalStorage
+    try {
+      adminPin = sessionStorage.getItem("adminPin") || null;
+      const porraGuardada = localStorage.getItem("porra_actual");
+      if (porraGuardada) porra = JSON.parse(porraGuardada);
+      const sesion = localStorage.getItem("porra_usuario");
+      if (sesion) me = JSON.parse(sesion);
+    } catch (e) {
+      console.warn("LocalStorage bloqueado o corrupto, se iniciará sesión limpia.");
+    }
+    
     pintarTitulo();
-    $("vista").innerHTML = `<div class="cargando">Saltando al campo…</div>`;
+    
+    let connectionTimeout = setTimeout(() => {
+      if (!cargado) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">La conexión a la base de datos está tardando demasiado.<br><br>Intenta recargar la página.</div>`;
+    }, 8000);
+
     await cargarTodo();
+    clearTimeout(connectionTimeout); 
+
     suscribirRealtime();
     programarSync();
     cargado = true;
     render();
     setTimeout(scrollToCurrent, 500); 
+
   } catch (e) {
-    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)"><b>⚠️ Error de carga:</b><br><br>${e.message}<br><br><small>Por favor, borra la caché de tu navegador.</small></div>`;
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja); background:var(--campo-2); border-radius:12px; margin:20px;"><b>⚠️ Error crítico de sistema:</b><br><br>${e.message || e}<br><br><small>Por favor, revisa tu conexión o borra la caché del navegador.</small></div>`;
   }
 }
 
 async function cargarTodo(){
   const p = await db.from("partidos").select("*").order("fecha_utc");
+  if (p.error) throw new Error("Partidos BD: " + p.error.message);
   partidos = p.data || [];
+  
   if (!porra){ usuarios = []; pronosticos = []; return; }
+  
   const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra").eq("porra_id", porra.id).order("nombre");
+  if (u.error) throw new Error("Usuarios BD: " + u.error.message);
   usuarios = u.data || [];
+  
   if (usuarios.length){
     const pr = await db.from("pronosticos").select("usuario_id,partido_id,goles_local,goles_visitante").in("usuario_id", usuarios.map(x => x.id));
+    if (pr.error) throw new Error("Pronósticos BD: " + pr.error.message);
     pronosticos = pr.data || [];
   } else { pronosticos = []; }
   
-  if (me && !usuarios.find(x => x.id === me.id)) { me = null; localStorage.removeItem("porra_usuario"); }
+  if (me && !usuarios.find(x => x.id === me.id)) { 
+    me = null; 
+    try { localStorage.removeItem("porra_usuario"); } catch(e){} 
+  }
 }
 
 function suscribirRealtime(){
@@ -363,9 +408,7 @@ let refrescando = false;
 async function refrescar(){
   if (refrescando) return; refrescando = true;
   setTimeout(async () => { 
-    await cargarTodo(); 
-    render(); 
-    if (partidoAbiertoId) renderModal(partidoAbiertoId); 
+    try { await cargarTodo(); render(); if (partidoAbiertoId) renderModal(partidoAbiertoId); } catch(e){}
     refrescando = false; 
   }, 400);
 }
@@ -383,7 +426,7 @@ async function llamarSync(){ try { await fetch("/api/sync"); } catch(e){} }
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
-  setInterval(() => { if (cargado) render(); if(partidoAbiertoId) renderModal(partidoAbiertoId); }, 60e3);
+  setInterval(() => { if (cargado) { render(); if(partidoAbiertoId) renderModal(partidoAbiertoId); } }, 60e3);
 }
 
 function puntosDe(pred, p){
@@ -424,7 +467,7 @@ function clasificacion(){
     }
   }
 
-  // SOLUCION ANTI-CRASH: Garantizamos que .nombre exista siempre
+  // Prevenimos crashes con localeCompare asegurando strings válidos
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
@@ -448,13 +491,14 @@ function render(){
     actualizarCabecera();
     const v = $("vista");
     if (!porra){ v.innerHTML = vistaCodigo(); return; }
+    
     if (tab === "partidos") v.innerHTML = vistaPartidos();
     else if (tab === "torneo") v.innerHTML = vistaTorneo();
     else if (tab === "tabla") v.innerHTML = vistaTabla();
     else v.innerHTML = vistaPerfil();
   } catch (error) {
     console.error(error);
-    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)">Ocurrió un error cargando la vista.<br><br>Borra la caché del navegador.</div>`;
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja); background:var(--campo-2); border-radius:12px; margin:20px;"><b>⚠️ Error cargando la vista:</b><br><br>${error.message}</div>`;
   }
 }
 
@@ -702,10 +746,12 @@ function tablaGrupo(letra, ps){
     if (p.visitante) fila(p.visitante, p.visitante_crest);
     if (!esFin(p.estado) || p.goles_local == null) continue;
     const L = t[p.local], V = t[p.visitante];
-    L.pj++; V.pj++; L.gf += p.goles_local; L.gc += p.goles_visitante; V.gf += p.goles_visitante; V.gc += p.goles_local;
-    if (p.goles_local > p.goles_visitante) L.pts += 3;
-    else if (p.goles_local < p.goles_visitante) V.pts += 3;
-    else { L.pts++; V.pts++; }
+    if(L && V) {
+      L.pj++; V.pj++; L.gf += p.goles_local; L.gc += p.goles_visitante; V.gf += p.goles_visitante; V.gc += p.goles_local;
+      if (p.goles_local > p.goles_visitante) L.pts += 3;
+      else if (p.goles_local < p.goles_visitante) V.pts += 3;
+      else { L.pts++; V.pts++; }
+    }
   }
   const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
   
@@ -905,12 +951,6 @@ function vistaAcceso(){
     <div id="msg-reg"></div>
   </div>`;
 }
-let emojiElegido = EMOJIS[0];
-function elegirEmoji(btn, e){
-  emojiElegido = e;
-  document.querySelectorAll("#emoji-fila button").forEach(b => b.classList.remove("activo"));
-  btn.classList.add("activo");
-}
 
 async function registrarse(){
   const nombre = $("reg-nombre").value.trim(); const pin = $("reg-pin").value.trim();
@@ -932,7 +972,7 @@ async function registrarse(){
   const { data, error } = await db.from("usuarios").insert({ porra_id: porra.id, nombre, pin_hash: hash, emoji: '⚽', avatar_url: avatarUrl }).select().single();
   if (error) return msg.innerHTML = `<div class="error">${esc(error.code === "23505" ? "Ese nombre ya está cogido en esta porra." : error.message)}</div>`;
   me = { id: data.id, nombre: data.nombre, emoji: data.emoji, avatar_url: data.avatar_url };
-  localStorage.setItem("porra_usuario", JSON.stringify(me));
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   await cargarTodo(); irA("partidos");
 }
 
@@ -943,16 +983,21 @@ async function iniciarSesion(){
   if (!u) return msg.innerHTML = `<div class="error">Usuario no encontrado.</div>`;
   if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return msg.innerHTML = `<div class="error">PIN incorrecto.</div>`;
   me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url };
-  localStorage.setItem("porra_usuario", JSON.stringify(me));
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   irA("partidos");
 }
-function cerrarSesion(){ me = null; localStorage.removeItem("porra_usuario"); adminPin = null; sessionStorage.removeItem("adminPin"); render(); }
+function cerrarSesion(){ 
+  me = null; 
+  try { localStorage.removeItem("porra_usuario"); sessionStorage.removeItem("adminPin"); } catch(e){}
+  adminPin = null; 
+  render(); 
+}
 
 function actualizarCabecera(){
   const b = $("btn-yo");
   if (!me){ b.hidden = true; return; }
   b.hidden = false;
-  $("yo-emoji").innerHTML = avatarHtml(me);
+  $("yo-emoji").innerHTML = avatarHtmlMini(me);
   $("yo-nombre").textContent = me.nombre;
   const fila = clasificacion().find(f => f.u.id === me.id);
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
@@ -969,7 +1014,8 @@ async function subirNuevaFoto(input) {
   const avatarUrl = db.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
   const { error: dbError } = await db.from("usuarios").update({ avatar_url: avatarUrl }).eq("id", me.id);
   if (dbError) return msg.innerHTML = `<div class="error">Error BD: ${esc(dbError.message)}</div>`;
-  me.avatar_url = avatarUrl; localStorage.setItem("porra_usuario", JSON.stringify(me));
+  me.avatar_url = avatarUrl; 
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   msg.innerHTML = `<div class="ok">¡Foto actualizada! ✓</div>`;
   await cargarTodo(); setTimeout(() => { render(); msg.innerHTML=''; }, 1000);
 }
@@ -979,7 +1025,9 @@ async function entrarAdmin(){
   const pin = $("pin-admin").value.trim();
   const { data, error } = await db.rpc("es_admin_pin", { p_porra: porra.id, pin });
   if (error || !data) return $("msg-admin").innerHTML = `<div class="error">PIN de admin incorrecto para esta porra.</div>`;
-  adminPin = pin; sessionStorage.setItem("adminPin", pin); render();
+  adminPin = pin; 
+  try { sessionStorage.setItem("adminPin", pin); } catch(e){}
+  render();
 }
 function vistaAdmin(){
   const pendientes = partidos.filter(p => empezado(p) && !esFin(p.estado));
@@ -1026,14 +1074,6 @@ async function guardarResultado(id, estado){
   if (error) return alert("Error: " + error.message);
   await cargarTodo(); render();
 }
-async function crearPartidoManual(){
-  const local = $("np-local").value.trim(), visit = $("np-visit").value.trim(), fecha = $("np-fecha").value;
-  if (!local || !visit || !fecha) return $("msg-nuevo").innerHTML = `<div class="error">Rellena equipos y fecha.</div>`;
-  const { error } = await db.rpc("crear_partido", { p_local: local, p_visitante: visit, p_fecha: new Date(fecha).toISOString(), p_etapa: "GROUP_STAGE", p_grupo: null, p_porra: porra.id, pin: adminPin });
-  if (error) return $("msg-nuevo").innerHTML = `<div class="error">${esc(error.message)}</div>`;
-  $("msg-nuevo").innerHTML = `<div class="ok">Partido añadido ✓</div>`;
-  await cargarTodo(); setTimeout(render, 700);
-}
 async function sincronizarAhora(){
   $("msg-sync").innerHTML = `<div class="nota">Sincronizando…</div>`;
   const r = await llamarSync();
@@ -1041,7 +1081,7 @@ async function sincronizarAhora(){
   else $("msg-sync").innerHTML = `<div class="ok">Sincronizado ✓</div>`;
   await cargarTodo(); setTimeout(render, 900);
 }
-function salirAdmin(){ adminPin = null; sessionStorage.removeItem("adminPin"); render(); }
+function salirAdmin(){ adminPin = null; try{sessionStorage.removeItem("adminPin");}catch(e){} render(); }
 async function darPuntos(){
   const uid = $("adm-puntos-usr").value; const pts = parseInt($("adm-puntos-val").value, 10);
   if (!uid || isNaN(pts)) return $("msg-admin-gestion").innerHTML = `<div class="error">Selecciona usuario y puntos.</div>`;

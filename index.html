@@ -236,7 +236,7 @@
   .admin-partido .btn-mini{padding:8px 8px; border-radius:8px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); cursor:pointer; font-size:11px; font-weight:700}
 
   /* Listas dentro del Pop-up de Mis Pronósticos */
-  .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+  .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; }
   .pron-item-eq { display: flex; align-items: center; justify-content:center; flex-shrink:0; }
   .pron-item-info { flex: 1; min-width: 0; border-left:1px dashed var(--cal-tenue); padding-left:10px; }
   .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
@@ -248,6 +248,13 @@
 </style>
 </head>
 <body>
+<script>
+  window.onerror = function(msg, url, lineNo, columnNo, error) {
+    document.body.innerHTML = `<div style="padding:40px 20px; text-align:center; color:white; background:#ef4444; font-family:sans-serif;"><b>⚠️ Error Fatal:</b><br><br>${msg}</div>`;
+    return false;
+  };
+</script>
+
 <div id="app">
   <header>
     <div class="marca">
@@ -279,20 +286,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ============================================================
-   SISTEMA ANTICRASH SILENCIOSO
-   ============================================================ */
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-  console.error("Error JS:", msg, error);
-  return false; 
-};
-window.onunhandledrejection = function(event) {
-  console.error("Promesa Rechazada:", event.reason);
-};
-
-/* ============================================================
-   CONFIGURACIÓN SUPABASE
-   ============================================================ */
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
@@ -352,7 +345,11 @@ async function sha256(texto){
 init();
 async function init(){
   try {
-    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+    if (typeof supabase === 'undefined') throw new Error("Supabase no se cargó. ¿Tienes un AdBlocker?");
+    
+    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { 
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } 
+    });
     
     try {
       adminPin = sessionStorage.getItem("adminPin") || null;
@@ -363,28 +360,39 @@ async function init(){
     } catch (e) {}
     
     pintarTitulo();
+    
+    let timeoutId = setTimeout(() => {
+      if (!cargado) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Conexión lenta. Recarga la página.</div>`;
+    }, 6000);
+
     await cargarTodo();
+    clearTimeout(timeoutId); 
+
     suscribirRealtime();
     programarSync();
     cargado = true;
     render();
     setTimeout(scrollToCurrent, 500); 
+
   } catch (e) {
-    $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Error al iniciar. Recarga la página.</div>`;
+    $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Error al iniciar: ${e.message}</div>`;
   }
 }
 
 async function cargarTodo(){
   const p = await db.from("partidos").select("*").order("fecha_utc");
+  if (p.error) throw new Error("BD Partidos: " + p.error.message);
   partidos = p.data || [];
   
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
   const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra").eq("porra_id", porra.id).order("nombre");
+  if (u.error) throw new Error("BD Usuarios: " + u.error.message);
   usuarios = u.data || [];
   
   if (usuarios.length){
     const pr = await db.from("pronosticos").select("usuario_id,partido_id,goles_local,goles_visitante").in("usuario_id", usuarios.map(x => x.id));
+    if (pr.error) throw new Error("BD Pronósticos: " + pr.error.message);
     pronosticos = pr.data || [];
   } else { pronosticos = []; }
   
@@ -591,7 +599,7 @@ function tarjetaFeed(p, conPron){
 
   let footer = "";
   if(conPron){
-    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === (me ? me.id : null) && x.partido_id === p.id);
     if (!empezado(p)){
       footer = mio ? `<span>Tu pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span>✏️</span>` : `<span>Sin pronóstico</span> <span style="color:var(--cesped)">Pronosticar 👉</span>`;
     } else {
@@ -639,7 +647,7 @@ function renderModal(id) {
   
   let bannerMio = "";
   if (me) {
-    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === me.id && x.partido_id === p.id);
     if (!empezado(p)){
       const d = borradores[p.id] || { gl: mio ? mio.goles_local : 0, gv: mio ? mio.goles_visitante : 0 };
       borradores[p.id] = d;
@@ -750,6 +758,7 @@ function renderModal(id) {
 }
 
 function abrirModalMisPronosticos() {
+  if(!me) return;
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
   const misPartidosId = misProns.map(x => x.partido_id);
   const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));

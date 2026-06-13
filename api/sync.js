@@ -1,106 +1,58 @@
 // ============================================================
-//  /api/sync — Sincroniza el Mundial 2026 desde football-data.org
-//
-//  Se ejecuta en el servidor de Vercel, nunca en el navegador,
-//  así que las claves secretas no se exponen a nadie.
+//  /api/sync — Sincroniza usando API-FOOTBALL (Free Tier)
+//  Se ejecuta cada 5 minutos (100 llamadas al día = ok)
 // ============================================================
 
-const COMPETICION = "WC"; // FIFA World Cup en football-data.org
-const THROTTLE_SEGUNDOS = 60; // no llamar a la API más de 1 vez por minuto
+const COMPETICION = 1; // ID 1 = World Cup
+const TEMPORADA = 2026;
+const THROTTLE_SEGUNDOS = 300; // Bloqueo de 5 minutos exactos
 
 export default async function handler(req, res) {
   const SUPA = process.env.SUPABASE_URL;
   const KEY = process.env.SUPABASE_SERVICE_KEY;
-  const FD_TOKEN = process.env.FOOTBALL_DATA_TOKEN;
+  const API_KEY = process.env.API_FOOTBALL_KEY || process.env.FOOTBALL_DATA_TOKEN;
 
   res.setHeader("Cache-Control", "no-store");
+  if (!SUPA || !KEY || !API_KEY) return res.status(500).json({ ok: false, error: "Faltan variables de entorno." });
 
-  if (!SUPA || !KEY || !FD_TOKEN) {
-    return res.status(500).json({
-      ok: false,
-      error: "Faltan variables de entorno: SUPABASE_URL, SUPABASE_SERVICE_KEY o FOOTBALL_DATA_TOKEN",
-    });
-  }
-
-  const headersSupa = {
-    apikey: KEY,
-    Authorization: `Bearer ${KEY}`,
-    "Content-Type": "application/json",
-  };
+  const headersSupa = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
 
   try {
-    // ---- 1. Freno: si hemos sincronizado hace < 60 s, no repetimos ----
-    const confResp = await fetch(
-      `${SUPA}/rest/v1/config?clave=eq.last_sync&select=valor`,
-      { headers: headersSupa }
-    );
+    // 1. Control de llamadas (Evitar pasarse de 100/día)
+    const confResp = await fetch(`${SUPA}/rest/v1/config?clave=eq.last_sync&select=valor`, { headers: headersSupa });
     const conf = await confResp.json();
     const ultima = conf?.[0]?.valor ? new Date(conf[0].valor) : null;
     const hace = ultima ? (Date.now() - ultima.getTime()) / 1000 : Infinity;
 
     if (hace < THROTTLE_SEGUNDOS) {
-      return res.status(200).json({
-        ok: true,
-        omitido: true,
-        mensaje: `Sincronizado hace ${Math.round(hace)} s; se reutilizan los datos.`,
-      });
+      return res.status(200).json({ ok: true, omitido: true, mensaje: `Sincronizado hace ${Math.round(hace)}s.` });
     }
 
-    // ---- 2. Pedir todos los partidos del Mundial a football-data ----
-    const fdResp = await fetch(
-      `https://api.football-data.org/v4/competitions/${COMPETICION}/matches`,
-      { headers: { "X-Auth-Token": FD_TOKEN } }
-    );
+    // 2. Pedir datos a API-FOOTBALL
+    const afResp = await fetch(`https://v3.football.api-sports.io/fixtures?league=${COMPETICION}&season=${TEMPORADA}`, { 
+      headers: { "x-apisports-key": API_KEY } 
+    });
 
-    if (!fdResp.ok) {
-      const detalle = await fdResp.text();
-      return res.status(502).json({
-        ok: false,
-        error: `football-data.org respondió ${fdResp.status}`,
-        detalle: detalle.slice(0, 300),
-      });
-    }
+    if (!afResp.ok) return res.status(502).json({ ok: false, error: `API respondió ${afResp.status}` });
+    const datos = await afResp.json();
+    if (!datos.response || datos.response.length === 0) return res.status(200).json({ ok: true, partidos: 0, mensaje: "No hay partidos en la API." });
 
-    const datos = await fdResp.json();
-    const partidos = (datos.matches || []).map(mapearPartido).filter(Boolean);
+    const partidos = datos.response.map(mapearPartidoAF).filter(Boolean);
 
-    if (partidos.length === 0) {
-      return res.status(200).json({
-        ok: true,
-        partidos: 0,
-        mensaje: "La API no devolvió partidos.",
-      });
-    }
-
-    // ---- 3. Guardar en Supabase (upsert: crea o actualiza) ----
+    // 3. Subir a Supabase
     const upsert = await fetch(`${SUPA}/rest/v1/partidos`, {
       method: "POST",
-      headers: {
-        ...headersSupa,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
+      headers: { ...headersSupa, Prefer: "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify(partidos),
     });
 
-    if (!upsert.ok) {
-      const detalle = await upsert.text();
-      return res.status(502).json({
-        ok: false,
-        error: `Supabase respondió ${upsert.status} al guardar`,
-        detalle: detalle.slice(0, 300),
-      });
-    }
+    if (!upsert.ok) return res.status(502).json({ ok: false, error: `Supabase respondió ${upsert.status}` });
 
-    // ---- 4. Apuntar la hora de esta sincronización ----
+    // 4. Renovar Marca de Tiempo
     await fetch(`${SUPA}/rest/v1/config`, {
       method: "POST",
-      headers: {
-        ...headersSupa,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify([
-        { clave: "last_sync", valor: new Date().toISOString() },
-      ]),
+      headers: { ...headersSupa, Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify([{ clave: "last_sync", valor: new Date().toISOString() }]),
     });
 
     return res.status(200).json({ ok: true, partidos: partidos.length, omitido: false });
@@ -109,54 +61,67 @@ export default async function handler(req, res) {
   }
 }
 
-// Convierte un partido de football-data al formato de nuestra tabla
-function mapearPartido(m) {
-  if (!m || !m.id) return null;
-  const grupo = m.group ? m.group.replace("GROUP_", "").replace("Group ", "").trim() : null;
+function mapearPartidoAF(m) {
+  if (!m.fixture || !m.fixture.id) return null;
+  const fix = m.fixture;
+  const status = fix.status.short;
 
-  // ---- NUEVO: Extraer Goles y Cartulinas (Eventos) ----
+  let estado = "TIMED";
+  if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(status)) estado = "IN_PLAY";
+  if (["FT", "AET", "PEN"].includes(status)) estado = "FINISHED";
+  if (["SUSP", "INT", "PST", "CANC", "ABD", "AWD", "WO"].includes(status)) estado = "PAUSED";
+
   let eventos = [];
-  
-  if (m.goals && Array.isArray(m.goals)) {
-    m.goals.forEach(g => {
-      eventos.push({ 
-        tipo: '⚽', 
-        minuto: g.minute, 
-        jugador: g.scorer?.name || '?', 
-        equipo: g.team?.name 
-      });
+  if (m.events && Array.isArray(m.events)) {
+    m.events.forEach(e => {
+       let icono = "⏱";
+       let txtJugador = e.player?.name || "?";
+       
+       if (e.type === "Goal") {
+           icono = "⚽";
+           if(e.detail === "Penalty") icono = "⚽ (P)";
+           if(e.detail === "Own Goal") icono = "⚽ (AG)";
+           if(e.assist?.name) txtJugador += ` (A: ${e.assist.name})`;
+       }
+       if (e.type === "Card") icono = e.detail.includes("Red") ? "🟥" : "🟨";
+       if (e.type === "subst") {
+           icono = "🔄";
+           txtJugador = `${e.assist?.name || "?"} ⬆️ ${e.player?.name || "?"} ⬇️`;
+       }
+       if (e.type === "Var") {
+           icono = "📺";
+           txtJugador += ` (${e.detail})`;
+       }
+       
+       eventos.push({
+           minuto: e.time.elapsed + (e.time.extra ? `+${e.time.extra}` : ""),
+           tipo: icono,
+           jugador: txtJugador,
+           equipo: e.team?.name || ""
+       });
     });
   }
-  
-  if (m.bookings && Array.isArray(m.bookings)) {
-    m.bookings.forEach(b => {
-      let esRoja = (b.card === 'RED' || b.card === 'RED_CARD');
-      eventos.push({ 
-        tipo: esRoja ? '🟥' : '🟨', 
-        minuto: b.minute, 
-        jugador: b.player?.name || '?', 
-        equipo: b.team?.name 
-      });
-    });
+
+  let etapa = m.league.round || "GROUP_STAGE";
+  let grupo = null;
+  if (etapa.includes("Group")) {
+      grupo = etapa.split("-")[1]?.trim() || etapa.replace("Group", "").trim().charAt(0);
+      etapa = "GROUP_STAGE";
   }
-  
-  // Ordenar los eventos por minuto (cronológicamente)
-  eventos.sort((a, b) => a.minuto - b.minuto);
 
   return {
-    id: m.id,
-    numero: m.matchday ?? null,
-    etapa: m.stage || "GROUP_STAGE",
+    id: fix.id,
+    etapa: etapa,
     grupo: grupo,
-    local: m.homeTeam?.shortName || m.homeTeam?.name || null,
-    visitante: m.awayTeam?.shortName || m.awayTeam?.name || null,
-    local_crest: m.homeTeam?.crest || null,
-    visitante_crest: m.awayTeam?.crest || null,
-    fecha_utc: m.utcDate || null,
-    estado: m.status || "TIMED",
-    goles_local: m.score?.fullTime?.home ?? null,
-    goles_visitante: m.score?.fullTime?.away ?? null,
-    eventos: eventos, // <-- Enviamos el JSON con la línea de tiempo a Supabase
-    actualizado_en: new Date().toISOString(),
+    local: m.teams.home.name,
+    visitante: m.teams.away.name,
+    local_crest: m.teams.home.logo,
+    visitante_crest: m.teams.away.logo,
+    fecha_utc: fix.date,
+    estado: estado,
+    goles_local: m.goals.home,
+    goles_visitante: m.goals.away,
+    eventos: eventos,
+    actualizado_en: new Date().toISOString()
   };
 }

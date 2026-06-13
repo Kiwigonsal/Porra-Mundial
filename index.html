@@ -835,42 +835,19 @@ function vistaTabla(){
   <p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></p>`;
 }
 
-function vistaPerfil(){
-  if (!me) return vistaAcceso();
-  
-  const filas = clasificacion();
-  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
-  const maxPts = filas.length ? filas[0].total : 0;
-  const dist = maxPts - f.total;
-  const txtDist = (dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar");
-
+function abrirModalMisPronosticos() {
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
-  const partidosJugados = partidos.filter(p => esFin(p.estado) && misProns.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-  let aciertosPuntuables = 0;
-  partidosJugados.forEach(p => {
-      const pr = misProns.find(x => x.partido_id === p.id);
-      if (puntosDe(pr, p) > 0) aciertosPuntuables++;
-  });
-  const eficiencia = partidosJugados.length ? Math.round((aciertosPuntuables / partidosJugados.length) * 100) : 0;
-
-  const ultimos5 = partidosJugados.slice(-5);
-  let htmlForma = '';
-  for(let i=0; i<5; i++){
-      if(ultimos5[i]) {
-          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
-          htmlForma += `<div class="forma-box ${pts > 0 ? 'forma-verde' : 'forma-roja'}"></div>`;
-      } else {
-          htmlForma += `<div class="forma-box forma-vacia"></div>`;
-      }
-  }
-
   const misPartidosId = misProns.map(x => x.partido_id);
-  const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
+  const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
 
-  let htmlProns = misPartidos.map(p => {
+  const futuros = misPartidos.filter(p => !empezado(p));
+  const pasados = misPartidos.filter(p => empezado(p)).reverse(); // Los más recientes primero
+
+  const generarHtmlProns = (lista) => {
+    if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico aquí.</div>`;
+    return lista.map(p => {
       const pr = misProns.find(x => x.partido_id === p.id);
-      const fin = esFin(p.estado);
-      const vivo = esVivo(p.estado);
+      const fin = esFin(p.estado), vivo = esVivo(p.estado);
       const pts = (fin || vivo) ? puntosDe(pr, p) : null;
       
       let badgePts = "", realScore = "";
@@ -883,63 +860,39 @@ function vistaPerfil(){
           realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else badgePts = `<div class="pron-item-pts pending">-</div>`;
 
+      // Banderas estrictamente limitadas a 22x22 píxeles
       return `
       <div class="pron-item" style="cursor:pointer" onclick="abrirModal(${p.id})">
-          <div class="pron-item-eq">${escudo(p.local_crest)} <span style="font-size:8.5px;color:var(--cal-tenue)">vs</span> ${escudo(p.visitante_crest)}</div>
+          <div class="pron-item-eq">
+              <img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> 
+              <span style="font-size:8.5px;color:var(--cal-tenue)">vs</span> 
+              <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;">
+          </div>
           <div class="pron-item-info">
               <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
               <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
           </div>
           ${badgePts}
       </div>`;
-  }).join("");
+    }).join("");
+  };
 
-  const esKiwi = (me.nombre || "").toLowerCase() === "kiwi";
-
-  return `
-  <div class="perfil-header">
-      <div style="position:relative; width:80px; height:80px; margin: 0 auto 12px;">
-          <div class="perfil-avatar" style="margin:0; width:100%; height:100%; cursor:pointer;" onclick="document.getElementById('input-cambiar-foto').click()">${avatarHtml(me)}</div>
-          <div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; cursor:pointer; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div>
-      </div>
-      <input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">
-      <div id="msg-foto-perfil" style="margin-bottom:10px"></div>
-      
-      <h2>${esc(me.nombre)}</h2>
-      <div class="perfil-badges">
-          <span class="badge badge-pos">🏅 #${f.rank}</span>
-          <span class="badge badge-jugados">⚽ ${misProns.length}/104</span>
-      </div>
-  </div>
-
-  <div class="perfil-stats-row">
-      <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
-      <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
-      <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
-  </div>
-
-  <div class="perfil-dash-row">
-      <div class="p-dash-card efi-card">
-          <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
-          <div class="k">EFICIENCIA</div>
-      </div>
-      <div class="p-dash-card">
-          <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
-          <div class="forma-row">${htmlForma}</div>
-          <div class="forma-txt">${txtDist}</div>
-      </div>
-  </div>
-
-  <h3 class="seccion-titulo">MIS PRONÓSTICOS</h3>
-  <div class="pron-list">${htmlProns || '<div class="vacio" style="padding:20px; background:var(--campo-2); border-radius:12px;">No has pronosticado ningún partido.</div>'}</div>
-
-  <div style="margin-top:20px; display:flex; gap:10px;">
-      <button class="btn secundario" style="margin-top:0" onclick="cerrarSesion()">Cerrar sesión</button>
-      <button class="btn secundario" style="margin-top:0" onclick="cambiarPorra()">↔️ Cambiar porra</button>
-  </div>
-
-  ${esKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><p>Solo per Kiwi.</p><label for="pin-admin">PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()">Entrar come admin</button><div id="msg-admin"></div></div>`) : ''}
+  const content = `
+    <div class="modal-close" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-header" style="margin-bottom:20px;">
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">MIS PRONÓSTICOS</h2>
+    </div>
+    
+    <h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4>
+    <div class="pron-list" style="margin-bottom:24px;">${generarHtmlProns(futuros)}</div>
+    
+    <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
+    <div class="pron-list">${generarHtmlProns(pasados)}</div>
   `;
+  
+  document.getElementById("modal-content").innerHTML = content;
+  document.getElementById("modal-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
 }
 
 function vistaAcceso(){

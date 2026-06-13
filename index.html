@@ -118,9 +118,7 @@
   }
   .pick b{color:var(--cal); font-variant-numeric:tabular-nums}
   .pick .p5{color:var(--trofeo); font-weight:800}
-  .pick .p4{color:#b3e6c9; font-weight:800}
   .pick .p3{color:var(--cesped); font-weight:800}
-  .pick .p1{color:var(--cal-suave); font-weight:800}
   .pick .p0{color:var(--grada)}
   .pick.vivo-verde { border-color: var(--cesped); background: rgba(39,160,93,.15); }
   .pick.vivo-rojo { border-color: var(--tarjeta-roja); background: rgba(226,84,69,.15); opacity: 0.8; }
@@ -181,8 +179,9 @@
   .perfil-dash-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-bottom: 24px; }
   .p-dash-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
   .efi-card { align-items: center; }
-  .efi-circle { width: 66px; height: 66px; border-radius: 50%; border: 5px solid var(--trofeo); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: var(--display); font-size: 18px; color: var(--cal); border-left-color: var(--cal-tenue); transform: rotate(-45deg); }
-  .efi-circle span { transform: rotate(45deg); }
+  .efi-circle { width: 66px; height: 66px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: var(--display); font-size: 18px; color: var(--cal); }
+  .efi-circle::before { content: ""; position: absolute; inset: 5px; background: var(--campo-2); border-radius: 50%; z-index: 1; }
+  .efi-circle span { position: relative; z-index: 2; }
   .forma-row { display: flex; gap: 6px; margin-bottom: 12px; }
   .forma-box { width: 24px; height: 24px; border-radius: 6px; }
   .forma-verde { background: var(--cesped); }
@@ -267,9 +266,9 @@
   .aviso-config code{background:var(--campo); padding:2px 6px; border-radius:6px; font-size:12px}
 
   .admin-partido{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 0; border-bottom:1px solid rgba(242,245,240,.07); font-size:13px}
-  .admin-partido .mini{display:flex; gap:6px; align-items:center}
-  .admin-partido input{width:46px; padding:8px 4px; text-align:center; font-size:15px}
-  .admin-partido .btn-mini{padding:8px 10px; border-radius:10px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); cursor:pointer; font-size:12px; font-weight:700}
+  .admin-partido .mini{display:flex; gap:4px; align-items:center}
+  .admin-partido input{width:40px; padding:8px 2px; text-align:center; font-size:15px}
+  .admin-partido .btn-mini{padding:8px 8px; border-radius:8px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); cursor:pointer; font-size:11px; font-weight:700}
 </style>
 </head>
 <body>
@@ -297,10 +296,9 @@
 <script>
 /* ============================================================
    CONFIGURACIÓN — pega aquí tus datos de Supabase
-   (Project Settings → API en tu panel de Supabase)
    ============================================================ */
-const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";        // p.ej. https://abcdefg.supabase.co
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";       // la clave "anon public"
+const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
 /* ============================================================ */
 const ETAPAS = {
@@ -313,11 +311,11 @@ const EMOJIS = ["⚽","🔥","🦁","🐙","🍺","🎯","👑","🧉","🌵","�
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
-let porra = null;              // {id, nombre, codigo} — el grupo actual
-let me = null;                 // {id, nombre, emoji}
+let porra = null;
+let me = null;
 let adminPin = sessionStorage.getItem("adminPin") || null;
 let tab = "partidos";
-let borradores = {};           // pronósticos sin guardar {partidoId:{gl,gv}}
+let borradores = {};
 let cargado = false;
 
 const $ = (id) => document.getElementById(id);
@@ -338,12 +336,6 @@ async function sha256(texto){
 /* ---------- Arranque ---------- */
 init();
 async function init(){
-  if (SUPABASE_URL.startsWith("PEGA_AQUI")){
-    $("vista").innerHTML = `<div class="aviso-config"><b>Falta configurar Supabase.</b><br>
-      Abre <code>index.html</code> y rellena <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code>
-      con los valores de tu proyecto (Project Settings → API). Después recarga.</div>`;
-    return;
-  }
   db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const porraGuardada = localStorage.getItem("porra_actual");
   if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
@@ -388,28 +380,27 @@ async function refrescar(){
   setTimeout(async () => { await cargarTodo(); render(); refrescando = false; }, 400);
 }
 
-/* ---------- Sincronización con la API de resultados ---------- */
 function hayPartidoEnVentana(){
   const ahora = Date.now();
   return partidos.some(p => {
     if (!p.fecha_utc) return false;
     const t = new Date(p.fecha_utc).getTime();
-    return ahora >= t - 5*60e3 && ahora <= t + 3*3600e3; // desde 5 min antes hasta 3 h después
+    return ahora >= t - 5*60e3 && ahora <= t + 3*3600e3;
   });
 }
 async function llamarSync(forzado){
   try {
     const r = await fetch("/api/sync");
     return await r.json();
-  } catch(e){ return { ok:false, error:"No se pudo contactar con /api/sync (¿estás en Vercel?)" }; }
+  } catch(e){ return { ok:false, error:"No se pudo contactar con /api/sync" }; }
 }
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
-  setInterval(() => { if (cargado) render(); }, 60e3); // refresca candados y horas
+  setInterval(() => { if (cargado) render(); }, 60e3);
 }
 
-/* ---------- Puntos ---------- */
+/* ---------- Regole dei Punti ---------- */
 function puntosDe(pred, p){
   if (p.goles_local == null || p.goles_visitante == null) return null;
   
@@ -417,15 +408,14 @@ function puntosDe(pred, p){
   const aciertoVisitante = pred.goles_visitante === p.goles_visitante;
   const aciertoSigno = Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante);
 
-  if (aciertoLocal && aciertoVisitante) return 5; // Pleno (Resultado exacto)
-  if (aciertoSigno && (aciertoLocal || aciertoVisitante)) return 4; // Signo + Goles 1 equipo
-  if (aciertoSigno) return 3; // Ganador o empate acertado
+  if (aciertoLocal && aciertoVisitante) return 5; // Pleno exacto
+  if (aciertoSigno) return 3; // Ganador o empate
   
-  return 0; // Fallo total (eliminado el +1 suelto)
+  return 0; // Fallo total (tolto il +4 e il +1)
 }
 
 function clasificacion(){
-  // Calculamos la tabla histórica (sin el último partido finalizado) para sacar la Tendencia
+  // El histórico excluye los partidos en juego para calcular la "Tendencia"
   const terminados = partidos.filter(p => p.estado === "FINISHED").sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   const idUltimo = terminados.length ? terminados[terminados.length-1].id : null;
 
@@ -435,41 +425,45 @@ function clasificacion(){
   for (const pr of pronosticos){
     const p = partidos.find(x => x.id === pr.partido_id);
     const f = porUsuario[pr.usuario_id];
-    if (!p || !f || p.estado !== "FINISHED") continue;
+    if (!p || !f) continue;
+    
+    const fin = p.estado === "FINISHED";
+    const vivo = p.estado === "IN_PLAY" || p.estado === "PAUSED";
+    
+    if (!fin && !vivo) continue; // Solo cuenta terminados y en vivo
     
     const pts = puntosDe(pr, p);
     if (pts == null) continue;
     
-    f.jugados++; 
-    f.total += pts;
+    if (fin) f.jugados++; 
+    f.total += pts; // Suma sia punti finali che quelli provvisori Live
     
     if (pts === 5) f.plenos++; 
     else if (pts > 0) f.signos++;
 
-    // Guardar estado anterior al último partido para la tendencia
-    if (p.id !== idUltimo) {
+    // Para la tendencia (solo partidos terminati)
+    if (fin && p.id !== idUltimo) {
         f.totalAnt += pts;
         if (pts === 5) f.plenosAnt++;
-    } else {
-        f.ptsUltimo = pts; // Puntos ganados en la última jornada
+    } else if (fin && p.id === idUltimo) {
+        f.ptsUltimo += pts; 
     }
   }
 
-  // Ordenar el histórico para asignar Rank anterior
+  // Ordenar storico per la tendenza
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || a.u.nombre.localeCompare(b.u.nombre));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  // Ordenar el actual para asignar Rank definitivo y Tendencia
+  // Classifica attuale (incluso Live)
   const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
-      f.tendencia = f.rankAnt - f.rank; // Positivo = sube puestos
+      f.tendencia = f.rankAnt - f.rank;
   });
 
   return actSorted;
 }
 
-/* ---------- Navegación ---------- */
 function irA(t){ tab = t; render(); window.scrollTo({top:0}); }
 function render(){
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("activo", b.dataset.tab === tab));
@@ -482,7 +476,6 @@ function render(){
   else v.innerHTML = vistaPerfil();
 }
 
-/* ---------- Vista: entrar con código de invitación ---------- */
 function vistaCodigo(){
   return `<div class="panel">
     <h2>¿De qué porra eres?</h2>
@@ -528,7 +521,6 @@ function actualizarCabecera(){
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
-/* ---------- Vista: Partidos ---------- */
 function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= Date.now(); }
 function fmtHora(p){
   if (!p.fecha_utc) return "Por definir";
@@ -549,8 +541,7 @@ function escudo(url){
 }
 function vistaPartidos(){
   if (partidos.length === 0){
-    return `<div class="vacio">Todavía no hay partidos cargados.<br><br>
-      ${me ? "Si eres el admin, entra en <b>Perfil → Panel de admin</b> y pulsa <b>Sincronizar ahora</b>." : "Inicia sesión en Perfil para empezar."}</div>`;
+    return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
   }
   if (!me){
     return `<div class="vacio">Para pronosticar, primero crea tu perfil o inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
@@ -631,10 +622,7 @@ function zonaPronostico(p){
     } else {
       let clsPts = "p0";
       if (pts === 5) clsPts = "p5";
-      else if (pts === 4) clsPts = "p4";
       else if (pts === 3) clsPts = "p3";
-      else if (pts === 1) clsPts = "p1";
-      
       sufijo = pts == null ? "" : ` <span class="${clsPts}">${pts===5?"+5 🎯":pts>0?"+"+pts:"0"}</span>`;
     }
 
@@ -671,7 +659,6 @@ async function guardarPronostico(partidoId){
   setTimeout(render, 600);
 }
 
-/* ---------- Vista: Torneo ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -712,7 +699,6 @@ function tablaGrupo(letra, ps){
     </table></div>`;
 }
 
-/* ---------- Vista: Tabla (Podio + Ranking) ---------- */
 function vistaTabla(){
   const filas = clasificacion();
   if (!filas.length) return `<div class="vacio">Todavía no hay nadie en la porra. ¡Sé el primero en la pestaña Perfil!</div>`;
@@ -787,12 +773,10 @@ function vistaTabla(){
   ${podioHtml}
   ${listaHtml}
   <p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">
-    Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Ganador+Goles: <b style="color:#b3e6c9">4 pts</b><br>
-    Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b>
+    Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b>
   </p>`;
 }
 
-/* ---------- Vista: Perfil Completo ---------- */
 function vistaPerfil(){
   if (!me) return vistaAcceso();
   
@@ -860,6 +844,8 @@ function vistaPerfil(){
       </div>`;
   }).join("");
 
+  const esKiwi = me.nombre.toLowerCase() === "kiwi";
+
   return `
   <div class="perfil-header">
       <div class="perfil-avatar">${esc(me.emoji)}</div>
@@ -879,7 +865,7 @@ function vistaPerfil(){
 
   <div class="perfil-dash-row">
       <div class="p-dash-card efi-card">
-          <div class="efi-circle"><span>${eficiencia}%</span></div>
+          <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
           <div class="k">EFICIENCIA</div>
       </div>
       <div class="p-dash-card">
@@ -899,15 +885,15 @@ function vistaPerfil(){
       <button class="btn secundario" style="margin-top:0" onclick="cambiarPorra()">↔️ Cambiar porra</button>
   </div>
 
-  ${adminPin ? vistaAdmin() : `
+  ${esKiwi ? (adminPin ? vistaAdmin() : `
   <div class="panel">
     <h2>🛠️ Panel de admin</h2>
-    <p>Solo para quien organiza la porra.</p>
+    <p>Solo per Kiwi. Inserisci il PIN dell'admin per sbloccare i superpoteri.</p>
     <label for="pin-admin">PIN de admin</label>
     <input type="password" id="pin-admin" inputmode="numeric" autocomplete="off">
-    <button class="btn oro" onclick="entrarAdmin()">Entrar como admin</button>
+    <button class="btn oro" onclick="entrarAdmin()">Entrar come admin</button>
     <div id="msg-admin"></div>
-  </div>`}
+  </div>`) : ''}
   `;
 }
 
@@ -1001,7 +987,7 @@ function vistaAdmin(){
     <button class="btn" onclick="sincronizarAhora()">🔄 Sincronizar ahora</button>
     <div id="msg-sync"></div>
 
-    <label style="margin-top:20px">Poner resultado a mano</label>
+    <label style="margin-top:20px">Poner resultado a mano / Probar LIVE</label>
     ${pendientes.length === 0 ? `<p class="nota">No hay partidos en juego o pendientes de cerrar ahora mismo.</p>` :
       pendientes.map(filaAdmin).join("")}
     ${recientes.length ? `<label style="margin-top:18px">Corregir un resultado reciente</label>` + recientes.map(filaAdmin).join("") : ""}
@@ -1036,15 +1022,16 @@ function filaAdmin(p){
     <span class="mini">
       <input type="text" inputmode="numeric" id="adm-gl-${p.id}" value="${p.goles_local ?? ""}" placeholder="0">
       <input type="text" inputmode="numeric" id="adm-gv-${p.id}" value="${p.goles_visitante ?? ""}" placeholder="0">
-      <button class="btn-mini" onclick="guardarResultado(${p.id})">Final ✓</button>
+      <button class="btn-mini" style="color:var(--tarjeta-roja); border-color:var(--tarjeta-roja)" onclick="guardarResultado(${p.id}, 'IN_PLAY')">Live</button>
+      <button class="btn-mini" onclick="guardarResultado(${p.id}, 'FINISHED')">Final ✓</button>
     </span>
   </div>`;
 }
-async function guardarResultado(id){
+async function guardarResultado(id, estado){
   const gl = parseInt($(`adm-gl-${id}`).value, 10);
   const gv = parseInt($(`adm-gv-${id}`).value, 10);
   if (isNaN(gl) || isNaN(gv)) return alert("Pon los dos marcadores.");
-  const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: "FINISHED", p_porra: porra.id, pin: adminPin });
+  const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return alert("Error: " + error.message);
   await cargarTodo(); render();
 }

@@ -91,6 +91,11 @@
   .tanteo small{display:block; font-family:var(--body); font-size:10px; letter-spacing:.18em; color:var(--grada); margin-top:4px; text-transform:uppercase}
   .tanteo .vs{color:var(--cal-suave); font-size:22px}
 
+  /* ---------- Eventos en Directo ---------- */
+  .eventos-caja { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(242,245,240,.06); display: flex; flex-direction: column; gap: 5px; }
+  .evento-linea { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--grada); }
+  .evento-min { font-weight: 800; color: var(--cal-suave); min-width: 22px; text-align: right; }
+
   /* ---------- Pronóstico ---------- */
   .pron{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--cal-tenue); }
   .pron-titulo{font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--trofeo); margin-bottom:8px}
@@ -118,7 +123,9 @@
   }
   .pick b{color:var(--cal); font-variant-numeric:tabular-nums}
   .pick .p5{color:var(--trofeo); font-weight:800}
+  .pick .p4{color:#b3e6c9; font-weight:800}
   .pick .p3{color:var(--cesped); font-weight:800}
+  .pick .p1{color:var(--cal-suave); font-weight:800}
   .pick .p0{color:var(--grada)}
   .pick.vivo-verde { border-color: var(--cesped); background: rgba(39,160,93,.15); }
   .pick.vivo-rojo { border-color: var(--tarjeta-roja); background: rgba(226,84,69,.15); opacity: 0.8; }
@@ -169,7 +176,6 @@
   .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
   .badge-pos { background: rgba(232,178,58,0.15); border: 1px solid var(--trofeo); color: var(--trofeo); }
   .badge-jugados { background: rgba(242,245,240,0.1); border: 1px solid var(--cal-tenue); color: var(--cal); }
-  .badge-podio { background: rgba(39,160,93,0.15); border: 1px solid var(--cesped); color: var(--cesped); }
 
   .perfil-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
   .p-stat-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px 6px; text-align: center; }
@@ -411,11 +417,10 @@ function puntosDe(pred, p){
   if (aciertoLocal && aciertoVisitante) return 5; // Pleno exacto
   if (aciertoSigno) return 3; // Ganador o empate
   
-  return 0; // Fallo total (tolto il +4 e il +1)
+  return 0; 
 }
 
 function clasificacion(){
-  // El histórico excluye los partidos en juego para calcular la "Tendencia"
   const terminados = partidos.filter(p => p.estado === "FINISHED").sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   const idUltimo = terminados.length ? terminados[terminados.length-1].id : null;
 
@@ -430,18 +435,17 @@ function clasificacion(){
     const fin = p.estado === "FINISHED";
     const vivo = p.estado === "IN_PLAY" || p.estado === "PAUSED";
     
-    if (!fin && !vivo) continue; // Solo cuenta terminados y en vivo
+    if (!fin && !vivo) continue;
     
     const pts = puntosDe(pr, p);
     if (pts == null) continue;
     
     if (fin) f.jugados++; 
-    f.total += pts; // Suma sia punti finali che quelli provvisori Live
+    f.total += pts;
     
     if (pts === 5) f.plenos++; 
     else if (pts > 0) f.signos++;
 
-    // Para la tendencia (solo partidos terminati)
     if (fin && p.id !== idUltimo) {
         f.totalAnt += pts;
         if (pts === 5) f.plenosAnt++;
@@ -450,11 +454,9 @@ function clasificacion(){
     }
   }
 
-  // Ordenar storico per la tendenza
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || a.u.nombre.localeCompare(b.u.nombre));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  // Classifica attuale (incluso Live)
   const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
@@ -574,6 +576,20 @@ function tarjetaPartido(p, conPron){
   } else {
     centro = `<div class="tanteo"><span class="vs">VS</span><small>${p.fecha_utc ? fmtHora(p) : "—"}</small></div>`;
   }
+
+  // --- Cronología de Eventos en Directo ---
+  let eventosHtml = "";
+  if (p.eventos && Array.isArray(p.eventos) && p.eventos.length > 0) {
+    const evs = p.eventos.map(e => `
+      <div class="evento-linea">
+        <span class="evento-min">${e.minuto}'</span>
+        <span>${e.tipo}</span>
+        <span>${esc(e.jugador)}</span>
+      </div>
+    `).join("");
+    eventosHtml = `<div class="eventos-caja">${evs}</div>`;
+  }
+
   let bloquePron = "";
   if (conPron) bloquePron = zonaPronostico(p);
   return `<article class="partido ${vivo?"en-vivo":""} ${fin?"acabado":""}">
@@ -583,6 +599,7 @@ function tarjetaPartido(p, conPron){
       ${centro}
       <div class="equipo">${escudo(p.visitante_crest)}<span>${esc(p.visitante || "Por definir")}</span></div>
     </div>
+    ${eventosHtml}
     ${bloquePron}
   </article>`;
 }
@@ -786,7 +803,6 @@ function vistaPerfil(){
   const dist = maxPts - f.total;
   const txtDist = (dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar");
 
-  // Eficiencia
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
   const partidosJugados = partidos.filter(p => p.estado === "FINISHED" && misProns.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   let aciertosPuntuables = 0;
@@ -796,7 +812,6 @@ function vistaPerfil(){
   });
   const eficiencia = partidosJugados.length ? Math.round((aciertosPuntuables / partidosJugados.length) * 100) : 0;
 
-  // Forma (últimos 5 partidos)
   const ultimos5 = partidosJugados.slice(-5);
   let htmlForma = '';
   for(let i=0; i<5; i++){
@@ -808,7 +823,6 @@ function vistaPerfil(){
       }
   }
 
-  // Lista MIS PRONÓSTICOS
   const misPartidosId = misProns.map(x => x.partido_id);
   const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
 
@@ -853,7 +867,6 @@ function vistaPerfil(){
       <div class="perfil-badges">
           <span class="badge badge-pos">🏅 #${f.rank}</span>
           <span class="badge badge-jugados">⚽ ${misProns.length}/104</span>
-          ${f.rank <= 3 && filas.length > 3 ? '<span class="badge badge-podio">🏆 PODIO</span>' : ''}
       </div>
   </div>
 
@@ -983,7 +996,7 @@ function vistaAdmin(){
   return `
   <div class="panel">
     <h2>🛠️ Panel de admin</h2>
-    <p>Los resultados llegan solos desde football-data.org. Aquí puedes forzar una sincronización o corregir a mano. Ojo: los resultados reales son compartidos, así que corregirlos afecta a todas las porras.</p>
+    <p>Los resultados llegan solos desde football-data.org. Aquí puedes forzar una sincronización o corregir a mano. Ojo: los resultados reales son compartidos, così que corregirlos afecta a todas las porras.</p>
     <button class="btn" onclick="sincronizarAhora()">🔄 Sincronizar ahora</button>
     <div id="msg-sync"></div>
 
@@ -1082,7 +1095,7 @@ async function resetearPin(){
   const u = usuarios.find(x => x.id === uid);
   if (!u) return;
 
-  if (!confirm(`¿Seguro que quieres cambiar el PIN de ${u.nombre} a "0000"?`)) return;
+  if (!confirm(`¿Seguro que vuoi cambiare il PIN di ${u.nombre} a "0000"?`)) return;
 
   msg.innerHTML = `<div class="nota">Generando nueva clave segura…</div>`;
   const nuevoHash = await sha256(u.nombre.toLowerCase() + ":0000");

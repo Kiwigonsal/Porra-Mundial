@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
+    /* Paleta Pibardos (Dark Navy) */
     --campo:#0f172a;          
     --campo-2:#1e293b;        
     --campo-3:#334155;        
@@ -543,23 +544,12 @@ function chipEstado(p){
 function escudo(url){
   return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="sin-escudo">❔</div>`;
 }
-  function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= Date.now(); }
 
-function fmtHora(p){
-  if (!p.fecha_utc) return "Por definir";
-  return new Date(p.fecha_utc).toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+function vistaPartidos(){
+  if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
+  if (!me) return `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
+  return listaPartidos(true);
 }
-
-function chipEstado(p){
-  if (esVivo(p.estado)) return `<span class="chip vivo">En juego</span>`;
-  if (esFin(p.estado)) return `<span class="chip fin">Final</span>`;
-  return `<span class="chip">${fmtHora(p)}</span>`;
-}
-
-function escudo(url){
-  return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="sin-escudo">❔</div>`;
-}
-  function vistaPartidos(){
 function listaPartidos(conPron){
   const porDia = {};
   for (const p of partidos){

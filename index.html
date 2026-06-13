@@ -582,17 +582,7 @@ function zonaPronostico(p){
 
   return `<div class="picks">${chips}</div>`;
 }
-  // Empezado: se destapan los pronósticos de todos
-  const todos = pronosticos.filter(x => x.partido_id === p.id);
-  if (todos.length === 0) return `<div class="candado">Nadie pronosticó este partido 😶</div>`;
-  const chips = todos.map(pr => {
-    const u = usuarios.find(x => x.id === pr.usuario_id);
-    const pts = puntosDe(pr, p);
-    const cls = pts === 3 ? "p3" : pts === 1 ? "p1" : "p0";
-    const sufijo = pts == null ? "" : ` <span class="${cls}">${pts===3?"+3 🎯":pts===1?"+1":"0"}</span>`;
-    return `<span class="pick">${u ? esc(u.emoji+" "+u.nombre) : "?"} <b>${pr.goles_local}-${pr.goles_visitante}</b>${sufijo}</span>`;
-  }).join("");
-  return `<div class="picks">${chips}</div>`;
+ 
 }
 function stepper(id, campo, valor){
   return `<div class="stepper">

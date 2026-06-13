@@ -62,9 +62,7 @@
     border:1px solid var(--cal-tenue); border-radius:var(--radius);
     padding:14px 14px 12px; margin-bottom:12px; position:relative; overflow:hidden;
   }
-  .partido::before{ /* línea de cal lateral */
-    content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--cal-tenue);
-  }
+  .partido::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--cal-tenue); }
   .partido.en-vivo::before{background:var(--tarjeta-roja)}
   .partido.acabado::before{background:var(--cesped)}
   .partido-meta{
@@ -93,10 +91,8 @@
   .tanteo small{display:block; font-family:var(--body); font-size:10px; letter-spacing:.18em; color:var(--grada); margin-top:4px; text-transform:uppercase}
   .tanteo .vs{color:var(--cal-suave); font-size:22px}
 
-  /* ---------- Pronóstico (stepper) ---------- */
-  .pron{
-    margin-top:12px; padding-top:12px; border-top:1px dashed var(--cal-tenue);
-  }
+  /* ---------- Pronóstico ---------- */
+  .pron{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--cal-tenue); }
   .pron-titulo{font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--trofeo); margin-bottom:8px}
   .pron-fila{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px}
   .stepper{display:flex; align-items:center; justify-content:center; gap:8px}
@@ -121,31 +117,95 @@
     background:var(--campo); border:1px solid var(--cal-tenue); border-radius:999px; color:var(--cal-suave);
   }
   .pick b{color:var(--cal); font-variant-numeric:tabular-nums}
-  /* Colores para partido terminado (5, 4, 3, 1 pts) */
   .pick .p5{color:var(--trofeo); font-weight:800}
   .pick .p4{color:#b3e6c9; font-weight:800}
   .pick .p3{color:var(--cesped); font-weight:800}
   .pick .p1{color:var(--cal-suave); font-weight:800}
   .pick .p0{color:var(--grada)}
-  /* Colores para el partido en directo */
   .pick.vivo-verde { border-color: var(--cesped); background: rgba(39,160,93,.15); }
   .pick.vivo-rojo { border-color: var(--tarjeta-roja); background: rgba(226,84,69,.15); opacity: 0.8; }
   .candado{font-size:11.5px; color:var(--grada); margin-top:10px; text-align:center}
 
-  /* ---------- Tabla de clasificación ---------- */
-  .tabla{width:100%; border-collapse:collapse; margin-top:14px}
-  .tabla th{
-    font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--grada);
-    text-align:left; padding:8px 8px; border-bottom:1px solid var(--cal-tenue); font-weight:800;
-  }
-  .tabla td{padding:11px 8px; border-bottom:1px solid rgba(242,245,240,.07); font-size:14px}
-  .tabla .pos{font-family:var(--display); color:var(--grada); width:34px; font-size:16px}
-  .tabla tr:first-child .pos{color:var(--trofeo)}
-  .tabla .num{text-align:right; font-variant-numeric:tabular-nums; font-weight:600}
-  .tabla .total{font-family:var(--display); font-size:19px; color:var(--trofeo); text-align:right}
-  .tabla .yo-fila{background:rgba(39,160,93,.10)}
+  /* ---------- Tabla de Clasificación: Podio y Ranking ---------- */
+  .live-banner { background: rgba(226,84,69,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; }
+  .podio-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 24px 0; }
+  .podio-item { display: flex; flex-direction: column; align-items: center; background: var(--campo-2); border-radius: 16px 16px 0 0; padding: 15px 10px; width: 31%; position: relative; }
+  .podio-item.oro { background: linear-gradient(180deg, rgba(232,178,58,0.2) 0%, var(--campo-2) 100%); border: 1px solid var(--trofeo); border-bottom: none; z-index: 2; padding-bottom: 25px; }
+  .podio-item.plata { background: linear-gradient(180deg, rgba(192,192,192,0.15) 0%, var(--campo-2) 100%); border: 1px solid #C0C0C0; border-bottom: none; height: 90%; }
+  .podio-item.bronce { background: linear-gradient(180deg, rgba(205,127,50,0.15) 0%, var(--campo-2) 100%); border: 1px solid #CD7F32; border-bottom: none; height: 80%; }
+  .podio-avatar { width: 50px; height: 50px; border-radius: 50%; font-size: 30px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 2px solid; margin-bottom: 8px;}
+  .podio-item.oro .podio-avatar { border-color: var(--trofeo); width: 64px; height: 64px; font-size: 35px; }
+  .podio-item.plata .podio-avatar { border-color: #C0C0C0; }
+  .podio-item.bronce .podio-avatar { border-color: #CD7F32; }
+  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-bottom: 4px; }
+  .podio-pts { font-family: var(--display); font-size: 22px; color: var(--cal); line-height: 1; }
+  .podio-pts small { font-size: 10px; font-family: var(--body); color: var(--grada); font-weight: 800; text-transform: uppercase; margin-left: 2px; }
+  .medalla { position: absolute; top: -14px; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-  /* ---------- Torneo (grupos) ---------- */
+  .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
+  .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; }
+  .rank-card.yo { border-color: var(--cesped); background: rgba(39,160,93,0.05); }
+  .rank-pos { display: flex; flex-direction: column; align-items: center; min-width: 28px; }
+  .rank-num { font-family: var(--display); font-size: 18px; color: var(--cal); line-height:1; }
+  .rank-trend { font-size: 10px; font-weight: 800; margin-top: 4px; line-height:1; }
+  .trend-up { color: var(--cesped); }
+  .trend-down { color: var(--tarjeta-roja); }
+  .trend-eq { color: var(--grada); }
+  .rank-avatar { width: 44px; height: 44px; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .rank-stats { font-size: 11px; color: var(--grada); display: flex; gap: 8px; font-weight: 600; }
+  .rank-stats span { display: flex; align-items: center; gap: 3px; }
+  .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center;}
+  .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
+  .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
+  .rank-pts-box.has-trend { position: relative; }
+  .rank-pts-trend { font-size: 10px; color: var(--cesped); font-weight: 800; margin-top: 2px; line-height: 1;}
+
+  /* ---------- Perfil UI ---------- */
+  .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; margin-bottom: 14px; position: relative; overflow: hidden; }
+  .perfil-header::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--trofeo); }
+  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .perfil-header h2 { font-family: var(--display); font-size: 26px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 12px; }
+  .perfil-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
+  .badge-pos { background: rgba(232,178,58,0.15); border: 1px solid var(--trofeo); color: var(--trofeo); }
+  .badge-jugados { background: rgba(242,245,240,0.1); border: 1px solid var(--cal-tenue); color: var(--cal); }
+  .badge-podio { background: rgba(39,160,93,0.15); border: 1px solid var(--cesped); color: var(--cesped); }
+
+  .perfil-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .p-stat-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px 6px; text-align: center; }
+  .p-stat-card .v { font-family: var(--display); font-size: 24px; margin-bottom: 4px; }
+  .p-stat-card .k { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; text-transform: uppercase; }
+
+  .perfil-dash-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-bottom: 24px; }
+  .p-dash-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+  .efi-card { align-items: center; }
+  .efi-circle { width: 66px; height: 66px; border-radius: 50%; border: 5px solid var(--trofeo); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: var(--display); font-size: 18px; color: var(--cal); border-left-color: var(--cal-tenue); transform: rotate(-45deg); }
+  .efi-circle span { transform: rotate(45deg); }
+  .forma-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .forma-box { width: 24px; height: 24px; border-radius: 6px; }
+  .forma-verde { background: var(--cesped); }
+  .forma-roja { background: var(--tarjeta-roja); }
+  .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
+  .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
+
+  .seccion-titulo { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--grada); margin-bottom: 12px; display:flex; align-items:center; gap:8px;}
+  .seccion-titulo::after { content:""; flex:1; height:1px; background:var(--cal-tenue); }
+  
+  .pron-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;}
+  .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+  .pron-item-eq { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--cal-suave); font-weight: 800; width:65px; justify-content:center; flex-shrink:0; }
+  .pron-item-eq img, .pron-item-eq .sin-escudo { width: 22px; height: 22px; font-size: 10px; }
+  .pron-item-info { flex: 1; min-width: 0; border-left:1px dashed var(--cal-tenue); padding-left:10px; }
+  .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
+  .pron-item-scores { font-size: 12px; color: var(--cal-suave); }
+  .pron-item-pts { font-family: var(--display); font-size: 20px; color: var(--cal-suave); min-width: 30px; text-align: right; }
+  .pron-item-pts.ok { color: var(--trofeo); }
+  .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; color: var(--tarjeta-roja); font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
+  .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
+
+  /* ---------- Formularios / Utils ---------- */
   .grupo-card{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px}
   .grupo-card h3{font-family:var(--display); font-weight:400; letter-spacing:.1em; color:var(--trofeo); font-size:15px; margin-bottom:8px; text-transform:uppercase}
   .grupo-card table{width:100%; border-collapse:collapse; font-size:12.5px}
@@ -154,7 +214,6 @@
   .grupo-card th{color:var(--grada); font-size:10px; letter-spacing:.1em; text-transform:uppercase}
   .grupo-card td{border-top:1px solid rgba(242,245,240,.06)}
 
-  /* ---------- Formularios / login ---------- */
   .panel{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:18px; margin-top:16px}
   .panel h2{font-family:var(--display); font-weight:400; letter-spacing:.05em; font-size:20px; margin-bottom:4px; text-transform:uppercase}
   .panel p{color:var(--grada); font-size:13px; margin-bottom:14px; line-height:1.5}
@@ -181,12 +240,6 @@
     background:var(--campo); border:1px solid var(--cal-tenue);
   }
   .emoji-fila button.activo{border-color:var(--trofeo); background:rgba(232,178,58,.12)}
-
-  /* ---------- Estadísticas de perfil ---------- */
-  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px}
-  .stat{background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; padding:12px; text-align:center}
-  .stat .v{font-family:var(--display); font-size:26px; color:var(--trofeo)}
-  .stat .k{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--grada); margin-top:4px}
 
   /* ---------- Barra de pestañas inferior ---------- */
   nav{
@@ -365,14 +418,18 @@ function puntosDe(pred, p){
   const aciertoSigno = Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante);
 
   if (aciertoLocal && aciertoVisitante) return 5; // Pleno (Resultado exacto)
-  if (aciertoSigno && (aciertoLocal || aciertoVisitante)) return 4; // Signo + 1 equipo
-  if (aciertoSigno) return 3; // Equipo ganador o empate acertado
-  if (aciertoLocal || aciertoVisitante) return 1; // Solo goles de 1 equipo
+  if (aciertoSigno && (aciertoLocal || aciertoVisitante)) return 4; // Signo + Goles 1 equipo
+  if (aciertoSigno) return 3; // Ganador o empate acertado
   
-  return 0; // Fallo total
+  return 0; // Fallo total (eliminado el +1 suelto)
 }
+
 function clasificacion(){
-  const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, plenos:0, signos:0, jugados:0, racha: false }));
+  // Calculamos la tabla histórica (sin el último partido finalizado) para sacar la Tendencia
+  const terminados = partidos.filter(p => p.estado === "FINISHED").sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  const idUltimo = terminados.length ? terminados[terminados.length-1].id : null;
+
+  const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, totalAnt: u.puntos_extra || 0, plenos:0, plenosAnt:0, signos:0, jugados:0, ptsUltimo: 0 }));
   const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
 
   for (const pr of pronosticos){
@@ -386,23 +443,30 @@ function clasificacion(){
     f.jugados++; 
     f.total += pts;
     
-    // Conteo para el nuevo sistema 5-4-3-1
     if (pts === 5) f.plenos++; 
-    else if (pts === 4 || pts === 3) f.signos++;
-  }
+    else if (pts > 0) f.signos++;
 
-  // Calcular "Racha": ¿Ha hecho Pleno en el último partido finalizado que pronosticó?
-  const terminados = partidos.filter(p => p.estado === "FINISHED").sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
-  for (const f of filas) {
-    const misProns = pronosticos.filter(pr => pr.usuario_id === f.u.id);
-    const ultimoJugado = terminados.find(p => misProns.some(pr => pr.partido_id === p.id));
-    if (ultimoJugado) {
-      const pronUltimo = misProns.find(pr => pr.partido_id === ultimoJugado.id);
-      if (puntosDe(pronUltimo, ultimoJugado) === 5) f.racha = true;
+    // Guardar estado anterior al último partido para la tendencia
+    if (p.id !== idUltimo) {
+        f.totalAnt += pts;
+        if (pts === 5) f.plenosAnt++;
+    } else {
+        f.ptsUltimo = pts; // Puntos ganados en la última jornada
     }
   }
 
-  return filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
+  // Ordenar el histórico para asignar Rank anterior
+  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || a.u.nombre.localeCompare(b.u.nombre));
+  antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
+
+  // Ordenar el actual para asignar Rank definitivo y Tendencia
+  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
+  actSorted.forEach((f, idx) => {
+      f.rank = idx + 1;
+      f.tendencia = f.rankAnt - f.rank; // Positivo = sube puestos
+  });
+
+  return actSorted;
 }
 
 /* ---------- Navegación ---------- */
@@ -549,7 +613,6 @@ function zonaPronostico(p){
     </div>`;
   }
 
-  // Empezado: se destapan los pronósticos de todos
   const todos = pronosticos.filter(x => x.partido_id === p.id);
   if (todos.length === 0) return `<div class="candado">Nadie pronosticó este partido 😶</div>`;
 
@@ -557,17 +620,15 @@ function zonaPronostico(p){
 
   const chips = todos.map(pr => {
     const u = usuarios.find(x => x.id === pr.usuario_id);
-    const pts = puntosDe(pr, p); // Puntos definitivos o virtuales si está en juego
+    const pts = puntosDe(pr, p);
     
     let clsPick = "";
     let sufijo = "";
     
     if (vivo) {
-      // Magia en directo: Verde si ahora mismo pillas puntos, Rojo si no
       clsPick = pts > 0 ? "vivo-verde" : "vivo-rojo";
       sufijo = pts > 0 ? ` <span style="font-size:10px; opacity:0.8">virt. +${pts}</span>` : "";
     } else {
-      // Terminado: Asignamos las nuevas clases de CSS según la puntuación
       let clsPts = "p0";
       if (pts === 5) clsPts = "p5";
       else if (pts === 4) clsPts = "p4";
@@ -651,54 +712,193 @@ function tablaGrupo(letra, ps){
     </table></div>`;
 }
 
-/* ---------- Vista: Tabla ---------- */
+/* ---------- Vista: Tabla (Podio + Ranking) ---------- */
 function vistaTabla(){
   const filas = clasificacion();
   if (!filas.length) return `<div class="vacio">Todavía no hay nadie en la porra. ¡Sé el primero en la pestaña Perfil!</div>`;
   
-  // Buscar quién es el líder absoluto de plenos para ponerle la estrella
-  const maxPlenos = Math.max(...filas.map(f => f.plenos));
+  const podio = filas.slice(0, 3);
+  const resto = filas.slice(3);
 
-  return `<div class="panel" style="padding:6px 14px 2px">
-    <table class="tabla">
-      <tr><th></th><th>Quinielista</th><th style="text-align:right">🎯 Plenos</th><th style="text-align:right">✓ Signos</th><th style="text-align:right">Pts</th></tr>
-      ${filas.map((f,i) => `
-      <tr class="${me && f.u.id === me.id ? "yo-fila" : ""}">
-        <td class="pos">${i+1}</td>
-        <td>
-          ${esc(f.u.emoji)} ${esc(f.u.nombre)}
-          ${f.racha ? '<span title="¡En racha! Pleno en su último partido" style="font-size:14px; margin-left:4px">🔥</span>' : ''}
-        </td>
-        <td class="num">${f.plenos} ${f.plenos > 0 && f.plenos === maxPlenos ? '<span style="color:#E8B23A">⭐</span>' : ''}</td>
-        <td class="num">${f.signos}</td>
-        <td class="total">${f.total}</td>
-      </tr>`).join("")}
-    </table>
-  </div>
-  <p class="nota" style="text-align:center; line-height:1.8">
-    Pleno: <b style="color:var(--trofeo)">5 pts</b> · Signo+Goles: <b style="color:#b3e6c9">4 pts</b><br>
-    Signo: <b style="color:var(--cesped)">3 pts</b> · Goles 1 eq: <b style="color:var(--cal-suave)">1 pt</b><br>
-    🔥 = Pleno en su último partido. ⭐ = Líder de plenos.
+  const pos1 = podio[0];
+  const pos2 = podio[1];
+  const pos3 = podio[2];
+
+  let podioHtml = `<div class="podio-container">`;
+  if (pos2) podioHtml += `
+    <div class="podio-item plata">
+      <div class="medalla">🥈</div>
+      <div class="podio-avatar">${esc(pos2.u.emoji)}</div>
+      <div class="podio-nombre">${esc(pos2.u.nombre)}</div>
+      <div class="podio-pts">${pos2.total}<small>pts</small></div>
+    </div>`;
+
+  if (pos1) podioHtml += `
+    <div class="podio-item oro">
+      <div class="medalla">🥇</div>
+      <div class="podio-avatar">${esc(pos1.u.emoji)}</div>
+      <div class="podio-nombre">${esc(pos1.u.nombre)}</div>
+      <div class="podio-pts">${pos1.total}<small>pts</small></div>
+    </div>`;
+
+  if (pos3) podioHtml += `
+    <div class="podio-item bronce">
+      <div class="medalla">🥉</div>
+      <div class="podio-avatar">${esc(pos3.u.emoji)}</div>
+      <div class="podio-nombre">${esc(pos3.u.nombre)}</div>
+      <div class="podio-pts">${pos3.total}<small>pts</small></div>
+    </div>`;
+  podioHtml += `</div>`;
+
+  let listaHtml = `<div class="lista-ranking">`;
+  listaHtml += resto.map(f => {
+    let trendHtml = `<div class="rank-trend trend-eq">=</div>`;
+    if (f.tendencia > 0) trendHtml = `<div class="rank-trend trend-up">▲ ${f.tendencia}</div>`;
+    else if (f.tendencia < 0) trendHtml = `<div class="rank-trend trend-down">▼ ${Math.abs(f.tendencia)}</div>`;
+
+    return `
+    <div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}">
+      <div class="rank-pos">
+        <span class="rank-num">${f.rank}</span>
+        ${trendHtml}
+      </div>
+      <div class="rank-avatar">${esc(f.u.emoji)}</div>
+      <div class="rank-info">
+        <div class="rank-nombre">${esc(f.u.nombre)}</div>
+        <div class="rank-stats">
+          <span>⭐ ${f.plenos}</span>
+          <span>✅ ${f.signos}</span>
+          <span>📝 ${f.jugados}</span>
+        </div>
+      </div>
+      <div class="rank-pts-box ${f.ptsUltimo > 0 ? 'has-trend' : ''}">
+        <div class="rank-pts-val">${f.total}</div>
+        <div class="rank-pts-lbl">PTS</div>
+        ${f.ptsUltimo > 0 ? `<div class="rank-pts-trend">+${f.ptsUltimo}</div>` : ''}
+      </div>
+    </div>`;
+  }).join("");
+  listaHtml += `</div>`;
+
+  const hayDirecto = partidos.some(p => p.estado === "IN_PLAY" || p.estado === "PAUSED");
+
+  return `
+  ${hayDirecto ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}
+  ${podioHtml}
+  ${listaHtml}
+  <p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">
+    Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Ganador+Goles: <b style="color:#b3e6c9">4 pts</b><br>
+    Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b>
   </p>`;
 }
 
-/* ---------- Vista: Perfil (login, registro, admin) ---------- */
+/* ---------- Vista: Perfil Completo ---------- */
 function vistaPerfil(){
   if (!me) return vistaAcceso();
-  const fila = clasificacion().find(f => f.u.id === me.id) || { total:0, plenos:0, jugados:0 };
-  const misProns = pronosticos.filter(x => x.usuario_id === me.id).length;
+  
+  const filas = clasificacion();
+  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
+  const maxPts = filas.length ? filas[0].total : 0;
+  const dist = maxPts - f.total;
+  const txtDist = (dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar");
+
+  // Eficiencia
+  const misProns = pronosticos.filter(x => x.usuario_id === me.id);
+  const partidosJugados = partidos.filter(p => p.estado === "FINISHED" && misProns.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  let aciertosPuntuables = 0;
+  partidosJugados.forEach(p => {
+      const pr = misProns.find(x => x.partido_id === p.id);
+      if (puntosDe(pr, p) > 0) aciertosPuntuables++;
+  });
+  const eficiencia = partidosJugados.length ? Math.round((aciertosPuntuables / partidosJugados.length) * 100) : 0;
+
+  // Forma (últimos 5 partidos)
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts > 0 ? 'forma-verde' : 'forma-roja'}"></div>`;
+      } else {
+          htmlForma += `<div class="forma-box forma-vacia"></div>`;
+      }
+  }
+
+  // Lista MIS PRONÓSTICOS
+  const misPartidosId = misProns.map(x => x.partido_id);
+  const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
+
+  let htmlProns = misPartidos.map(p => {
+      const pr = misProns.find(x => x.partido_id === p.id);
+      const fin = p.estado === "FINISHED";
+      const vivo = p.estado === "IN_PLAY" || p.estado === "PAUSED";
+      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
+      
+      let badgePts = "";
+      let realScore = "";
+
+      if (fin) {
+          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--trofeo)">${p.goles_local}-${p.goles_visitante}</b>`;
+      } else if (vivo) {
+          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
+      } else {
+          badgePts = `<div class="pron-item-pts pending">-</div>`;
+      }
+
+      return `
+      <div class="pron-item">
+          <div class="pron-item-eq">
+             ${escudo(p.local_crest)} <span style="font-size:8.5px;color:var(--cal-tenue)">vs</span> ${escudo(p.visitante_crest)}
+          </div>
+          <div class="pron-item-info">
+              <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
+              <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
+          </div>
+          ${badgePts}
+      </div>`;
+  }).join("");
+
   return `
-  <div class="panel">
-    <h2>${esc(me.emoji)} ${esc(me.nombre)}</h2>
-    <p>Jugando en <b style="color:var(--trofeo)">${esc(porra.nombre)}</b> · código ${esc(porra.codigo)}</p>
-    <div class="stats">
-      <div class="stat"><div class="v">${fila.total}</div><div class="k">Puntos</div></div>
-      <div class="stat"><div class="v">${fila.plenos}</div><div class="k">Plenos</div></div>
-      <div class="stat"><div class="v">${misProns}</div><div class="k">Pronósticos</div></div>
-    </div>
-    <button class="btn secundario" onclick="cerrarSesion()">Cerrar sesión</button>
-    <button class="btn secundario" onclick="cambiarPorra()">↔️ Cambiar de porra</button>
+  <div class="perfil-header">
+      <div class="perfil-avatar">${esc(me.emoji)}</div>
+      <h2>${esc(me.nombre)}</h2>
+      <div class="perfil-badges">
+          <span class="badge badge-pos">🏅 #${f.rank}</span>
+          <span class="badge badge-jugados">⚽ ${misProns.length}/104</span>
+          ${f.rank <= 3 && filas.length > 3 ? '<span class="badge badge-podio">🏆 PODIO</span>' : ''}
+      </div>
   </div>
+
+  <div class="perfil-stats-row">
+      <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+      <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+      <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+  </div>
+
+  <div class="perfil-dash-row">
+      <div class="p-dash-card efi-card">
+          <div class="efi-circle"><span>${eficiencia}%</span></div>
+          <div class="k">EFICIENCIA</div>
+      </div>
+      <div class="p-dash-card">
+          <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
+          <div class="forma-row">${htmlForma}</div>
+          <div class="forma-txt">${txtDist}</div>
+      </div>
+  </div>
+
+  <h3 class="seccion-titulo">MIS PRONÓSTICOS</h3>
+  <div class="pron-list">
+      ${htmlProns || '<div class="vacio" style="padding:20px; background:var(--campo-2); border-radius:12px;">No has pronosticado ningún partido.</div>'}
+  </div>
+
+  <div style="margin-top:20px; display:flex; gap:10px;">
+      <button class="btn secundario" style="margin-top:0" onclick="cerrarSesion()">Cerrar sesión</button>
+      <button class="btn secundario" style="margin-top:0" onclick="cambiarPorra()">↔️ Cambiar porra</button>
+  </div>
+
   ${adminPin ? vistaAdmin() : `
   <div class="panel">
     <h2>🛠️ Panel de admin</h2>
@@ -707,8 +907,10 @@ function vistaPerfil(){
     <input type="password" id="pin-admin" inputmode="numeric" autocomplete="off">
     <button class="btn oro" onclick="entrarAdmin()">Entrar como admin</button>
     <div id="msg-admin"></div>
-  </div>`}`;
+  </div>`}
+  `;
 }
+
 function vistaAcceso(){
   return `
   <div class="panel">
@@ -777,7 +979,7 @@ async function iniciarSesion(){
 function cerrarSesion(){
   me = null; localStorage.removeItem("porra_usuario");
   adminPin = null; sessionStorage.removeItem("adminPin");
-  render();  // la porra elegida se mantiene
+  render();  
 }
 
 /* ---------- Admin ---------- */

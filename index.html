@@ -40,6 +40,9 @@
   #app{max-width:560px; margin:0 auto; padding:0 14px calc(86px + env(safe-area-inset-bottom)); }
 
   [hidden] { display: none !important; }
+  
+  /* Reset botones móviles */
+  button { appearance: none; -webkit-appearance: none; font-family: inherit; }
 
   header{
     display:flex; align-items:center; justify-content:space-between;
@@ -101,12 +104,13 @@
   .p-estado-ok { color:var(--cesped); font-weight:800; }
   .p-estado-bad { color:var(--tarjeta-roja); font-weight:800; }
 
-  /* ---------- Modal ---------- */
+  /* ---------- Modal Perfecto (Scroll y Ocultamiento) ---------- */
   .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; justify-content:center; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
   .modal-overlay.open { opacity:1; pointer-events:auto; }
-  .modal-content { background:var(--campo); width:100%; max-width:560px; max-height:85vh; border-radius: 24px 24px 0 0; padding: 24px 16px env(safe-area-inset-bottom); overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); display:flex; flex-direction:column; gap:16px; position:relative; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
+  .modal-content { background:var(--campo); width:100%; max-width:560px; max-height:85vh; border-radius: 24px 24px 0 0; padding: 24px 16px max(24px, env(safe-area-inset-bottom)); overflow-y:auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); display:flex; flex-direction:column; gap:16px; position:relative; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
   .modal-overlay.open .modal-content { transform:translateY(0); }
-  .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; z-index:10;}
+  .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; z-index:10; transition: transform 0.1s;}
+  .modal-close:active { transform:scale(0.9); }
   
   .modal-header { text-align:center; margin-bottom:8px; }
   .modal-meta { font-size:11px; font-weight:800; letter-spacing:.15em; color:var(--grada); text-transform:uppercase; margin-bottom:16px; display:block;}
@@ -129,7 +133,7 @@
   .pron-fila{display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:16px;}
   .stepper{display:flex; flex-direction:column; align-items:center; gap:8px}
   .stepper-controles { display:flex; justify-content:space-between; align-items:center; background:var(--campo-3); border-radius:16px; padding:8px; width: 130px; border:1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}
-  .stepper button{ width:40px; height:40px; border-radius:12px; border:none; background:transparent; color:var(--cal); font-size:24px; font-weight:400; cursor:pointer; transition: background 0.2s;}
+  .stepper button{ width:40px; height:40px; border-radius:12px; border:none; background:transparent; color:var(--cal); font-size:24px; font-weight:400; cursor:pointer; transition: background 0.2s; display:flex; align-items:center; justify-content:center; line-height:1; padding-bottom:4px;}
   .stepper button:active{background:rgba(255,255,255,.1)}
   .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1;}
   
@@ -161,7 +165,7 @@
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; color: var(--tarjeta-roja); font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
-  .guardar{ width:100%; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; letter-spacing:.04em; font-family:var(--body); box-shadow: 0 4px 10px rgba(16,185,129,0.3); transition: transform 0.1s;}
+  .guardar{ width:100%; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; letter-spacing:.04em; font-family:var(--body); box-shadow: 0 4px 10px rgba(16,185,129,0.3); transition: transform 0.1s; display:flex; align-items:center; justify-content:center;}
   .guardar:active{ transform:scale(0.98); }
   .guardar[disabled]{opacity:.55; cursor:default}
 
@@ -221,7 +225,6 @@
   .forma-verde { background: var(--cesped); }
   .forma-roja { background: var(--tarjeta-roja); }
   .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
-  .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
 
   .grupo-card{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:16px; margin-bottom:24px}
   .grupo-card h3{font-family:var(--display); font-weight:400; letter-spacing:.1em; color:var(--cal-suave); font-size:16px; margin-bottom:12px; text-transform:uppercase}
@@ -239,9 +242,9 @@
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
   
-  .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal)}
-  .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja)}
-  .btn.oro{background:var(--trofeo); color:#0B1120}
+  .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal); display:flex; align-items:center; justify-content:center; line-height:1;}
+  .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja); display:flex; align-items:center; justify-content:center; line-height:1;}
+  .btn.oro{background:var(--trofeo); color:#0B1120; display:flex; align-items:center; justify-content:center; line-height:1;}
 
   nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); }
   .nav-inner{max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr)}
@@ -258,6 +261,8 @@
 </style>
 </head>
 <body>
+<div id="toast-container"></div>
+
 <div id="app">
   <header>
     <div class="marca">
@@ -272,8 +277,6 @@
     <div class="cargando">Saltando al campo…</div>
   </main>
 </div>
-
-<div id="toast-container"></div>
 
 <div id="modal-overlay" class="modal-overlay" onclick="cerrarModal(event)">
   <div class="modal-content" id="modal-content" onclick="event.stopPropagation()">
@@ -291,15 +294,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-  console.error("Error JS:", msg, error);
-  return false; 
-};
-
-window.addEventListener('unhandledrejection', function(event) {
-  console.error("Promesa Rechazada:", event.reason);
-});
-
+/* ============================================================
+   CONFIGURACIÓN SUPABASE
+   ============================================================ */
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
@@ -486,7 +483,19 @@ function hayPartidoEnVentana(){
     return ahora >= t - 5*60e3 && ahora <= t + 4*3600e3;
   });
 }
-async function llamarSync(){ try { await fetch("/api/sync"); } catch(e){} }
+
+// Sincronización a prueba de fallos Vercel/JSON
+async function llamarSync(){ 
+  try { 
+    const res = await fetch("/api/sync"); 
+    if (!res.ok) return { ok: false, error: "Error servidor: " + res.status };
+    const texto = await res.text();
+    try { return JSON.parse(texto); } catch(e) { return { ok: false, error: "Respuesta API inválida." }; }
+  } catch(e){
+    return { ok: false, error: "Error de red" };
+  } 
+}
+
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
@@ -745,40 +754,39 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-/* ---------- APERTURA E CHIUSURA MODAL (Corretta) ---------- */
+/* ---------- MANEJO DE MODALES Y BOTÓN ATRÁS MÓVIL ---------- */
 function abrirModal(id) {
   partidoAbiertoId = id; renderModal(id);
   const overlay = $("modal-overlay");
   if(overlay) overlay.classList.add("open");
   document.body.style.overflow = "hidden"; 
-  history.pushState({modal: true}, ""); // Supporto tasto Indietro
+  history.pushState({modalOpen: true}, "");
 }
 
 function cerrarModal(e) {
-  if (e && e.target) {
+  if (e && e.type === 'click') {
     const clickFondo = e.target.id === "modal-overlay";
     const clickX = e.target.closest && e.target.closest(".modal-close");
     if (!clickFondo && !clickX) return;
+    
+    // Si cerramos por UI, retrocedemos en historial para matar el pushState
+    if (history.state && history.state.modalOpen) {
+        history.back(); // Esto dispara popstate y cierra visualmente abajo
+        return; 
+    }
   }
   
   const overlay = $("modal-overlay");
   if(overlay) overlay.classList.remove("open");
-  document.body.style.overflow = "auto";
+  document.body.style.overflow = "";
   setTimeout(() => { partidoAbiertoId = null; }, 300);
-  
-  // Consuma lo stato dell'history se chiuso tramite tasto UI
-  if (e && history.state && history.state.modal) {
-      history.back();
-  }
 }
 
-// Ascoltatore universale del tasto Indietro Android
+// Cierra modal al darle a la flecha atrás del móvil
 window.addEventListener('popstate', function(event) {
   const overlay = document.getElementById("modal-overlay");
   if (overlay && overlay.classList.contains("open")) {
-    overlay.classList.remove("open");
-    document.body.style.overflow = "auto";
-    partidoAbiertoId = null;
+    cerrarModal(); 
   }
 });
 
@@ -822,7 +830,7 @@ function renderModal(id) {
               <span style="font-size:10px; color:var(--grada); font-weight:800; letter-spacing:.1em">${esc(p.visitante || "VISIT.")}</span>
             </div>
           </div>
-          <button class="guardar" style="width:100%; display:block;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
+          <button class="guardar" style="width:100%; display:flex;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
         </div>`;
     } else {
       if(!mio) {
@@ -907,6 +915,7 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
+/* ---------- Perfiles de Otros Usuarios y Mis Pronosticos Modal ---------- */
 function abrirPerfil(uid) {
   const u = usuarios.find(x => x.id === uid);
   if(!u) return;
@@ -932,40 +941,6 @@ function abrirPerfil(uid) {
           htmlForma += `<div class="forma-box forma-vacia"></div>`;
       }
   }
-
-  const pasados = partidos.filter(p => empezado(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
-
-  const htmlProns = pasados.length === 0 ? `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico revelado aún.</div>` : pasados.map(p => {
-      const pr = pronsUser.find(x => x.partido_id === p.id);
-      const fin = esFin(p.estado), vivo = esVivo(p.estado);
-      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
-      
-      let badgePts = "", realScore = "", bgClass = "";
-      if (fin) {
-          if (pts === 5) bgClass = "pleno-bg";
-          else if (pts === 3) bgClass = "ok-bg";
-          else bgClass = "bad-bg";
-          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
-      } else if (vivo) {
-          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
-      }
-
-      return `
-      <div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
-          <div class="pron-item-eq">
-              <img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> 
-              <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> 
-              <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;">
-          </div>
-          <div class="pron-item-info">
-              <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
-              <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
-          </div>
-          ${badgePts}
-      </div>`;
-  }).join("");
 
   const content = `
       <div class="modal-close" onclick="cerrarModal(event)">✕</div>
@@ -995,29 +970,37 @@ function abrirPerfil(uid) {
           </div>
       </div>
 
-      <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRONÓSTICOS REVELADOS</h4>
-      <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column;">${htmlProns}</div>
+      <button class="btn secundario" style="margin-bottom:24px; padding:16px; font-size:14px;" onclick="abrirModalPronosticos('${uid}')">📋 VER SUS PRONÓSTICOS</button>
   `;
 
   $("modal-content").innerHTML = content;
-  $("modal-overlay").classList.add("open");
+  
+  // Si veníamos de otro modal (ej. lista de pronósticos), no añadimos historial duplicado
+  const overlay = $("modal-overlay");
+  const yaAbierto = overlay.classList.contains("open");
+  overlay.classList.add("open");
   document.body.style.overflow = "hidden";
-  history.pushState({modal: true}, ""); 
+  if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
-function abrirModalMisPronosticos() {
-  if(!me) return;
-  const misProns = pronosticos.filter(x => x.usuario_id === me.id);
-  const misPartidosId = misProns.map(x => x.partido_id);
-  const misPartidos = partidos.filter(p => misPartidosId.includes(p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+function abrirModalPronosticos(uid) {
+  if(!uid && me) uid = me.id;
+  if(!uid) return;
+  
+  const targetUser = usuarios.find(x => x.id === uid);
+  const esMio = (me && uid === me.id);
+  
+  const userProns = pronosticos.filter(x => x.usuario_id === uid);
+  const userPartidosId = userProns.map(x => x.partido_id);
+  const userPartidos = partidos.filter(p => userPartidosId.includes(p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
 
-  const futuros = misPartidos.filter(p => !empezado(p));
-  const pasados = misPartidos.filter(p => empezado(p)).reverse(); 
+  const futuros = esMio ? userPartidos.filter(p => !empezado(p)) : []; 
+  const pasados = userPartidos.filter(p => empezado(p)).reverse(); 
 
   const generarHtmlProns = (lista) => {
     if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico aquí.</div>`;
     return lista.map(p => {
-      const pr = misProns.find(x => x.partido_id === p.id);
+      const pr = userProns.find(x => x.partido_id === p.id);
       const fin = esFin(p.estado), vivo = esVivo(p.estado);
       const pts = (fin || vivo) ? puntosDe(pr, p) : null;
       
@@ -1050,25 +1033,31 @@ function abrirModalMisPronosticos() {
     }).join("");
   };
 
+  const titleText = esMio ? "MIS PRONÓSTICOS" : `PRON. DE ${esc(targetUser.nombre)}`;
+
   const content = `
     <div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header" style="margin-bottom:20px;">
-      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">MIS PRONÓSTICOS</h2>
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${titleText}</h2>
     </div>
     
-    <h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4>
-    <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column; gap:8px;">${generarHtmlProns(futuros)}</div>
+    ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4>
+    <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column; gap:8px;">${generarHtmlProns(futuros)}</div>` : ''}
     
     <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
     <div class="pron-list" style="display:flex; flex-direction:column; gap:8px;">${generarHtmlProns(pasados)}</div>
   `;
   
   document.getElementById("modal-content").innerHTML = content;
-  document.getElementById("modal-overlay").classList.add("open");
+  
+  const overlay = document.getElementById("modal-overlay");
+  const yaAbierto = overlay.classList.contains("open");
+  overlay.classList.add("open");
   document.body.style.overflow = "hidden";
-  history.pushState({modal: true}, ""); 
+  if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
+/* ---------- Vistas Principales ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -1145,7 +1134,7 @@ function vistaTabla(){
     else if (f.tendencia < 0) trendHtml = `<div class="rank-trend trend-down">▼ ${Math.abs(f.tendencia)}</div>`;
 
     return `
-    <div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer">
+    <div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')">
       <div class="rank-pos"><span class="rank-num">${f.rank}</span>${trendHtml}</div>
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info">
@@ -1231,7 +1220,7 @@ function vistaPerfil(){
       </div>
   </div>
 
-  <button class="btn oro" style="margin-bottom:24px; padding:16px; font-size:16px;" onclick="abrirModalMisPronosticos()">📋 VER MIS PRONÓSTICOS</button>
+  <button class="btn oro" style="margin-bottom:24px; padding:16px; font-size:16px;" onclick="abrirModalPronosticos()">📋 VER MIS PRONÓSTICOS</button>
 
   <div style="margin-top:20px; display:flex; gap:10px;">
       <button class="btn secundario" style="margin-top:0" onclick="cerrarSesion()">Cerrar sesión</button>
@@ -1242,6 +1231,7 @@ function vistaPerfil(){
   `;
 }
 
+/* ---------- LOGIN Y REGISTRO ---------- */
 function vistaAcceso(){
   return `
   <div class="panel">

@@ -238,7 +238,7 @@
   input[type=text],input[type=password],input[type=datetime-local],select{ width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); font-size:16px; font-family:var(--body); }
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
-  .btn{ width:100%; margin-top:14px; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; }
+  
   .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal)}
   .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja)}
   .btn.oro{background:var(--trofeo); color:#0B1120}
@@ -531,10 +531,10 @@ function clasificacion(){
     }
   }
 
-  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre ? a.u.nombre : "").localeCompare(b.u.nombre ? b.u.nombre : ""));
+  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre ? a.u.nombre : "").localeCompare(b.u.nombre ? b.u.nombre : ""));
+  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
       f.tendencia = f.rankAnt - f.rank;
@@ -745,104 +745,43 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-function abrirPerfil(uid) {
-  const u = usuarios.find(x => x.id === uid);
-  if(!u) return;
-
-  const filas = clasificacion();
-  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
-  
-  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
-  const partidosJugados = partidos.filter(p => esFin(p.estado) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-  let aciertos = 0;
-  partidosJugados.forEach(p => {
-      if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++;
-  });
-  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
-
-  const ultimos5 = partidosJugados.slice(-5);
-  let htmlForma = '';
-  for(let i=0; i<5; i++){
-      if(ultimos5[i]) {
-          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
-          htmlForma += `<div class="forma-box ${pts > 0 ? 'forma-verde' : 'forma-roja'}"></div>`;
-      } else {
-          htmlForma += `<div class="forma-box forma-vacia"></div>`;
-      }
-  }
-
-  // Ocultamos los partidos futuros
-  const pasados = partidos.filter(p => empezado(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
-
-  const htmlProns = pasados.length === 0 ? `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico revelado aún.</div>` : pasados.map(p => {
-      const pr = pronsUser.find(x => x.partido_id === p.id);
-      const fin = esFin(p.estado), vivo = esVivo(p.estado);
-      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
-      
-      let badgePts = "", realScore = "", bgClass = "";
-      if (fin) {
-          if (pts === 5) bgClass = "pleno-bg";
-          else if (pts === 3) bgClass = "ok-bg";
-          else bgClass = "bad-bg";
-          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
-      } else if (vivo) {
-          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
-      }
-
-      return `
-      <div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
-          <div class="pron-item-eq">
-              <img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> 
-              <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> 
-              <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;">
-          </div>
-          <div class="pron-item-info">
-              <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
-              <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
-          </div>
-          ${badgePts}
-      </div>`;
-  }).join("");
-
-  const content = `
-      <div class="modal-close" id="btn-cerrar-modal" onclick="cerrarModal(event)">✕</div>
-      <div class="perfil-header" style="margin-bottom:16px;">
-          <div class="perfil-avatar">${avatarHtml(u)}</div>
-          <h2>${esc(u.nombre)}</h2>
-          <div class="perfil-badges">
-              <span class="badge badge-pos">🏅 #${f.rank}</span>
-              <span class="badge badge-jugados">⚽ ${pronsUser.length}/104</span>
-          </div>
-      </div>
-
-      <div class="perfil-stats-row">
-          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
-          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
-          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
-      </div>
-
-      <div class="perfil-dash-row">
-          <div class="p-dash-card efi-card">
-              <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
-              <div class="k">EFICIENCIA</div>
-          </div>
-          <div class="p-dash-card">
-              <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
-              <div class="forma-row">${htmlForma}</div>
-          </div>
-      </div>
-
-      <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRONÓSTICOS REVELADOS</h4>
-      <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column;">${htmlProns}</div>
-  `;
-
-  $("modal-content").innerHTML = content;
-  $("modal-overlay").classList.add("open");
-  document.body.style.overflow = "hidden";
-  history.pushState({modal: true}, ""); // Solución botón atrás del móvil
+/* ---------- APERTURA E CHIUSURA MODAL (Corretta) ---------- */
+function abrirModal(id) {
+  partidoAbiertoId = id; renderModal(id);
+  const overlay = $("modal-overlay");
+  if(overlay) overlay.classList.add("open");
+  document.body.style.overflow = "hidden"; 
+  history.pushState({modal: true}, ""); // Supporto tasto Indietro
 }
+
+function cerrarModal(e) {
+  if (e && e.target) {
+    const clickFondo = e.target.id === "modal-overlay";
+    const clickX = e.target.closest && e.target.closest(".modal-close");
+    if (!clickFondo && !clickX) return;
+  }
+  
+  const overlay = $("modal-overlay");
+  if(overlay) overlay.classList.remove("open");
+  document.body.style.overflow = "auto";
+  setTimeout(() => { partidoAbiertoId = null; }, 300);
+  
+  // Consuma lo stato dell'history se chiuso tramite tasto UI
+  if (e && history.state && history.state.modal) {
+      history.back();
+  }
+}
+
+// Ascoltatore universale del tasto Indietro Android
+window.addEventListener('popstate', function(event) {
+  const overlay = document.getElementById("modal-overlay");
+  if (overlay && overlay.classList.contains("open")) {
+    overlay.classList.remove("open");
+    document.body.style.overflow = "auto";
+    partidoAbiertoId = null;
+  }
+});
+
 
 function renderModal(id) {
   const p = partidos.find(x => x.id === id);
@@ -856,7 +795,7 @@ function renderModal(id) {
   
   let bannerMio = "";
   if (me) {
-    const mio = pronosticos.find(x => x.usuario_id === me.id && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
     if (!empezado(p)){
       const d = borradores[p.id] || { gl: mio ? mio.goles_local : 0, gv: mio ? mio.goles_visitante : 0 };
       borradores[p.id] = d;
@@ -943,7 +882,7 @@ function renderModal(id) {
   }
 
   const content = `
-    <div class="modal-close" id="btn-cerrar-modal" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header">
       <span class="modal-meta">${etiqueta} · ${txtHora}</span>
       <div class="modal-marcador">
@@ -968,7 +907,6 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
-/* ---------- Perfiles de Otros Usuarios ---------- */
 function abrirPerfil(uid) {
   const u = usuarios.find(x => x.id === uid);
   if(!u) return;
@@ -995,7 +933,6 @@ function abrirPerfil(uid) {
       }
   }
 
-  // Ocultamos los partidos futuros
   const pasados = partidos.filter(p => empezado(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
 
   const htmlProns = pasados.length === 0 ? `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico revelado aún.</div>` : pasados.map(p => {
@@ -1065,8 +1002,8 @@ function abrirPerfil(uid) {
   $("modal-content").innerHTML = content;
   $("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
+  history.pushState({modal: true}, ""); 
 }
-
 
 function abrirModalMisPronosticos() {
   if(!me) return;
@@ -1114,7 +1051,7 @@ function abrirModalMisPronosticos() {
   };
 
   const content = `
-    <div class="modal-close" id="btn-cerrar-modal" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header" style="margin-bottom:20px;">
       <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">MIS PRONÓSTICOS</h2>
     </div>
@@ -1129,7 +1066,7 @@ function abrirModalMisPronosticos() {
   document.getElementById("modal-content").innerHTML = content;
   document.getElementById("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
-  history.pushState({modal: true}, ""); // Solución botón atrás del móvil
+  history.pushState({modal: true}, ""); 
 }
 
 function vistaTorneo(){
@@ -1168,7 +1105,7 @@ function tablaGrupo(letra, ps){
       else { L.pts++; V.pts++; }
     }
   }
-  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n ? a.n : "").localeCompare(b.n ? b.n : ""));
+  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
   
   let htmlPartidos = ps.sort((a,b)=> new Date(a.fecha_utc) - new Date(b.fecha_utc)).map(p => {
     let score = (p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`;
@@ -1391,6 +1328,33 @@ function actualizarCabecera(){
   $("yo-nombre").textContent = me.nombre;
   const fila = clasificacion().find(f => f.u.id === me.id);
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
+}
+
+async function subirNuevaFoto(input) {
+  if (!input.files || input.files.length === 0) return;
+  mostrarToast("Comprimiendo y subiendo...", "nota");
+  
+  const file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) return mostrarToast("La foto pesa mucho (máx 5MB).", "error");
+  
+  const compressedBlob = await comprimirImagen(file);
+  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`;
+  
+  const { error: uploadError } = await db.storage.from('avatars').upload(fileName, compressedBlob, { cacheControl: '3600', upsert: false });
+  if (uploadError) return mostrarToast("Error al subir foto: " + esc(uploadError.message), "error");
+  
+  const avatarUrl = db.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+  const { error: dbError } = await db.from("usuarios").update({ avatar_url: avatarUrl }).eq("id", me.id);
+  
+  if (dbError) return mostrarToast("Error BD: " + esc(dbError.message), "error");
+  
+  me.avatar_url = avatarUrl; 
+  const userIndex = usuarios.findIndex(u => u.id === me.id);
+  if (userIndex !== -1) usuarios[userIndex].avatar_url = avatarUrl;
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
+  
+  mostrarToast("¡Foto actualizada! ✓", "ok");
+  render();
 }
 
 /* ---------- Admin ---------- */

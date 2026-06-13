@@ -527,10 +527,21 @@ function fmtDiaLogico(clave){
   } catch(e) { return "Fecha desconocida"; }
 }
 
-function vistaPartidos(){
-  if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
-  if (!me) return `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
-  return listaPartidos(true);
+function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= Date.now(); }
+
+function fmtHora(p){
+  if (!p.fecha_utc) return "Por definir";
+  return new Date(p.fecha_utc).toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+}
+
+function chipEstado(p){
+  if (esVivo(p.estado)) return `<span class="chip vivo">En juego</span>`;
+  if (esFin(p.estado)) return `<span class="chip fin">Final</span>`;
+  return `<span class="chip">${fmtHora(p)}</span>`;
+}
+
+function escudo(url){
+  return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="sin-escudo">❔</div>`;
 }
 function listaPartidos(conPron){
   const porDia = {};

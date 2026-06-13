@@ -372,17 +372,36 @@ function puntosDe(pred, p){
   return 0; // Fallo total
 }
 function clasificacion(){
-const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, plenos:0, signos:0, jugados:0 }));
-    const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
+  const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, plenos:0, signos:0, jugados:0, racha: false }));
+  const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
+
   for (const pr of pronosticos){
     const p = partidos.find(x => x.id === pr.partido_id);
     const f = porUsuario[pr.usuario_id];
     if (!p || !f || p.estado !== "FINISHED") continue;
+    
     const pts = puntosDe(pr, p);
     if (pts == null) continue;
-    f.jugados++; f.total += pts;
-    if (pts === 3) f.plenos++; else if (pts === 1) f.signos++;
+    
+    f.jugados++; 
+    f.total += pts;
+    
+    // Conteo para el nuevo sistema 5-4-3-1
+    if (pts === 5) f.plenos++; 
+    else if (pts === 4 || pts === 3) f.signos++;
   }
+
+  // Calcular "Racha": ¿Ha hecho Pleno en el último partido finalizado que pronosticó?
+  const terminados = partidos.filter(p => p.estado === "FINISHED").sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
+  for (const f of filas) {
+    const misProns = pronosticos.filter(pr => pr.usuario_id === f.u.id);
+    const ultimoJugado = terminados.find(p => misProns.some(pr => pr.partido_id === p.id));
+    if (ultimoJugado) {
+      const pronUltimo = misProns.find(pr => pr.partido_id === ultimoJugado.id);
+      if (puntosDe(pronUltimo, ultimoJugado) === 5) f.racha = true;
+    }
+  }
+
   return filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || a.u.nombre.localeCompare(b.u.nombre));
 }
 
@@ -647,19 +666,31 @@ function tablaGrupo(letra, ps){
 function vistaTabla(){
   const filas = clasificacion();
   if (!filas.length) return `<div class="vacio">Todavía no hay nadie en la porra. ¡Sé el primero en la pestaña Perfil!</div>`;
+  
+  // Buscar quién es el líder absoluto de plenos para ponerle la estrella
+  const maxPlenos = Math.max(...filas.map(f => f.plenos));
+
   return `<div class="panel" style="padding:6px 14px 2px">
     <table class="tabla">
       <tr><th></th><th>Quinielista</th><th style="text-align:right">🎯 Plenos</th><th style="text-align:right">✓ Signos</th><th style="text-align:right">Pts</th></tr>
-      ${filas.map((f,i) => `<tr class="${me && f.u.id === me.id ? "yo-fila" : ""}">
+      ${filas.map((f,i) => `
+      <tr class="${me && f.u.id === me.id ? "yo-fila" : ""}">
         <td class="pos">${i+1}</td>
-        <td>${esc(f.u.emoji)} ${esc(f.u.nombre)}</td>
-        <td class="num">${f.plenos}</td>
+        <td>
+          ${esc(f.u.emoji)} ${esc(f.u.nombre)}
+          ${f.racha ? '<span title="¡En racha! Pleno en su último partido" style="font-size:14px; margin-left:4px">🔥</span>' : ''}
+        </td>
+        <td class="num">${f.plenos} ${f.plenos > 0 && f.plenos === maxPlenos ? '<span style="color:#E8B23A">⭐</span>' : ''}</td>
         <td class="num">${f.signos}</td>
         <td class="total">${f.total}</td>
       </tr>`).join("")}
     </table>
   </div>
-  <p class="nota" style="text-align:center">Pleno (resultado exacto): <b style="color:var(--trofeo)">3 pts</b> · Acertar 1X2: <b style="color:var(--cesped)">1 pt</b>. Solo puntúan partidos finalizados.</p>`;
+  <p class="nota" style="text-align:center; line-height:1.8">
+    Pleno: <b style="color:var(--trofeo)">5 pts</b> · Signo+Goles: <b style="color:#b3e6c9">4 pts</b><br>
+    Signo: <b style="color:var(--cesped)">3 pts</b> · Goles 1 eq: <b style="color:var(--cal-suave)">1 pt</b><br>
+    🔥 = Pleno en su último partido. ⭐ = Líder de plenos.
+  </p>`;
 }
 
 /* ---------- Vista: Perfil (login, registro, admin) ---------- */

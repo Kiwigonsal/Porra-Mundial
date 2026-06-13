@@ -303,8 +303,8 @@ async function cargarTodo(){
   const p = await db.from("partidos").select("*").order("fecha_utc");
   partidos = p.data || [];
   if (!porra){ usuarios = []; pronosticos = []; return; }
-  const u = await db.from("usuarios").select("id,nombre,emoji")
-    .eq("porra_id", porra.id).order("nombre");
+ const u = await db.from("usuarios").select("id,nombre,emoji,puntos_extra")
+  .eq("porra_id", porra.id).order("nombre");
   usuarios = u.data || [];
   if (usuarios.length){
     const pr = await db.from("pronosticos")
@@ -353,13 +353,21 @@ function programarSync(){
 /* ---------- Puntos ---------- */
 function puntosDe(pred, p){
   if (p.goles_local == null || p.goles_visitante == null) return null;
-  if (pred.goles_local === p.goles_local && pred.goles_visitante === p.goles_visitante) return 3;
-  if (Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante)) return 1;
-  return 0;
+  
+  const aciertoLocal = pred.goles_local === p.goles_local;
+  const aciertoVisitante = pred.goles_visitante === p.goles_visitante;
+  const aciertoSigno = Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante);
+
+  if (aciertoLocal && aciertoVisitante) return 5; // Pleno (Resultado exacto)
+  if (aciertoSigno && (aciertoLocal || aciertoVisitante)) return 4; // Signo + 1 equipo
+  if (aciertoSigno) return 3; // Equipo ganador o empate acertado
+  if (aciertoLocal || aciertoVisitante) return 1; // Solo goles de 1 equipo
+  
+  return 0; // Fallo total
 }
 function clasificacion(){
-  const filas = usuarios.map(u => ({ u, total:0, plenos:0, signos:0, jugados:0 }));
-  const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
+const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, plenos:0, signos:0, jugados:0 }));
+    const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
   for (const pr of pronosticos){
     const p = partidos.find(x => x.id === pr.partido_id);
     const f = porUsuario[pr.usuario_id];
@@ -743,6 +751,20 @@ function vistaAdmin(){
     <button class="btn secundario" onclick="crearPartidoManual()">Añadir partido</button>
     <div id="msg-nuevo"></div>
 
+    <label style="margin-top:20px">👥 Gestión de Participantes</label>
+    <p class="nota">Selecciona un jugador para asignarle puntos extra o resetear su PIN al valor temporal <b>0000</b>.</p>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
+      <select id="adm-puntos-usr" style="width:100%; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">
+        ${usuarios.map(u => `<option value="${u.id}">${esc(u.emoji)} ${esc(u.nombre)} (${u.puntos_extra || 0} extra)</option>`).join("")}
+      </select>
+      <div style="display:flex; gap:8px;">
+        <input type="number" id="adm-puntos-val" placeholder="+/- pts" style="flex:1; text-align:center; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">
+        <button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Asignar</button>
+      </div>
+      <button class="btn secundario" style="margin-top:4px;" onclick="resetearPin()">🔒 Resetear PIN a "0000"</button>
+    </div>
+    <div id="msg-admin-gestion"></div>
+
     <button class="btn peligro" onclick="salirAdmin()">Salir del modo admin</button>
   </div>`;
 }
@@ -785,6 +807,46 @@ async function sincronizarAhora(){
   await cargarTodo(); setTimeout(render, 900);
 }
 function salirAdmin(){ adminPin = null; sessionStorage.removeItem("adminPin"); render(); }
+async function darPuntos(){
+  const uid = $("adm-puntos-usr").value;
+  const pts = parseInt($("adm-puntos-val").value, 10);
+  const msg = $("msg-admin-gestion");
+  if (!uid || isNaN(pts)) return msg.innerHTML = `<div class="error">Selecciona un usuario y escribe los puntos.</div>`;
+
+  msg.innerHTML = `<div class="nota">Procesando puntos…</div>`;
+  const { error } = await db.rpc("asignar_puntos_extra", {
+    p_usuario: uid, p_puntos: pts, p_porra: porra.id, pin: adminPin
+  });
+
+  if (error) return msg.innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  msg.innerHTML = `<div class="ok">Puntos asignados con éxito ✓</div>`;
+  $("adm-puntos-val").value = "";
+  await cargarTodo();
+  setTimeout(render, 800);
+}
+
+async function resetearPin(){
+  const uid = $("adm-puntos-usr").value;
+  const msg = $("msg-admin-gestion");
+  if (!uid) return;
+
+  const u = usuarios.find(x => x.id === uid);
+  if (!u) return;
+
+  if (!confirm(`¿Seguro que quieres cambiar el PIN de ${u.nombre} a "0000"?`)) return;
+
+  msg.innerHTML = `<div class="nota">Generando nueva clave segura…</div>`;
+  const nuevoHash = await sha256(u.nombre.toLowerCase() + ":0000");
+
+  const { error } = await db.rpc("resetear_pin_admin", {
+    p_usuario: uid, p_nuevo_hash: nuevoHash, p_porra: porra.id, pin: adminPin
+  });
+
+  if (error) return msg.innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  msg.innerHTML = `<div class="ok">¡PIN de ${esc(u.nombre)} reseteado a "0000" con éxito! ✓</div>`;
+  await cargarTodo();
+  setTimeout(render, 1500);
+}
 </script>
 </body>
 </html>

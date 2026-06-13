@@ -58,7 +58,6 @@
   .yo-emoji-container { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .yo .pts{font-family:var(--display); color:var(--trofeo); font-size:15px; letter-spacing:.05em}
 
-  /* ---------- Toasts (Notificaciones flotantes) ---------- */
   #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 90%; max-width: 400px;}
   .toast { padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; color: #fff; opacity: 1; transition: opacity 0.3s, transform 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transform: translateY(0); pointer-events:auto;}
   .toast-ok { background: var(--cesped); color: #0B1120; font-weight:800; }
@@ -66,7 +65,6 @@
   .toast-nota { background: var(--campo-3); }
   .toast.fade-out { opacity: 0; transform: translateY(10px); }
 
-  /* ---------- Feed de Partidos y Buscador ---------- */
   .buscador-input { width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo-2); color:var(--cal); font-size:14px; font-family:var(--body); outline:none; transition:border-color 0.2s; margin-bottom: 8px; }
   .buscador-input:focus { border-color:var(--cesped); }
 
@@ -148,15 +146,12 @@
   .evento-linea { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cal); background:var(--campo); padding:10px 14px; border-radius:8px; border:1px solid var(--cal-tenue);}
   .evento-min { font-weight: 800; color: var(--cal-suave); min-width: 26px; text-align: right; }
 
-  /* ---------- Colores para Mis Pronósticos ---------- */
-  .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition:border-color 0.2s, transform 0.1s;}
+  /* Colores para Pronósticos */
+  .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
-  
-  /* Nuevas clases dinámicas de aciertos */
   .pron-item.pleno-bg { background: rgba(16,185,129,0.15); border-color: var(--cesped); }
   .pron-item.ok-bg { background: rgba(245,158,11,0.15); border-color: var(--trofeo); }
   .pron-item.bad-bg { background: rgba(239,68,68,0.15); border-color: var(--tarjeta-roja); }
-
   .pron-item-eq { display: flex; align-items: center; justify-content:center; flex-shrink:0; }
   .pron-item-info { flex: 1; min-width: 0; border-left:1px dashed var(--cal-tenue); padding-left:10px; }
   .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
@@ -166,7 +161,6 @@
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; color: var(--tarjeta-roja); font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
-  /* ---------- Utils Comunes ---------- */
   .guardar{ width:100%; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; letter-spacing:.04em; font-family:var(--body); box-shadow: 0 4px 10px rgba(16,185,129,0.3); transition: transform 0.1s;}
   .guardar:active{ transform:scale(0.98); }
   .guardar[disabled]{opacity:.55; cursor:default}
@@ -174,7 +168,8 @@
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
   .podio-container { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 24px 0; }
-  .podio-item { display: flex; flex-direction: column; align-items: center; background: var(--campo-2); border-radius: 16px 16px 0 0; padding: 15px 10px; width: 31%; position: relative; border: 1px solid var(--cal-tenue); border-bottom: none;}
+  .podio-item { display: flex; flex-direction: column; align-items: center; background: var(--campo-2); border-radius: 16px 16px 0 0; padding: 15px 10px; width: 31%; position: relative; border: 1px solid var(--cal-tenue); border-bottom: none; cursor:pointer; transition:transform 0.1s;}
+  .podio-item:active { transform:scale(0.96); }
   .podio-item.oro { background: linear-gradient(180deg, rgba(245,158,11,0.15) 0%, var(--campo-2) 100%); border-color: var(--trofeo); z-index: 2; padding-bottom: 25px; box-shadow: 0 -4px 15px rgba(245,158,11,0.1);}
   .podio-item.plata { height: 90%; }
   .podio-item.bronce { height: 80%; }
@@ -186,7 +181,8 @@
   .medalla { position: absolute; top: -14px; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
-  .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; }
+  .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s;}
+  .rank-card:active { transform:scale(0.98); }
   .rank-card.yo { border-color: var(--cesped); background: rgba(16,185,129,0.05); }
   .rank-pos { display: flex; flex-direction: column; align-items: center; min-width: 28px; }
   .rank-num { font-family: var(--display); font-size: 18px; color: var(--cal); line-height:1; }
@@ -242,7 +238,7 @@
   input[type=text],input[type=password],input[type=datetime-local],select{ width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); font-size:16px; font-family:var(--body); }
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
-  
+  .btn{ width:100%; margin-top:14px; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; }
   .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal)}
   .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja)}
   .btn.oro{background:var(--trofeo); color:#0B1120}
@@ -295,25 +291,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ============================================================
-   SISTEMA ANTICRASH SILENCIOSO
-   ============================================================ */
 window.onerror = function(msg, url, lineNo, columnNo, error) {
   console.error("Error JS:", msg, error);
   return false; 
 };
-window.onunhandledrejection = function(event) {
-  console.error("Promesa Rechazada:", event.reason);
-};
 
-/* ============================================================
-   CONFIGURACIÓN SUPABASE
-   ============================================================ */
+window.addEventListener('unhandledrejection', function(event) {
+  console.error("Promesa Rechazada:", event.reason);
+});
+
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
-const EMOJIS = ["⚽","🔥","🦁","🐙","🍺","🎯","👑","🧉","🌵","🦅","🤖","🍕"];
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
@@ -326,8 +316,8 @@ const esc = (s) => {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 };
 
-/* ---------- Sistema de Toasts ---------- */
-function mostrarToast(msg, tipo = 'nota') {
+function mostrarToast(msg, tipo) {
+  if (!tipo) tipo = 'nota';
   const container = $("toast-container");
   if (!container) return;
   const toast = document.createElement("div");
@@ -340,8 +330,8 @@ function mostrarToast(msg, tipo = 'nota') {
   }, 3000);
 }
 
-/* ---------- Compresión de Imágenes ---------- */
-function comprimirImagen(file, maxWidth = 300, maxHeight = 300, quality = 0.8) {
+function comprimirImagen(file, maxWidth, maxHeight, quality) {
+  if(!maxWidth) maxWidth = 300; if(!maxHeight) maxHeight = 300; if(!quality) quality = 0.8;
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -425,7 +415,7 @@ async function init(){
     pintarTitulo();
     
     let timeoutId = setTimeout(() => {
-      if (!cargado) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Conexión lenta. Recarga la página.</div>`;
+      if (!cargado && $("vista")) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Conexión lenta. Recarga la página.</div>`;
     }, 6000);
 
     await cargarTodo();
@@ -438,7 +428,7 @@ async function init(){
     setTimeout(scrollToCurrent, 500); 
 
   } catch (e) {
-    $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Error al iniciar: ${e.message}</div>`;
+    if($("vista")) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Error al iniciar: ${e.message}</div>`;
   }
 }
 
@@ -541,10 +531,10 @@ function clasificacion(){
     }
   }
 
-  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
+  const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre ? a.u.nombre : "").localeCompare(b.u.nombre ? b.u.nombre : ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
+  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre ? a.u.nombre : "").localeCompare(b.u.nombre ? b.u.nombre : ""));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
       f.tendencia = f.rankAnt - f.rank;
@@ -563,6 +553,8 @@ function render(){
     document.querySelectorAll("nav button").forEach(b => b.classList.toggle("activo", b.dataset.tab === tab));
     actualizarCabecera();
     const v = $("vista");
+    if(!v) return;
+
     if (!porra){ v.innerHTML = vistaCodigo(); return; }
     
     if (tab === "partidos") v.innerHTML = vistaPartidos();
@@ -609,12 +601,10 @@ function ajustar(id, campo, delta){
 
 async function guardarPronostico(partidoId){
   const p = partidos.find(x => x.id === partidoId);
-  if (!p || empezado(p)){ render(); return; }
+  if (!p || empezado(p) || !me) { render(); return; }
   const d = borradores[partidoId];
-  const msg = document.getElementById("msg-" + partidoId);
   
-  // Borrado de texto manual, ahora usamos Toasts
-  if (msg) msg.innerHTML = ``;
+  mostrarToast("Guardando...", "nota");
   
   const { error } = await db.from("pronosticos").upsert(
     { usuario_id: me.id, partido_id: partidoId, goles_local: d.gl, goles_visitante: d.gv, actualizado_en: new Date().toISOString() },
@@ -632,9 +622,8 @@ async function guardarPronostico(partidoId){
   render();
 }
 
-/* ---------- Buscador de Partidos ---------- */
 function filtrarPartidos() {
-  const texto = $("buscador-partidos").value.toLowerCase();
+  const texto = $("buscador-partidos") ? $("buscador-partidos").value.toLowerCase() : "";
   const cards = document.querySelectorAll("#lista-partidos-feed article.partido");
   cards.forEach(c => {
     const marcadorInfo = c.querySelector('.marcador-feed');
@@ -649,16 +638,55 @@ function filtrarPartidos() {
   });
 }
 
+function vistaCodigo(){
+  return `<div class="panel">
+    <h2>¿De qué porra eres?</h2>
+    <p>Escribe el código de invitación que te han pasado por el grupo.</p>
+    <label for="codigo-porra">Código de invitación</label>
+    <input type="text" id="codigo-porra" autocomplete="off" autocapitalize="characters"
+      style="text-transform:uppercase; letter-spacing:.2em; font-weight:800; text-align:center"
+      onkeydown="if(event.key==='Enter')entrarConCodigo()">
+    <button class="btn oro" onclick="entrarConCodigo()">Entrar en la porra</button>
+  </div>`;
+}
+
+async function entrarConCodigo(){
+  const codigo = $("codigo-porra") ? $("codigo-porra").value.trim() : "";
+  if (!codigo) return mostrarToast("Escribe el código.", "error");
+  
+  const { data, error } = await db.rpc("entrar_porra", { p_codigo: codigo });
+  if (error) return mostrarToast(esc(error.message), "error");
+  if (!data || !data.length) return mostrarToast("Ese código no existe. Revisa mayúsculas.", "error");
+  
+  porra = data[0];
+  try { localStorage.setItem("porra_actual", JSON.stringify(porra)); } catch(e){}
+  
+  me = null; adminPin = null; 
+  try { localStorage.removeItem("porra_usuario"); sessionStorage.removeItem("adminPin"); } catch(e){}
+  
+  pintarTitulo();
+  await cargarTodo();
+  irA("perfil");
+}
+
+function cambiarPorra(){
+  try { 
+    localStorage.removeItem("porra_actual"); 
+    localStorage.removeItem("porra_usuario"); 
+    sessionStorage.removeItem("adminPin"); 
+  } catch(e){}
+  window.location.reload(); 
+}
+
 function vistaPartidos(){
   if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
   
   let html = '';
   if (!me) html += `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>`;
   
-  // Barra de búsqueda
   html += `
   <div style="margin-bottom:12px;">
-    <input type="text" id="buscador-partidos" class="buscador-input" placeholder="🔍 Buscar selección (ej. Argentina...)" onkeyup="filtrarPartidos()">
+    <input type="text" id="buscador-partidos" class="buscador-input" placeholder="🔍 Buscar selección (ej. España...)" onkeyup="filtrarPartidos()">
   </div>`;
   
   html += `<div id="lista-partidos-feed">` + listaPartidos(!!me) + `</div>`;
@@ -692,7 +720,8 @@ function tarjetaFeed(p, conPron){
 
   let footer = "";
   if(conPron){
-    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
+    const miId = me ? me.id : null;
+    const mio = pronosticos.find(x => x.usuario_id === miId && x.partido_id === p.id);
     if (!empezado(p)){
       footer = mio ? `<span>Tu pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span>✏️</span>` : `<span>Sin pronóstico</span> <span style="color:var(--cesped)">Pronosticar 👉</span>`;
     } else {
@@ -722,7 +751,7 @@ function abrirModal(id) {
   document.body.style.overflow = "hidden"; 
 }
 function cerrarModal(e) {
-  if(e && e.target.id !== "modal-overlay" && e.target.id !== "btn-cerrar-modal") return;
+  if(e && e.target && e.target.id !== "modal-overlay" && e.target.id !== "btn-cerrar-modal") return;
   $("modal-overlay").classList.remove("open");
   document.body.style.overflow = "auto";
   setTimeout(() => { partidoAbiertoId = null; }, 300);
@@ -740,7 +769,7 @@ function renderModal(id) {
   
   let bannerMio = "";
   if (me) {
-    const mio = pronosticos.find(x => x.usuario_id === me?.id && x.partido_id === p.id);
+    const mio = pronosticos.find(x => x.usuario_id === me.id && x.partido_id === p.id);
     if (!empezado(p)){
       const d = borradores[p.id] || { gl: mio ? mio.goles_local : 0, gv: mio ? mio.goles_visitante : 0 };
       borradores[p.id] = d;
@@ -801,7 +830,7 @@ function renderModal(id) {
           sufijo = pts > 0 ? `<span style="font-size:11px; color:var(--${pts===5?'trofeo':'cesped'})">+${pts}</span>` : "";
         }
         return `
-          <div class="amigo-pick ${cls}">
+          <div class="amigo-pick ${cls}" style="cursor:pointer" onclick="abrirPerfil('${pr.usuario_id}')">
             <div class="amigo-info"><div class="amigo-avatar">${avatarHtml(u)}</div> ${esc(u?u.nombre:'?')}</div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span class="amigo-score">${pr.goles_local} - ${pr.goles_visitante}</span>
@@ -852,6 +881,106 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
+/* ---------- Perfiles de Otros Usuarios ---------- */
+function abrirPerfil(uid) {
+  const u = usuarios.find(x => x.id === uid);
+  if(!u) return;
+
+  const filas = clasificacion();
+  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
+  
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  let aciertos = 0;
+  partidosJugados.forEach(p => {
+      if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++;
+  });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts > 0 ? 'forma-verde' : 'forma-roja'}"></div>`;
+      } else {
+          htmlForma += `<div class="forma-box forma-vacia"></div>`;
+      }
+  }
+
+  // Ocultamos los partidos futuros
+  const pasados = partidos.filter(p => empezado(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc));
+
+  const htmlProns = pasados.length === 0 ? `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico revelado aún.</div>` : pasados.map(p => {
+      const pr = pronsUser.find(x => x.partido_id === p.id);
+      const fin = esFin(p.estado), vivo = esVivo(p.estado);
+      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
+      
+      let badgePts = "", realScore = "", bgClass = "";
+      if (fin) {
+          if (pts === 5) bgClass = "pleno-bg";
+          else if (pts === 3) bgClass = "ok-bg";
+          else bgClass = "bad-bg";
+          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
+      } else if (vivo) {
+          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
+      }
+
+      return `
+      <div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
+          <div class="pron-item-eq">
+              <img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> 
+              <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> 
+              <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;">
+          </div>
+          <div class="pron-item-info">
+              <div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div>
+              <div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> <b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b> &nbsp;&nbsp; ${realScore}</div>
+          </div>
+          ${badgePts}
+      </div>`;
+  }).join("");
+
+  const content = `
+      <div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="margin-bottom:16px;">
+          <div class="perfil-avatar">${avatarHtml(u)}</div>
+          <h2>${esc(u.nombre)}</h2>
+          <div class="perfil-badges">
+              <span class="badge badge-pos">🏅 #${f.rank}</span>
+              <span class="badge badge-jugados">⚽ ${pronsUser.length}/104</span>
+          </div>
+      </div>
+
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card">
+              <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
+              <div class="k">EFICIENCIA</div>
+          </div>
+          <div class="p-dash-card">
+              <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
+              <div class="forma-row">${htmlForma}</div>
+          </div>
+      </div>
+
+      <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRONÓSTICOS REVELADOS</h4>
+      <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column;">${htmlProns}</div>
+  `;
+
+  $("modal-content").innerHTML = content;
+  $("modal-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+
 function abrirModalMisPronosticos() {
   if(!me) return;
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
@@ -874,7 +1003,6 @@ function abrirModalMisPronosticos() {
           if (pts === 5) bgClass = "pleno-bg";
           else if (pts === 3) bgClass = "ok-bg";
           else bgClass = "bad-bg";
-          
           badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
           realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else if (vivo) {
@@ -905,10 +1033,10 @@ function abrirModalMisPronosticos() {
     </div>
     
     <h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4>
-    <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column;">${generarHtmlProns(futuros)}</div>
+    <div class="pron-list" style="margin-bottom:24px; display:flex; flex-direction:column; gap:8px;">${generarHtmlProns(futuros)}</div>
     
     <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
-    <div class="pron-list" style="display:flex; flex-direction:column;">${generarHtmlProns(pasados)}</div>
+    <div class="pron-list" style="display:flex; flex-direction:column; gap:8px;">${generarHtmlProns(pasados)}</div>
   `;
   
   document.getElementById("modal-content").innerHTML = content;
@@ -952,7 +1080,7 @@ function tablaGrupo(letra, ps){
       else { L.pts++; V.pts++; }
     }
   }
-  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
+  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n ? a.n : "").localeCompare(b.n ? b.n : ""));
   
   let htmlPartidos = ps.sort((a,b)=> new Date(a.fecha_utc) - new Date(b.fecha_utc)).map(p => {
     let score = (p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`;
@@ -980,9 +1108,9 @@ function vistaTabla(){
   const pos1 = podio[0], pos2 = podio[1], pos3 = podio[2];
 
   let podioHtml = `<div class="podio-container">`;
-  if (pos2) podioHtml += `<div class="podio-item plata"><div class="medalla">🥈</div><div class="podio-avatar">${avatarHtml(pos2.u)}</div><div class="podio-nombre">${esc(pos2.u.nombre)}</div><div class="podio-pts">${pos2.total}<small>pts</small></div></div>`;
-  if (pos1) podioHtml += `<div class="podio-item oro"><div class="medalla">🥇</div><div class="podio-avatar">${avatarHtml(pos1.u)}</div><div class="podio-nombre">${esc(pos1.u.nombre)}</div><div class="podio-pts">${pos1.total}<small>pts</small></div></div>`;
-  if (pos3) podioHtml += `<div class="podio-item bronce"><div class="medalla">🥉</div><div class="podio-avatar">${avatarHtml(pos3.u)}</div><div class="podio-nombre">${esc(pos3.u.nombre)}</div><div class="podio-pts">${pos3.total}<small>pts</small></div></div>`;
+  if (pos2) podioHtml += `<div class="podio-item plata" onclick="abrirPerfil('${pos2.u.id}')"><div class="medalla">🥈</div><div class="podio-avatar">${avatarHtml(pos2.u)}</div><div class="podio-nombre">${esc(pos2.u.nombre)}</div><div class="podio-pts">${pos2.total}<small>pts</small></div></div>`;
+  if (pos1) podioHtml += `<div class="podio-item oro" onclick="abrirPerfil('${pos1.u.id}')"><div class="medalla">🥇</div><div class="podio-avatar">${avatarHtml(pos1.u)}</div><div class="podio-nombre">${esc(pos1.u.nombre)}</div><div class="podio-pts">${pos1.total}<small>pts</small></div></div>`;
+  if (pos3) podioHtml += `<div class="podio-item bronce" onclick="abrirPerfil('${pos3.u.id}')"><div class="medalla">🥉</div><div class="podio-avatar">${avatarHtml(pos3.u)}</div><div class="podio-nombre">${esc(pos3.u.nombre)}</div><div class="podio-pts">${pos3.total}<small>pts</small></div></div>`;
   podioHtml += `</div>`;
 
   let listaHtml = `<div class="lista-ranking">`;
@@ -992,7 +1120,7 @@ function vistaTabla(){
     else if (f.tendencia < 0) trendHtml = `<div class="rank-trend trend-down">▼ ${Math.abs(f.tendencia)}</div>`;
 
     return `
-    <div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}">
+    <div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer">
       <div class="rank-pos"><span class="rank-num">${f.rank}</span>${trendHtml}</div>
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info">
@@ -1043,7 +1171,7 @@ function vistaPerfil(){
       }
   }
 
-  const esKiwi = (me.nombre || "").toLowerCase() === "kiwi";
+  const esKiwi = (me.nombre ? me.nombre : "").toLowerCase() === "kiwi";
 
   return `
   <div class="perfil-header">
@@ -1093,7 +1221,7 @@ function vistaAcceso(){
   return `
   <div class="panel">
     <h2>Inicia sesión</h2>
-    <p>Estás en <b style="color:var(--trofeo)">${esc(porra.nombre)}</b>. Elige tu nombre y mete tu PIN.
+    <p>Estás en <b style="color:var(--trofeo)">${esc(porra ? porra.nombre : "")}</b>. Elige tu nombre y mete tu PIN.
        <a href="#" onclick="cambiarPorra();return false" style="color:var(--grada)">¿No es tu porra?</a></p>
     <label for="sel-usuario">¿Quién eres?</label>
     <select id="sel-usuario">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join("")}</select>
@@ -1119,7 +1247,7 @@ function vistaAcceso(){
 
 async function registrarse(){
   const nombre = $("reg-nombre").value.trim(); const pin = $("reg-pin").value.trim();
-  const fileInput = $("reg-avatar");
+  const fileInput = $("reg-avatar"); 
   if (nombre.length < 2) return mostrarToast("Pon un nombre de al menos 2 letras.", "error");
   if (!/^\d{4,6}$/.test(pin)) return mostrarToast("El PIN deben ser de 4 a 6 números.", "error");
   
@@ -1177,33 +1305,6 @@ function actualizarCabecera(){
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
-async function subirNuevaFoto(input) {
-  if (!input.files || input.files.length === 0) return;
-  mostrarToast("Comprimiendo y subiendo...", "nota");
-  
-  const file = input.files[0];
-  if (file.size > 5 * 1024 * 1024) return mostrarToast("La foto pesa mucho (máx 5MB).", "error");
-  
-  const compressedBlob = await comprimirImagen(file);
-  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`;
-  
-  const { error: uploadError } = await db.storage.from('avatars').upload(fileName, compressedBlob, { cacheControl: '3600', upsert: false });
-  if (uploadError) return mostrarToast("Error al subir foto: " + esc(uploadError.message), "error");
-  
-  const avatarUrl = db.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
-  const { error: dbError } = await db.from("usuarios").update({ avatar_url: avatarUrl }).eq("id", me.id);
-  
-  if (dbError) return mostrarToast("Error BD: " + esc(dbError.message), "error");
-  
-  me.avatar_url = avatarUrl; 
-  const userIndex = usuarios.findIndex(u => u.id === me.id);
-  if (userIndex !== -1) usuarios[userIndex].avatar_url = avatarUrl;
-  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
-  
-  mostrarToast("¡Foto actualizada! ✓", "ok");
-  render();
-}
-
 /* ---------- Admin ---------- */
 async function entrarAdmin(){
   const pin = $("pin-admin").value.trim();
@@ -1259,7 +1360,7 @@ async function guardarResultado(id, estado){
 async function sincronizarAhora(){
   mostrarToast("Sincronizando...", "nota");
   const r = await llamarSync();
-  if (!r?.ok) mostrarToast(esc(r?.error || "Error desconocido"), "error");
+  if (!r || !r.ok) mostrarToast(esc((r && r.error) ? r.error : "Error desconocido"), "error");
   else mostrarToast("Sincronizado ✓", "ok");
   await cargarTodo(); setTimeout(render, 900);
 }

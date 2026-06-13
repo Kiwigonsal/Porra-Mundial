@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B1120">
 <meta name="description" content="La porra del Mundial 2026 entre amigos.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>La Porra del Mundial 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,19 +320,23 @@ async function sha256(texto){
 
 init();
 async function init(){
-  db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const porraGuardada = localStorage.getItem("porra_actual");
-  if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
-  const sesion = localStorage.getItem("porra_usuario");
-  if (sesion) { try { me = JSON.parse(sesion); } catch(e){} }
-  pintarTitulo();
-  $("vista").innerHTML = `<div class="cargando">Saltando al campo…</div>`;
-  await cargarTodo();
-  suscribirRealtime();
-  programarSync();
-  cargado = true;
-  render();
-  setTimeout(scrollToCurrent, 500); 
+  try {
+    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const porraGuardada = localStorage.getItem("porra_actual");
+    if (porraGuardada) { try { porra = JSON.parse(porraGuardada); } catch(e){} }
+    const sesion = localStorage.getItem("porra_usuario");
+    if (sesion) { try { me = JSON.parse(sesion); } catch(e){} }
+    pintarTitulo();
+    $("vista").innerHTML = `<div class="cargando">Saltando al campo…</div>`;
+    await cargarTodo();
+    suscribirRealtime();
+    programarSync();
+    cargado = true;
+    render();
+    setTimeout(scrollToCurrent, 500); 
+  } catch (e) {
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)"><b>⚠️ Error de carga:</b><br><br>${e.message}<br><br><small>Por favor, borra la caché de tu navegador.</small></div>`;
+  }
 }
 
 async function cargarTodo(){
@@ -417,7 +424,7 @@ function clasificacion(){
     }
   }
 
-  // SOLUCION BUG CLASIFICACIÓN (Seguridad alfabética total)
+  // SOLUCION ANTI-CRASH: Garantizamos que .nombre exista siempre
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
@@ -446,8 +453,8 @@ function render(){
     else if (tab === "tabla") v.innerHTML = vistaTabla();
     else v.innerHTML = vistaPerfil();
   } catch (error) {
-    console.error("Error en render:", error);
-    $("vista").innerHTML = `<div class="error" style="padding:20px; text-align:center">Ocurrió un error cargando la vista.</div>`;
+    console.error(error);
+    $("vista").innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--tarjeta-roja)">Ocurrió un error cargando la vista.<br><br>Borra la caché del navegador.</div>`;
   }
 }
 
@@ -459,7 +466,6 @@ function scrollToCurrent() {
   }
 }
 
-// Fechas Lógicas (Soporte Anti-Crash)
 function getFechaLogica(isoString) {
   if (!isoString) return "zzz";
   try {
@@ -477,7 +483,6 @@ function fmtDiaLogico(clave){
   } catch(e) { return "Fecha desconocida"; }
 }
 
-/* ---------- Feed de Partidos ---------- */
 function vistaPartidos(){
   if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
   if (!me) return `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>` + listaPartidos(false);
@@ -534,7 +539,6 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-/* ---------- Modal Logic ---------- */
 function abrirModal(id) {
   partidoAbiertoId = id; renderModal(id);
   $("modal-overlay").classList.add("open");
@@ -669,7 +673,6 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
-/* ---------- Torneo (Grupos y Eliminatorias) ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -902,6 +905,12 @@ function vistaAcceso(){
     <div id="msg-reg"></div>
   </div>`;
 }
+let emojiElegido = EMOJIS[0];
+function elegirEmoji(btn, e){
+  emojiElegido = e;
+  document.querySelectorAll("#emoji-fila button").forEach(b => b.classList.remove("activo"));
+  btn.classList.add("activo");
+}
 
 async function registrarse(){
   const nombre = $("reg-nombre").value.trim(); const pin = $("reg-pin").value.trim();
@@ -1016,6 +1025,14 @@ async function guardarResultado(id, estado){
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return alert("Error: " + error.message);
   await cargarTodo(); render();
+}
+async function crearPartidoManual(){
+  const local = $("np-local").value.trim(), visit = $("np-visit").value.trim(), fecha = $("np-fecha").value;
+  if (!local || !visit || !fecha) return $("msg-nuevo").innerHTML = `<div class="error">Rellena equipos y fecha.</div>`;
+  const { error } = await db.rpc("crear_partido", { p_local: local, p_visitante: visit, p_fecha: new Date(fecha).toISOString(), p_etapa: "GROUP_STAGE", p_grupo: null, p_porra: porra.id, pin: adminPin });
+  if (error) return $("msg-nuevo").innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  $("msg-nuevo").innerHTML = `<div class="ok">Partido añadido ✓</div>`;
+  await cargarTodo(); setTimeout(render, 700);
 }
 async function sincronizarAhora(){
   $("msg-sync").innerHTML = `<div class="nota">Sincronizando…</div>`;

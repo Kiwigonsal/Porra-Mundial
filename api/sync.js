@@ -2,51 +2,55 @@
 //  /api/sync — Sincroniza usando FOOTBALL-DATA.ORG (100% Gratis)
 // ============================================================
 
-const THROTTLE_SEGUNDOS = 60; // Espera de 1 minuto entre llamadas
+const THROTTLE_SEGUNDOS = 60; // Espera de 1 minuto entre llamadas para no saturar
 
 module.exports = async function(req, res) {
+  // Clave pública de Supabase incrustada por seguridad
   const SUPA = "https://aazygqkknksqnksyzhtq.supabase.co";
-  const KEY = process.env.SUPABASE_SERVICE_KEY;
-  const API_KEY = process.env.FOOTBALL_DATA_TOKEN; // Usamos el token antiguo
+  const KEY = process.env.SUPABASE_SERVICE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
+  
+  // Tu token gratuito de Football-Data.org
+  const API_KEY = process.env.FOOTBALL_DATA_TOKEN;
 
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json");
   
   if (!API_KEY) {
-      return res.status(200).json({ ok: false, error: "Falta FOOTBALL_DATA_TOKEN en Vercel." });
+      return res.status(200).json({ ok: false, error: "Falta la variable FOOTBALL_DATA_TOKEN en Vercel." });
   }
 
   const headersSupa = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
 
   try {
+    // 1. Control de saturación (Throttle)
     const confResp = await fetch(`${SUPA}/rest/v1/config?clave=eq.last_sync&select=valor`, { headers: headersSupa });
     const conf = await confResp.json();
     const ultima = (conf && conf[0] && conf[0].valor) ? new Date(conf[0].valor) : null;
     const hace = ultima ? (Date.now() - ultima.getTime()) / 1000 : Infinity;
 
     if (hace < THROTTLE_SEGUNDOS) {
-      return res.status(200).json({ ok: true, omitido: true, error: `Espera ${Math.round(THROTTLE_SEGUNDOS - hace)}s.` });
+      return res.status(200).json({ ok: true, omitido: true, error: `Sincronización pausada: Espera ${Math.round(THROTTLE_SEGUNDOS - hace)}s.` });
     }
 
-    // Llamada a Football-Data.org (WC = World Cup)
+    // 2. Llamada a Football-Data.org (Competición 'WC' = World Cup)
     const fdResp = await fetch(`https://api.football-data.org/v4/competitions/WC/matches`, { 
       headers: { "X-Auth-Token": API_KEY } 
     });
 
     if (!fdResp.ok) {
         const errTxt = await fdResp.text();
-        return res.status(200).json({ ok: false, error: `Error Football-Data: ${fdResp.status} - ${errTxt}` });
+        return res.status(200).json({ ok: false, error: `Error Football-Data API: ${fdResp.status} - ${errTxt}` });
     }
     
     const datos = await fdResp.json();
 
     if (!datos.matches || datos.matches.length === 0) {
-        return res.status(200).json({ ok: true, partidos: 0, error: "No hay partidos en la API." });
+        return res.status(200).json({ ok: true, partidos: 0, error: "No hay partidos en la API para la World Cup." });
     }
 
     const partidos = datos.matches.map(mapearPartidoFD).filter(Boolean);
 
-    // Subir a Supabase
+    // 3. Subir a Supabase
     const upsert = await fetch(`${SUPA}/rest/v1/partidos`, {
       method: "POST",
       headers: { ...headersSupa, Prefer: "resolution=merge-duplicates,return=minimal" },
@@ -55,10 +59,10 @@ module.exports = async function(req, res) {
 
     if (!upsert.ok) {
         const errTxt = await upsert.text();
-        return res.status(200).json({ ok: false, error: `Error BD Partidos: ${upsert.status} - ${errTxt}` });
+        return res.status(200).json({ ok: false, error: `Error escribiendo en BD: ${upsert.status} - ${errTxt}` });
     }
 
-    // Renovar Marca de Tiempo
+    // 4. Renovar Marca de Tiempo
     await fetch(`${SUPA}/rest/v1/config`, {
       method: "POST",
       headers: { ...headersSupa, Prefer: "resolution=merge-duplicates,return=minimal" },
@@ -71,11 +75,14 @@ module.exports = async function(req, res) {
   }
 }
 
+// Transformador de datos: Convierte el formato de Football-Data al formato de tu Supabase
 function mapearPartidoFD(m) {
   if (!m || !m.id) return null;
   
   let estado = m.status;
+  // Simplificamos los estados
   if (["IN_PLAY", "PAUSED"].includes(estado)) estado = "IN_PLAY";
+  if (["FINISHED", "AWARDED"].includes(estado)) estado = "FINISHED";
   
   let gl = null, gv = null;
   if (m.score && m.score.fullTime) {
@@ -83,12 +90,9 @@ function mapearPartidoFD(m) {
       gv = m.score.fullTime.away ?? null;
   }
 
-  // Football-Data procesa eventos de forma más sencilla (no tiene VAR ni Subs detalladas)
-  let eventos = [];
-  
   return {
     id: m.id,
-    etapa: m.stage,
+    etapa: m.stage || "GROUP_STAGE",
     grupo: m.group ? m.group.replace('GROUP_', '') : null,
     local: m.homeTeam?.tla || m.homeTeam?.name || "?",
     visitante: m.awayTeam?.tla || m.awayTeam?.name || "?",
@@ -98,7 +102,7 @@ function mapearPartidoFD(m) {
     estado: estado,
     goles_local: gl,
     goles_visitante: gv,
-    eventos: eventos,
+    eventos: '[]', // La API gratis no da minutos, pasamos un array vacío
     actualizado_en: new Date().toISOString()
   };
 }

@@ -543,6 +543,22 @@ function chipEstado(p){
 function escudo(url){
   return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="sin-escudo">❔</div>`;
 }
+  function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= Date.now(); }
+
+function fmtHora(p){
+  if (!p.fecha_utc) return "Por definir";
+  return new Date(p.fecha_utc).toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+}
+
+function chipEstado(p){
+  if (esVivo(p.estado)) return `<span class="chip vivo">En juego</span>`;
+  if (esFin(p.estado)) return `<span class="chip fin">Final</span>`;
+  return `<span class="chip">${fmtHora(p)}</span>`;
+}
+
+function escudo(url){
+  return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="sin-escudo">❔</div>`;
+}
   function vistaPartidos(){
 function listaPartidos(conPron){
   const porDia = {};

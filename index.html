@@ -40,7 +40,14 @@
   #app{max-width:560px; margin:0 auto; padding:0 14px calc(86px + env(safe-area-inset-bottom)); }
 
   [hidden] { display: none !important; }
+  
+  /* DISEÑO DE BOTONES ARREGLADO */
   button { appearance: none; -webkit-appearance: none; font-family: inherit; }
+  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; font-family: var(--body); cursor: pointer; transition: transform 0.1s; border: none; outline: none; display: flex; align-items: center; justify-content: center; line-height: 1; letter-spacing: .02em; }
+  .btn:active { transform: scale(0.97); }
+  .btn.secundario { background: transparent; border: 1px solid var(--cal-tenue); color: var(--cal); }
+  .btn.peligro { background: rgba(239,68,68,0.1); border: 1px solid var(--tarjeta-roja); color: var(--tarjeta-roja); }
+  .btn.oro { background: var(--trofeo); color: #0B1120; box-shadow: 0 4px 12px rgba(245,158,11,0.2); }
 
   header{
     display:flex; align-items:center; justify-content:space-between;
@@ -124,6 +131,7 @@
 
   .banner-resultado { background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:14px; text-align:center; font-size:13px; font-weight:600;}
   .banner-resultado.exito { border-color:var(--trofeo); background:rgba(245,158,11,.1); color:var(--trofeo); }
+  .banner-resultado.error { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); color:var(--tarjeta-roja); }
   
   details { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 14px; overflow: hidden; }
   summary { padding: 16px; font-size: 12px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--cal); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
@@ -162,10 +170,6 @@
   .pron-item-pts.ok { color: var(--trofeo); }
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; color: var(--tarjeta-roja); font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
-
-  .guardar{ width:100%; padding:14px; border-radius:14px; border:0; cursor:pointer; background:var(--cesped); color:#0B1120; font-weight:800; font-size:14px; letter-spacing:.04em; font-family:var(--body); box-shadow: 0 4px 10px rgba(16,185,129,0.3); transition: transform 0.1s; display:flex; align-items:center; justify-content:center;}
-  .guardar:active{ transform:scale(0.98); }
-  .guardar[disabled]{opacity:.55; cursor:default}
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
@@ -208,12 +212,12 @@
   .badge-pos { background: rgba(245,158,11,0.15); border: 1px solid var(--trofeo); color: var(--trofeo); }
   .badge-jugados { background: rgba(248,250,252,0.1); border: 1px solid var(--cal-tenue); color: var(--cal); }
 
-  .perfil-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;}
+  .perfil-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px;}
   .p-stat-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px 6px; text-align: center; }
   .p-stat-card .v { font-family: var(--display); font-size: 24px; margin-bottom: 4px; }
   .p-stat-card .k { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; text-transform: uppercase; }
 
-  .perfil-dash-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; }
+  .perfil-dash-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 10px; margin-bottom: 16px;}
   .p-dash-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
   .efi-circle { width: 66px; height: 66px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: var(--display); font-size: 18px; color: var(--cal); }
   .efi-circle::before { content: ""; position: absolute; inset: 5px; background: var(--campo-2); border-radius: 50%; z-index: 1; }
@@ -240,15 +244,11 @@
   input[type=text],input[type=password],input[type=datetime-local],select{ width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); font-size:16px; font-family:var(--body); }
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
-  
-  .btn.secundario{background:transparent; border:1px solid var(--cal-tenue); color:var(--cal); display:flex; align-items:center; justify-content:center; line-height:1;}
-  .btn.peligro{background:transparent; border:1px solid var(--tarjeta-roja); color:var(--tarjeta-roja); display:flex; align-items:center; justify-content:center; line-height:1;}
-  .btn.oro{background:var(--trofeo); color:#0B1120; display:flex; align-items:center; justify-content:center; line-height:1;}
 
   nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); }
   .nav-inner{max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr)}
-  nav button{ background:none; border:0; color:var(--grada); padding:10px 4px 12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); }
-  nav button .ico{font-size:20px}
+  nav button{ background:none; border:0; color:var(--grada); padding:10px 4px 12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; }
+  nav button .ico{font-size:22px; display:block; line-height:1;}
   nav button.activo{color:var(--trofeo)}
 
   .vacio{text-align:center; color:var(--grada); padding:40px 16px; font-size:14px; line-height:1.6}
@@ -307,6 +307,9 @@ const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
+
+// LÍMITE PARA VOTAR LOS EXTRAS: Martes 16 de Junio de 2026 a las 21:00 (Hora de España)
+const LIMITE_EXTRAS = new Date("2026-06-16T21:00:00+02:00").getTime();
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
@@ -442,7 +445,8 @@ async function cargarTodo(){
   
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
-  const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra").eq("porra_id", porra.id).order("nombre");
+  // Hemos añadido 'extras' a la consulta
+  const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra,extras").eq("porra_id", porra.id).order("nombre");
   if (u.error) throw new Error("BD Usuarios: " + u.error.message);
   usuarios = u.data || [];
   
@@ -661,7 +665,7 @@ function vistaCodigo(){
     <input type="text" id="codigo-porra" autocomplete="off" autocapitalize="characters"
       style="text-transform:uppercase; letter-spacing:.2em; font-weight:800; text-align:center"
       onkeydown="if(event.key==='Enter')entrarConCodigo()">
-    <button class="btn oro" onclick="entrarConCodigo()">Entrar en la porra</button>
+    <button class="btn oro" style="margin-top:16px;" onclick="entrarConCodigo()">Entrar en la porra</button>
   </div>`;
 }
 
@@ -750,7 +754,6 @@ function tarjetaFeed(p, conPron){
         else footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span class="${pts>0?'p-estado-ok':'p-estado-bad'}">${pts>0?'+'+pts+' pts':'0 pts'}</span>`;
       }
       
-      // Resumen Global de la Porra para este partido
       const pronsDelPartido = pronosticos.filter(x => x.partido_id === p.id);
       if (pronsDelPartido.length > 0) {
         let ex = 0, co = 0, se = 0;
@@ -780,7 +783,7 @@ function tarjetaFeed(p, conPron){
   </article>`;
 }
 
-/* ---------- MODALES Y BOTÓN ATRÁS (Arreglado Flex) ---------- */
+/* ---------- MODALES Y BOTÓN ATRÁS ---------- */
 function abrirModal(id) {
   partidoAbiertoId = id; renderModal(id);
   const overlay = $("modal-overlay");
@@ -922,7 +925,7 @@ function renderModal(id) {
   $("modal-content").innerHTML = content;
 }
 
-/* ---------- Perfiles de Otros Usuarios y Mis Pronosticos Modal ---------- */
+/* ---------- Perfiles y EXTRAS ---------- */
 function abrirPerfil(uid) {
   const u = usuarios.find(x => x.id === uid);
   if(!u) return;
@@ -977,7 +980,10 @@ function abrirPerfil(uid) {
           </div>
       </div>
 
-      <button class="btn secundario" style="margin-bottom:24px; padding:16px; font-size:14px;" onclick="abrirModalPronosticos('${uid}')">📋 VER SUS PRONÓSTICOS</button>
+      <div style="display:flex; gap:10px; margin-bottom:24px;">
+          <button class="btn secundario" onclick="abrirModalPronosticos('${uid}')">📋 PARTIDOS</button>
+          <button class="btn oro" onclick="abrirModalExtras('${uid}')">🔮 EXTRAS</button>
+      </div>
   `;
 
   $("modal-content").innerHTML = content;
@@ -987,6 +993,139 @@ function abrirPerfil(uid) {
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
   if (!yaAbierto) history.pushState({modalOpen: true}, "");
+}
+
+function abrirModalExtras(uid) {
+  if(!uid && me) uid = me.id;
+  if(!uid) return;
+  
+  const targetUser = usuarios.find(x => x.id === uid);
+  const esMio = (me && uid === me.id);
+  const dataExt = targetUser.extras || {};
+  
+  const ahora = Date.now();
+  const cerrado = ahora > LIMITE_EXTRAS;
+  
+  // Extraemos los nombres únicos de todos los equipos en el mundial
+  const equiposSet = new Set();
+  partidos.forEach(p => { 
+      if (p.local && p.local !== "?") equiposSet.add(p.local); 
+      if (p.visitante && p.visitante !== "?") equiposSet.add(p.visitante); 
+  });
+  const equiposArr = Array.from(equiposSet).sort();
+  
+  const opts = `<option value="">Selecciona equipo...</option>` + 
+               equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+
+  const txtTitulo = esMio ? "TUS PREDICCIONES EXTRA" : `EXTRAS DE ${esc(targetUser.nombre)}`;
+
+  let content = `
+    <div class="modal-close" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-header" style="margin-bottom:20px;">
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${txtTitulo}</h2>
+      <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
+    </div>
+  `;
+
+  if (esMio && !cerrado) {
+      content += `
+      <div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
+        <label>🥇 Campeón (10 pts)</label>
+        <select id="ext-cam" style="margin-bottom:12px;">${opts}</select>
+        
+        <label>🥈 Subcampeón (7 pts)</label>
+        <select id="ext-sub" style="margin-bottom:12px;">${opts}</select>
+        
+        <label>🥉 3er Puesto (5 pts)</label>
+        <select id="ext-ter" style="margin-bottom:12px;">${opts}</select>
+        
+        <label>🍫 4º Puesto (3 pts)</label>
+        <select id="ext-cua" style="margin-bottom:12px;">${opts}</select>
+        
+        <label>⚽ Pichichi (Libre)</label>
+        <input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
+        
+        <label>🏆 Mejor Jugador MVP (Libre)</label>
+        <input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+        
+        <button class="btn oro" onclick="guardarMisExtras()">Guardar Predicciones</button>
+      </div>`;
+  } else if (!esMio && !cerrado) {
+      content += `<div class="vacio">Las predicciones de los demás son secretas hasta que comience la Jornada 2 🔒</div>`;
+  } else {
+      content += `
+      <div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span>
+          <b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span>
+          <b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🏆 MVP</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.mvp || "—")}</b>
+        </div>
+      </div>`;
+  }
+
+  $("modal-content").innerHTML = content;
+  
+  if (esMio && !cerrado) {
+      if(dataExt.cam) $("ext-cam").value = dataExt.cam;
+      if(dataExt.sub) $("ext-sub").value = dataExt.sub;
+      if(dataExt.ter) $("ext-ter").value = dataExt.ter;
+      if(dataExt.cua) $("ext-cua").value = dataExt.cua;
+  }
+  
+  const overlay = document.getElementById("modal-overlay");
+  const yaAbierto = overlay.classList.contains("open");
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+  if (!yaAbierto) history.pushState({modalOpen: true}, "");
+}
+
+async function guardarMisExtras() {
+    const cam = $("ext-cam").value;
+    const sub = $("ext-sub").value;
+    const ter = $("ext-ter").value;
+    const cua = $("ext-cua").value;
+    const pic = $("ext-pic").value.trim();
+    const mvp = $("ext-mvp").value.trim();
+
+    const elegidos = [cam, sub, ter, cua].filter(x => x !== "");
+    const unicos = new Set(elegidos);
+    
+    if (elegidos.length !== unicos.size) {
+        return mostrarToast("¡Error! Has puesto al mismo equipo varias veces.", "error");
+    }
+
+    const payload = { cam, sub, ter, cua, pic, mvp };
+    
+    mostrarToast("Guardando extras...", "nota");
+    const { error } = await db.from("usuarios").update({ extras: payload }).eq("id", me.id);
+    
+    if (error) return mostrarToast("Error: " + error.message, "error");
+    
+    me.extras = payload;
+    const uIdx = usuarios.findIndex(u => u.id === me.id);
+    if (uIdx > -1) usuarios[uIdx].extras = payload;
+    
+    mostrarToast("¡Predicciones guardadas!", "ok");
+    cerrarModal(new Event('click')); // forzamos cierre
 }
 
 function abrirModalPronosticos(uid) {
@@ -1231,14 +1370,17 @@ function vistaPerfil(){
       </div>
   </div>
 
-  <button class="btn oro" style="margin-bottom:24px; padding:16px; font-size:16px;" onclick="abrirModalPronosticos()">📋 VER MIS PRONÓSTICOS</button>
+  <div style="display:flex; gap:10px; margin-bottom:24px;">
+      <button class="btn secundario" onclick="abrirModalPronosticos()">📋 PARTIDOS</button>
+      <button class="btn oro" onclick="abrirModalExtras()">🔮 EXTRAS</button>
+  </div>
 
   <div style="margin-top:20px; display:flex; gap:10px;">
       <button class="btn secundario" style="margin-top:0" onclick="cerrarSesion()">Cerrar sesión</button>
       <button class="btn secundario" style="margin-top:0" onclick="cambiarPorra()">↔️ Cambiar porra</button>
   </div>
 
-  ${esKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><p>Solo per Kiwi.</p><label for="pin-admin">PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()">Entrar come admin</button></div>`) : ''}
+  ${esKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><p>Solo per Kiwi.</p><label for="pin-admin">PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar come admin</button></div>`) : ''}
   `;
 }
 
@@ -1252,7 +1394,7 @@ function vistaAcceso(){
     <select id="sel-usuario">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join("")}</select>
     <label for="pin-login">Tu PIN</label>
     <input type="password" id="pin-login" inputmode="numeric" autocomplete="off">
-    <button class="btn" onclick="iniciarSesion()">Entrar</button>
+    <button class="btn oro" style="margin-top:16px" onclick="iniciarSesion()">Entrar</button>
   </div>
   <div class="panel">
     <h2>¿Primera vez? Únete</h2>
@@ -1295,7 +1437,7 @@ async function registrarse(){
   const { data, error } = await db.from("usuarios").insert({ porra_id: porra.id, nombre, pin_hash: hash, emoji: '⚽', avatar_url: avatarUrl }).select().single();
   if (error) return mostrarToast(error.code === "23505" ? "Ese nombre ya está cogido en esta porra." : error.message, "error");
   
-  me = { id: data.id, nombre: data.nombre, emoji: data.emoji, avatar_url: data.avatar_url };
+  me = { id: data.id, nombre: data.nombre, emoji: data.emoji, avatar_url: data.avatar_url, extras: data.extras || {} };
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   await cargarTodo(); 
   mostrarToast("¡Bienvenido!", "ok");
@@ -1309,7 +1451,7 @@ async function iniciarSesion(){
   if (!u) return mostrarToast("Usuario no encontrado.", "error");
   if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return mostrarToast("PIN incorrecto.", "error");
   
-  me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url };
+  me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url, extras: u.extras || {} };
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   mostrarToast("¡Sesión iniciada!", "ok");
   irA("partidos");
@@ -1369,28 +1511,47 @@ async function entrarAdmin(){
 function vistaAdmin(){
   const pendientes = partidos.filter(p => empezado(p) && !esFin(p.estado));
   const recientes = partidos.filter(p => esFin(p.estado)).slice(-5).reverse();
+  
+  const equiposSet = new Set();
+  partidos.forEach(p => { 
+      if (p.local && p.local !== "?") equiposSet.add(p.local); 
+      if (p.visitante && p.visitante !== "?") equiposSet.add(p.visitante); 
+  });
+  const opts = `<option value="">---</option>` + Array.from(equiposSet).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+
   return `
   <div class="panel">
     <h2>🛠️ Panel de admin</h2>
-    <p>Los resultados llegan solos desde la API.</p>
-    <button class="btn" onclick="sincronizarAhora()">🔄 Sincronizar ahora</button>
+    <button class="btn secundario" onclick="sincronizarAhora()" style="margin-bottom:24px;">🔄 Sincronizar ahora</button>
 
-    <label style="margin-top:20px">Poner resultado a mano / Probar LIVE</label>
+    <label>🏆 Cerrar Torneo (Puntos Automáticos)</label>
+    <div style="background:var(--campo); padding:16px; border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:24px;">
+        <select id="adm-cam" style="margin-bottom:8px;">${opts.replace("---", "Selecciona Campeón")}</select>
+        <select id="adm-sub" style="margin-bottom:8px;">${opts.replace("---", "Selecciona Subcampeón")}</select>
+        <select id="adm-ter" style="margin-bottom:8px;">${opts.replace("---", "Selecciona Tercero")}</select>
+        <select id="adm-cua" style="margin-bottom:12px;">${opts.replace("---", "Selecciona Cuarto")}</select>
+        <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos de Torneo</button>
+        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP asígnalos abajo a mano).</p>
+    </div>
+
+    <label>Poner resultado a mano / Probar LIVE</label>
     ${pendientes.length === 0 ? `<p class="nota">No hay partidos en juego o pendientes de cerrar ahora mismo.</p>` : pendientes.map(filaAdmin).join("")}
     ${recientes.length ? `<label style="margin-top:18px">Corregir un resultado reciente</label>` + recientes.map(filaAdmin).join("") : ""}
 
-    <label style="margin-top:20px">👥 Gestión de Participantes</label>
+    <label style="margin-top:24px">👥 Gestión de Participantes</label>
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
       <select id="adm-puntos-usr" style="width:100%; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)} (${u.puntos_extra || 0} extra)</option>`).join("")}</select>
       <div style="display:flex; gap:8px;">
         <input type="number" id="adm-puntos-val" placeholder="+/- pts" style="flex:1; text-align:center; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">
         <button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Asignar</button>
       </div>
-      <button class="btn secundario" style="margin-top:4px;" onclick="resetearPin()">🔒 Resetear PIN a "0000"</button>
+      <button class="btn peligro" style="margin-top:4px;" onclick="resetearPin()">🔒 Resetear PIN a "0000"</button>
     </div>
-    <button class="btn peligro" onclick="salirAdmin()">Salir del modo admin</button>
+    
+    <button class="btn secundario" onclick="salirAdmin()" style="margin-top:30px;">Salir del modo admin</button>
   </div>`;
 }
+
 function filaAdmin(p){
   return `<div class="admin-partido">
     <span style="flex:1">${esc(p.local||"?")} – ${esc(p.visitante||"?")}</span>
@@ -1416,6 +1577,38 @@ async function sincronizarAhora(){
   else mostrarToast("Sincronizado ✓", "ok");
   await cargarTodo(); setTimeout(render, 900);
 }
+
+async function calcularYAsignarExtras() {
+  if (!confirm("¿Seguro? Esto sumará los puntos automáticamente a los que hayan acertado el cuadro.")) return;
+  
+  const vCam = $("adm-cam").value;
+  const vSub = $("adm-sub").value;
+  const vTer = $("adm-ter").value;
+  const vCua = $("adm-cua").value;
+  
+  if (!vCam || !vSub) return mostrarToast("Selecciona al menos Campeón y Subcampeón.", "error");
+  
+  mostrarToast("Repartiendo puntos...", "nota");
+  
+  for (const u of usuarios) {
+      let puntosASumar = 0;
+      const ex = u.extras || {};
+      
+      if (ex.cam === vCam) puntosASumar += 10;
+      if (ex.sub === vSub) puntosASumar += 7;
+      if (ex.ter === vTer) puntosASumar += 5;
+      if (ex.cua === vCua) puntosASumar += 3;
+      
+      if (puntosASumar > 0) {
+          await db.rpc("asignar_puntos_extra", { p_usuario: u.id, p_puntos: puntosASumar, p_porra: porra.id, pin: adminPin });
+      }
+  }
+  
+  mostrarToast("¡Puntos de Torneo repartidos con éxito! 🏆", "ok");
+  await cargarTodo(); 
+  setTimeout(render, 1000);
+}
+
 function salirAdmin(){ adminPin = null; try{sessionStorage.removeItem("adminPin");}catch(e){} render(); }
 async function darPuntos(){
   const uid = $("adm-puntos-usr").value; const pts = parseInt($("adm-puntos-val").value, 10);
@@ -1428,7 +1621,7 @@ async function resetearPin(){
   const uid = $("adm-puntos-usr").value;
   if (!uid) return;
   const u = usuarios.find(x => x.id === uid);
-  if (!confirm(`¿Seguro que vuoi cambiare il PIN di ${u.nombre} a "0000"?`)) return;
+  if (!confirm(`¿Seguro que quieres resetear el PIN de ${u.nombre} a "0000"?`)) return;
   const nuevoHash = await sha256(u.nombre.toLowerCase() + ":0000");
   const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuevoHash, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast(esc(error.message), "error");

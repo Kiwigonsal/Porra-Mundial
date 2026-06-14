@@ -102,11 +102,10 @@
   .p-estado-ok { color:var(--cesped); font-weight:800; }
   .p-estado-bad { color:var(--tarjeta-roja); font-weight:800; }
 
-  /* ---------- Modal (SCROLL ARREGLADO) ---------- */
+  /* ---------- Modal ---------- */
   .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; justify-content:center; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
   .modal-overlay.open { opacity:1; pointer-events:auto; }
   
-  /* Aquí el display:block fuerza a Android a permitir el scroll interno siempre */
   .modal-content { background:var(--campo); width:100%; max-width:560px; max-height:85vh; border-radius: 24px 24px 0 0; padding: 24px 16px max(24px, env(safe-area-inset-bottom)); overflow-y:auto; -webkit-overflow-scrolling: touch; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); display:block; position:relative; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
   .modal-content > div, .modal-content > details, .modal-content > button { margin-bottom: 16px; }
   .modal-content > *:last-child { margin-bottom: 0; }
@@ -148,10 +147,6 @@
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(16,185,129,.1); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(245,158,11,.1); }
-
-  .eventos-caja { display: flex; flex-direction: column; gap: 8px; }
-  .evento-linea { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cal); background:var(--campo); padding:10px 14px; border-radius:8px; border:1px solid var(--cal-tenue);}
-  .evento-min { font-weight: 800; color: var(--cal-suave); min-width: 26px; text-align: right; }
 
   /* Colores para Pronósticos */
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
@@ -598,7 +593,8 @@ function getFechaLogica(isoString) {
   try {
     const d = new Date(isoString);
     if (isNaN(d.getHours())) return "zzz";
-    if (d.getHours() < 5) d.setDate(d.getDate() - 1);
+    // Las partidas que empiezan antes de las 07:00 AM se muestran en el día anterior
+    if (d.getHours() < 7) d.setDate(d.getDate() - 1);
     return d.toDateString();
   } catch(e){ return "zzz"; }
 }
@@ -738,17 +734,37 @@ function tarjetaFeed(p, conPron){
   else centro = `<div class="tanteo-feed"><span class="vs">vs</span></div>`;
 
   let footer = "";
+  let resumen = "";
+
   if(conPron){
     const miId = me ? me.id : null;
     const mio = pronosticos.find(x => x.usuario_id === miId && x.partido_id === p.id);
+    
     if (!empezado(p)){
       footer = mio ? `<span>Tu pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span>✏️</span>` : `<span>Sin pronóstico</span> <span style="color:var(--cesped)">Pronosticar 👉</span>`;
     } else {
       if(!mio) footer = `<span>Nadie pronosticó esto 😶</span>`;
       else {
         const pts = puntosDe(mio, p);
-        if(vivo) footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span class="${pts>0?'p-estado-ok':'p-estado-bad'}">live ${pts>0?'+'+pts:''}</span>`;
-        else footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span class="${pts>0?'p-estado-ok':''}">${pts>0?'+'+pts+' pts':'0 pts'}</span>`;
+        if(vivo) footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span class="${pts>0?'p-estado-ok':'p-estado-bad'}">live ${pts>0?'+'+pts:'0'}</span>`;
+        else footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span class="${pts>0?'p-estado-ok':'p-estado-bad'}">${pts>0?'+'+pts+' pts':'0 pts'}</span>`;
+      }
+      
+      // Resumen Global de la Porra para este partido
+      const pronsDelPartido = pronosticos.filter(x => x.partido_id === p.id);
+      if (pronsDelPartido.length > 0) {
+        let ex = 0, co = 0, se = 0;
+        pronsDelPartido.forEach(pr => {
+          const pts = puntosDe(pr, p);
+          if (pts === 5) ex++;
+          else if (pts === 3) co++;
+          else se++;
+        });
+        resumen = `<div style="display:flex; justify-content:space-between; font-size:10.5px; font-weight:800; text-transform:uppercase; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--cal-tenue);">
+          <span style="color:var(--trofeo)">⭐ ${ex} exactos</span>
+          <span style="color:var(--cesped)">✅ ${co} correctos</span>
+          <span style="color:var(--tarjeta-roja)">❌ ${se} a cero</span>
+        </div>`;
       }
     }
   }
@@ -760,7 +776,7 @@ function tarjetaFeed(p, conPron){
       ${centro}
       <div class="equipo-feed">${escudo(p.visitante_crest)} <span>${esc(p.visitante || "?")}</span></div>
     </div>
-    ${conPron ? `<div class="partido-footer">${footer}</div>` : ''}
+    ${conPron && empezado(p) ? `<div class="partido-footer" style="display:block;">${resumen}<div style="display:flex; justify-content:space-between;">${footer}</div></div>` : (conPron ? `<div class="partido-footer">${footer}</div>` : '')}
   </article>`;
 }
 
@@ -845,10 +861,10 @@ function renderModal(id) {
       } else {
         const pts = puntosDe(mio, p);
         if(vivo) {
-          bannerMio = `<div class="banner-resultado ${pts>0?'exito':''}">Tu pronóstico era <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block;">Puntos provisorios: ${pts>0?'+'+pts:'0'}</span></div>`;
+          bannerMio = `<div class="banner-resultado ${pts>0?'exito':(pts===0?'error':'')}">Tu pronóstico era <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block;">Puntos provisorios: ${pts>0?'+'+pts:'0'}</span></div>`;
         } else {
-          let textoPts = pts === 5 ? "⭐ ¡Pleno exacto! +5 puntos" : (pts === 3 ? "✅ ¡Resultado correcto! +3 puntos" : "0 puntos");
-          bannerMio = `<div class="banner-resultado ${pts>0?'exito':''}">Tu pronóstico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:12px; margin-top:4px; display:block;">${textoPts}</span></div>`;
+          let textoPts = pts === 5 ? "⭐ ¡Pleno exacto! +5 puntos" : (pts === 3 ? "✅ ¡Resultado correcto! +3 puntos" : "❌ 0 puntos");
+          bannerMio = `<div class="banner-resultado ${pts>0?'exito':(pts===0?'error':'')}">Tu pronóstico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:12px; margin-top:4px; display:block; color:${pts===0?'var(--tarjeta-roja)':''};">${textoPts}</span></div>`;
         }
       }
     }
@@ -865,10 +881,12 @@ function renderModal(id) {
         let cls = "", sufijo = "";
         if(vivo) {
           cls = pts > 0 ? "ok" : "bad";
-          sufijo = pts > 0 ? `<span style="font-size:11px; color:var(--cesped)">+${pts}</span>` : "";
+          sufijo = pts > 0 ? `<span style="font-size:11px; color:var(--cesped)">+${pts}</span>` : `<span style="font-size:11px; color:var(--tarjeta-roja)">0</span>`;
         } else {
-          cls = pts === 5 ? "pleno" : (pts === 3 ? "ok" : "");
-          sufijo = pts > 0 ? `<span style="font-size:11px; color:var(--${pts===5?'trofeo':'cesped'})">+${pts}</span>` : "";
+          cls = pts === 5 ? "pleno" : (pts === 3 ? "ok" : "bad");
+          if (pts === 5) sufijo = `<span style="font-size:11px; color:var(--trofeo)">+5</span>`;
+          else if (pts === 3) sufijo = `<span style="font-size:11px; color:var(--cesped)">+3</span>`;
+          else sufijo = `<span style="font-size:11px; color:var(--tarjeta-roja)">0</span>`;
         }
         return `
           <div class="amigo-pick ${cls}" style="cursor:pointer" onclick="abrirPerfil('${pr.usuario_id}')">
@@ -881,19 +899,6 @@ function renderModal(id) {
       }).join("");
       htmlTodos = `<div class="lista-amigos">${lista}</div>`;
     }
-  }
-
-  let htmlEventos = `<div class="vacio" style="padding:10px">Aún no hay eventos registrados.</div>`;
-  if (p.eventos && Array.isArray(p.eventos) && p.eventos.length > 0) {
-    const evs = p.eventos.map(e => `
-      <div class="evento-linea">
-        <span class="evento-min">${e.minuto}'</span>
-        <span style="font-size:15px">${e.tipo}</span>
-        <span style="font-weight:600">${esc(e.jugador)}</span>
-        <span style="font-size:10px; color:var(--cal-tenue); margin-left:auto">${esc(e.equipo || "")}</span>
-      </div>
-    `).join("");
-    htmlEventos = `<div class="eventos-caja">${evs}</div>`;
   }
 
   const content = `
@@ -913,15 +918,11 @@ function renderModal(id) {
       <summary>Pronósticos</summary>
       <div class="details-body">${htmlTodos}</div>
     </details>
-
-    <details>
-      <summary>Eventos en Directo</summary>
-      <div class="details-body">${htmlEventos}</div>
-    </details>
   `;
   $("modal-content").innerHTML = content;
 }
 
+/* ---------- Perfiles de Otros Usuarios y Mis Pronosticos Modal ---------- */
 function abrirPerfil(uid) {
   const u = usuarios.find(x => x.id === uid);
   if(!u) return;
@@ -1015,10 +1016,15 @@ function abrirModalPronosticos(uid) {
           if (pts === 5) bgClass = "pleno-bg";
           else if (pts === 3) bgClass = "ok-bg";
           else bgClass = "bad-bg";
-          badgePts = `<div class="pron-item-pts ${pts>0?'ok':''}">${pts}</div>`;
+          
+          if (pts === 5 || pts === 3) {
+            badgePts = `<div class="pron-item-pts ok">${pts}</div>`;
+          } else {
+            badgePts = `<div class="pron-item-pts" style="color:var(--tarjeta-roja);">0</div>`;
+          }
           realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else if (vivo) {
-          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:''}</div>`;
+          badgePts = `<div class="pron-item-pts vivo">Live ${pts>0?'+'+pts:'0'}</div>`;
           realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else badgePts = `<div class="pron-item-pts pending">-</div>`;
 

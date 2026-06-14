@@ -1477,15 +1477,26 @@ async function iniciarSesion(){
   
   mostrarToast("Entrando...", "nota");
   
-  // Llamamos a la función segura del servidor para que haga la comprobación internamente
   const { data, error } = await db.rpc('iniciar_sesion_seguro', {
+      p_porra: porra.id, // <-- ESTO SOLUCIONA EL BUG DE LAS MÚLTIPLES PORRAS
       p_nombre: nombreInput,
       p_pin: pin
   });
 
   if (error) {
-      return mostrarToast(esc(error.message), "error"); // Dirá "Usuario no encontrado" o "PIN incorrecto"
+      return mostrarToast(esc(error.message), "error"); 
   }
+  
+  me = data;
+  miPinClaro = pin;
+  try { 
+      localStorage.setItem("porra_usuario", JSON.stringify(me)); 
+      localStorage.setItem("miPinClaro", pin); 
+  } catch(e){}
+  
+  mostrarToast("¡Sesión iniciada!", "ok");
+  irA("partidos");
+}
   
   // Si nos devuelve data, es que el PIN era correcto
   me = data;

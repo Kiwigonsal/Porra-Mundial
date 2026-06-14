@@ -143,7 +143,7 @@
   .pron-fila{display:flex; align-items:center; justify-content:center; gap:20px; }
   .stepper{display:flex; flex-direction:column; align-items:center; gap:8px}
   .stepper-controles { display:flex; justify-content:space-between; align-items:center; background:var(--campo-3); border-radius:16px; padding:8px; width: 130px; border:1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}
-  .stepper button{ width:40px; height:40px; border-radius:12px; border:none; background:transparent; color:var(--cal); font-size:24px; font-weight:400; cursor:pointer; transition: background 0.2s; display:flex; align-items:center; justify-content:center; line-height:1; padding-bottom:4px;}
+  .stepper button { width:40px; height:40px; border-radius:12px; border:none; background:transparent; color:var(--cal); font-size:24px; font-weight:400; cursor:pointer; transition: background 0.2s; display:flex; align-items:center; justify-content:center; padding-bottom:4px;}
   .stepper button:active{background:rgba(255,255,255,.1)}
   .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1;}
   
@@ -245,10 +245,11 @@
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
 
-  nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); }
-  .nav-inner{max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr)}
-  nav button{ background:none; border:0; color:var(--grada); padding:10px 4px 12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; }
-  nav button .ico{font-size:22px; display:block; line-height:1;}
+  /* NAVEGACIÓN INFERIOR ARREGLADA */
+  nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
+  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); height:100%;}
+  nav button{ background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
+  nav button .ico{font-size:20px; display:block; line-height:1;}
   nav button.activo{color:var(--trofeo)}
 
   .vacio{text-align:center; color:var(--grada); padding:40px 16px; font-size:14px; line-height:1.6}
@@ -445,7 +446,6 @@ async function cargarTodo(){
   
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
-  // Hemos añadido 'extras' a la consulta
   const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra,extras").eq("porra_id", porra.id).order("nombre");
   if (u.error) throw new Error("BD Usuarios: " + u.error.message);
   usuarios = u.data || [];
@@ -597,7 +597,6 @@ function getFechaLogica(isoString) {
   try {
     const d = new Date(isoString);
     if (isNaN(d.getHours())) return "zzz";
-    // Las partidas que empiezan antes de las 07:00 AM se muestran en el día anterior
     if (d.getHours() < 7) d.setDate(d.getDate() - 1);
     return d.toDateString();
   } catch(e){ return "zzz"; }
@@ -856,7 +855,7 @@ function renderModal(id) {
               <span style="font-size:10px; color:var(--grada); font-weight:800; letter-spacing:.1em">${esc(p.visitante || "VISIT.")}</span>
             </div>
           </div>
-          <button class="guardar" style="width:100%; display:flex;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
+          <button class="btn oro" style="margin-top:16px; width:100%;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
         </div>`;
     } else {
       if(!mio) {
@@ -1006,7 +1005,6 @@ function abrirModalExtras(uid) {
   const ahora = Date.now();
   const cerrado = ahora > LIMITE_EXTRAS;
   
-  // Extraemos los nombres únicos de todos los equipos en el mundial
   const equiposSet = new Set();
   partidos.forEach(p => { 
       if (p.local && p.local !== "?") equiposSet.add(p.local); 
@@ -1031,16 +1029,16 @@ function abrirModalExtras(uid) {
       content += `
       <div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
         <label>🥇 Campeón (10 pts)</label>
-        <select id="ext-cam" style="margin-bottom:12px;">${opts}</select>
+        <select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         
         <label>🥈 Subcampeón (7 pts)</label>
-        <select id="ext-sub" style="margin-bottom:12px;">${opts}</select>
+        <select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         
         <label>🥉 3er Puesto (5 pts)</label>
-        <select id="ext-ter" style="margin-bottom:12px;">${opts}</select>
+        <select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         
         <label>🍫 4º Puesto (3 pts)</label>
-        <select id="ext-cua" style="margin-bottom:12px;">${opts}</select>
+        <select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         
         <label>⚽ Pichichi (Libre)</label>
         <input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
@@ -1125,7 +1123,7 @@ async function guardarMisExtras() {
     if (uIdx > -1) usuarios[uIdx].extras = payload;
     
     mostrarToast("¡Predicciones guardadas!", "ok");
-    cerrarModal(new Event('click')); // forzamos cierre
+    cerrarModal(new Event('click'));
 }
 
 function abrirModalPronosticos(uid) {
@@ -1375,10 +1373,7 @@ function vistaPerfil(){
       <button class="btn oro" onclick="abrirModalExtras()">🔮 EXTRAS</button>
   </div>
 
-  <div style="margin-top:20px; display:flex; gap:10px;">
-      <button class="btn secundario" style="margin-top:0" onclick="cerrarSesion()">Cerrar sesión</button>
-      <button class="btn secundario" style="margin-top:0" onclick="cambiarPorra()">↔️ Cambiar porra</button>
-  </div>
+  <button class="btn secundario" style="margin-bottom:24px;" onclick="cambiarPorra()">🚪 Salir / Cambiar Porra</button>
 
   ${esKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><p>Solo per Kiwi.</p><label for="pin-admin">PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar come admin</button></div>`) : ''}
   `;
@@ -1388,14 +1383,18 @@ function vistaAcceso(){
   return `
   <div class="panel">
     <h2>Inicia sesión</h2>
-    <p>Estás en <b style="color:var(--trofeo)">${esc(porra ? porra.nombre : "")}</b>. Elige tu nombre y mete tu PIN.
-       <a href="#" onclick="cambiarPorra();return false" style="color:var(--grada)">¿No es tu porra?</a></p>
-    <label for="sel-usuario">¿Quién eres?</label>
-    <select id="sel-usuario">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join("")}</select>
-    <label for="pin-login">Tu PIN</label>
+    <p>Estás en <b style="color:var(--trofeo)">${esc(porra ? porra.nombre : "")}</b>.</p>
+    
+    <label for="login-nombre">Tu nombre</label>
+    <input type="text" id="login-nombre" autocomplete="off" placeholder="Ej. Kiwi">
+    
+    <label for="pin-login" style="margin-top:12px;">Tu PIN</label>
     <input type="password" id="pin-login" inputmode="numeric" autocomplete="off">
-    <button class="btn oro" style="margin-top:16px" onclick="iniciarSesion()">Entrar</button>
+    
+    <button class="btn oro" style="margin-top:20px" onclick="iniciarSesion()">Entrar</button>
+    <button class="btn secundario" style="margin-top:12px" onclick="cambiarPorra()">Cambiar porra</button>
   </div>
+  
   <div class="panel">
     <h2>¿Primera vez? Únete</h2>
     <p>Crea tu perfil en 10 segundos.</p>
@@ -1417,6 +1416,11 @@ async function registrarse(){
   const fileInput = $("reg-avatar"); 
   if (nombre.length < 2) return mostrarToast("Pon un nombre de al menos 2 letras.", "error");
   if (!/^\d{4,6}$/.test(pin)) return mostrarToast("El PIN deben ser de 4 a 6 números.", "error");
+  
+  // Anti-duplicados local ignorando mayúsculas
+  if (usuarios.some(x => x.nombre.toLowerCase() === nombre.toLowerCase())) {
+      return mostrarToast("Ese nombre ya existe. ¡Elige otro!", "error");
+  }
   
   mostrarToast("Creando perfil...", "nota");
   
@@ -1445,10 +1449,14 @@ async function registrarse(){
 }
 
 async function iniciarSesion(){
-  const id = $("sel-usuario")?.value; const pin = $("pin-login").value.trim();
-  if (!id) return mostrarToast("Aún no hay nadie registrado.", "error");
-  const { data: u } = await db.from("usuarios").select("*").eq("id", id).single();
+  const nombreInput = $("login-nombre").value.trim().toLowerCase(); 
+  const pin = $("pin-login").value.trim();
+  
+  if (!nombreInput || !pin) return mostrarToast("Rellena todos los campos.", "error");
+  
+  const u = usuarios.find(x => x.nombre.toLowerCase() === nombreInput);
   if (!u) return mostrarToast("Usuario no encontrado.", "error");
+  
   if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return mostrarToast("PIN incorrecto.", "error");
   
   me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url, extras: u.extras || {} };
@@ -1457,8 +1465,12 @@ async function iniciarSesion(){
   irA("partidos");
 }
 
-function cerrarSesion(){ 
-  try { localStorage.removeItem("porra_usuario"); sessionStorage.removeItem("adminPin"); } catch(e){}
+function cambiarPorra(){
+  try { 
+    localStorage.removeItem("porra_actual"); 
+    localStorage.removeItem("porra_usuario"); 
+    sessionStorage.removeItem("adminPin"); 
+  } catch(e){}
   window.location.reload(); 
 }
 
@@ -1530,7 +1542,7 @@ function vistaAdmin(){
         <select id="adm-sub" style="margin-bottom:8px;">${opts.replace("---", "Selecciona Subcampeón")}</select>
         <select id="adm-ter" style="margin-bottom:8px;">${opts.replace("---", "Selecciona Tercero")}</select>
         <select id="adm-cua" style="margin-bottom:12px;">${opts.replace("---", "Selecciona Cuarto")}</select>
-        <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos de Torneo</button>
+        <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
         <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP asígnalos abajo a mano).</p>
     </div>
 

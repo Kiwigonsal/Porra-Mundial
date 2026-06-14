@@ -156,6 +156,7 @@
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(245,158,11,.1); }
 
+  /* Colores para Pronósticos */
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
   .pron-item.pleno-bg { background: rgba(16,185,129,0.15); border-color: var(--cesped); }
@@ -412,7 +413,7 @@ async function init(){
     
     try {
       adminPin = sessionStorage.getItem("adminPin") || null;
-      miPinClaro = localStorage.getItem("miPinClaro") || null; // Necesitamos recordar el PIN para las llamadas seguras RPC
+      miPinClaro = localStorage.getItem("miPinClaro") || null; 
       const porraGuardada = localStorage.getItem("porra_actual");
       if (porraGuardada) porra = JSON.parse(porraGuardada);
       const sesion = localStorage.getItem("porra_usuario");
@@ -617,7 +618,7 @@ function ajustar(id, campo, delta){
   if (el) el.textContent = d[campo];
 }
 
-// NUEVO: Guardar usando RPC Seguro
+// GUARDAR PRONÓSTICO SEGURO
 async function guardarPronostico(partidoId){
   const p = partidos.find(x => x.id === partidoId);
   if (!p || empezado(p) || !me || !miPinClaro) { return; }
@@ -1101,7 +1102,7 @@ function abrirModalExtras(uid) {
   if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
-// NUEVO: Guardar Extras usando RPC Seguro
+// GUARDAR EXTRAS SEGURO
 async function guardarMisExtras() {
     const cam = $("ext-cam").value;
     const sub = $("ext-sub").value;
@@ -1421,7 +1422,7 @@ function vistaAcceso(){
   </div>`;
 }
 
-// NUEVO: Registro por RPC Seguro
+// REGISTRO RPC SEGURO
 async function registrarse(){
   const nombre = $("reg-nombre").value.trim(); const pin = $("reg-pin").value.trim();
   const fileInput = $("reg-avatar"); 
@@ -1469,6 +1470,7 @@ async function registrarse(){
   irA("partidos");
 }
 
+// INICIO DE SESIÓN CORREGIDO
 async function iniciarSesion(){
   const nombreInput = $("login-nombre").value.trim().toLowerCase(); 
   const pin = $("pin-login").value.trim();
@@ -1477,8 +1479,9 @@ async function iniciarSesion(){
   
   mostrarToast("Entrando...", "nota");
   
+  // Llamamos a la función segura, ahora sí, CON LOS 3 PARÁMETROS.
   const { data, error } = await db.rpc('iniciar_sesion_seguro', {
-      p_porra: porra.id, // <-- ESTO SOLUCIONA EL BUG DE LAS MÚLTIPLES PORRAS
+      p_porra: porra.id,
       p_nombre: nombreInput,
       p_pin: pin
   });
@@ -1487,18 +1490,6 @@ async function iniciarSesion(){
       return mostrarToast(esc(error.message), "error"); 
   }
   
-  me = data;
-  miPinClaro = pin;
-  try { 
-      localStorage.setItem("porra_usuario", JSON.stringify(me)); 
-      localStorage.setItem("miPinClaro", pin); 
-  } catch(e){}
-  
-  mostrarToast("¡Sesión iniciada!", "ok");
-  irA("partidos");
-}
-  
-  // Si nos devuelve data, es que el PIN era correcto
   me = data;
   miPinClaro = pin;
   try { 
@@ -1520,7 +1511,7 @@ function actualizarCabecera(){
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
-// NUEVO: Subir foto por RPC Seguro
+// SUBIR FOTO RPC SEGURO
 async function subirNuevaFoto(input) {
   if (!input.files || input.files.length === 0 || !miPinClaro) return;
   mostrarToast("Comprimiendo y subiendo...", "nota");

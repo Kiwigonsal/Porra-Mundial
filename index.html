@@ -41,7 +41,7 @@
 
   [hidden] { display: none !important; }
   
-  /* DISEÑO DE BOTONES ARREGLADO */
+  /* DISEÑO DE BOTONES */
   button { appearance: none; -webkit-appearance: none; font-family: inherit; }
   .btn { width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; font-family: var(--body); cursor: pointer; transition: transform 0.1s; border: none; outline: none; display: flex; align-items: center; justify-content: center; line-height: 1; letter-spacing: .02em; }
   .btn:active { transform: scale(0.97); }
@@ -109,7 +109,7 @@
   .p-estado-ok { color:var(--cesped); font-weight:800; }
   .p-estado-bad { color:var(--tarjeta-roja); font-weight:800; }
 
-  /* ---------- Modal ---------- */
+  /* ---------- Modal SCROLL FIJADO ---------- */
   .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; justify-content:center; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
   .modal-overlay.open { opacity:1; pointer-events:auto; }
   
@@ -156,7 +156,6 @@
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(245,158,11,.1); }
 
-  /* Colores para Pronósticos */
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
   .pron-item.pleno-bg { background: rgba(16,185,129,0.15); border-color: var(--cesped); }
@@ -245,7 +244,7 @@
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
 
-  /* NAVEGACIÓN INFERIOR ARREGLADA */
+  /* NAVEGACIÓN INFERIOR ARREGLADA ICONOS */
   nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
   .nav-inner{width:100%; max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); height:100%;}
   nav button{ background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
@@ -314,7 +313,7 @@ const LIMITE_EXTRAS = new Date("2026-06-16T21:00:00+02:00").getTime();
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
-let porra = null, me = null, adminPin = null;
+let porra = null, me = null, adminPin = null, miPinClaro = null;
 let tab = "partidos", borradores = {}, cargado = false, partidoAbiertoId = null;
 
 const $ = (id) => document.getElementById(id);
@@ -413,6 +412,7 @@ async function init(){
     
     try {
       adminPin = sessionStorage.getItem("adminPin") || null;
+      miPinClaro = localStorage.getItem("miPinClaro") || null; // Necesitamos recordar el PIN para las llamadas seguras RPC
       const porraGuardada = localStorage.getItem("porra_actual");
       if (porraGuardada) porra = JSON.parse(porraGuardada);
       const sesion = localStorage.getItem("porra_usuario");
@@ -463,8 +463,8 @@ async function cargarTodo(){
         me.nombre = myUser.nombre;
         try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
     } else {
-        me = null; 
-        try { localStorage.removeItem("porra_usuario"); } catch(e){} 
+        me = null; miPinClaro = null;
+        try { localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro");} catch(e){} 
     }
   }
 }
@@ -617,17 +617,21 @@ function ajustar(id, campo, delta){
   if (el) el.textContent = d[campo];
 }
 
+// NUEVO: Guardar usando RPC Seguro
 async function guardarPronostico(partidoId){
   const p = partidos.find(x => x.id === partidoId);
-  if (!p || empezado(p) || !me) { render(); return; }
+  if (!p || empezado(p) || !me || !miPinClaro) { return; }
   const d = borradores[partidoId];
   
   mostrarToast("Guardando...", "nota");
   
-  const { error } = await db.from("pronosticos").upsert(
-    { usuario_id: me.id, partido_id: partidoId, goles_local: d.gl, goles_visitante: d.gv, actualizado_en: new Date().toISOString() },
-    { onConflict: "usuario_id,partido_id" }
-  );
+  const { error } = await db.rpc('guardar_pronostico_seguro', {
+      p_usuario: me.id,
+      p_pin: miPinClaro,
+      p_partido: partidoId,
+      p_gl: d.gl,
+      p_gv: d.gv
+  });
   
   if (error){ 
     mostrarToast("Error: " + esc(error.message), "error");
@@ -679,8 +683,8 @@ async function entrarConCodigo(){
   porra = data[0];
   try { localStorage.setItem("porra_actual", JSON.stringify(porra)); } catch(e){}
   
-  me = null; adminPin = null; 
-  try { localStorage.removeItem("porra_usuario"); sessionStorage.removeItem("adminPin"); } catch(e){}
+  me = null; adminPin = null; miPinClaro = null;
+  try { localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro"); sessionStorage.removeItem("adminPin"); } catch(e){}
   
   pintarTitulo();
   await cargarTodo();
@@ -691,6 +695,7 @@ function cambiarPorra(){
   try { 
     localStorage.removeItem("porra_actual"); 
     localStorage.removeItem("porra_usuario"); 
+    localStorage.removeItem("miPinClaro");
     sessionStorage.removeItem("adminPin"); 
   } catch(e){}
   window.location.reload(); 
@@ -855,7 +860,7 @@ function renderModal(id) {
               <span style="font-size:10px; color:var(--grada); font-weight:800; letter-spacing:.1em">${esc(p.visitante || "VISIT.")}</span>
             </div>
           </div>
-          <button class="btn oro" style="margin-top:16px; width:100%;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
+          <button class="btn oro" style="margin-top:16px;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
         </div>`;
     } else {
       if(!mio) {
@@ -1096,6 +1101,7 @@ function abrirModalExtras(uid) {
   if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
+// NUEVO: Guardar Extras usando RPC Seguro
 async function guardarMisExtras() {
     const cam = $("ext-cam").value;
     const sub = $("ext-sub").value;
@@ -1114,7 +1120,11 @@ async function guardarMisExtras() {
     const payload = { cam, sub, ter, cua, pic, mvp };
     
     mostrarToast("Guardando extras...", "nota");
-    const { error } = await db.from("usuarios").update({ extras: payload }).eq("id", me.id);
+    const { error } = await db.rpc('guardar_extras_seguro', {
+        p_usuario: me.id,
+        p_pin: miPinClaro,
+        p_extras: payload
+    });
     
     if (error) return mostrarToast("Error: " + error.message, "error");
     
@@ -1411,13 +1421,13 @@ function vistaAcceso(){
   </div>`;
 }
 
+// NUEVO: Registro por RPC Seguro
 async function registrarse(){
   const nombre = $("reg-nombre").value.trim(); const pin = $("reg-pin").value.trim();
   const fileInput = $("reg-avatar"); 
   if (nombre.length < 2) return mostrarToast("Pon un nombre de al menos 2 letras.", "error");
   if (!/^\d{4,6}$/.test(pin)) return mostrarToast("El PIN deben ser de 4 a 6 números.", "error");
   
-  // Anti-duplicados local ignorando mayúsculas
   if (usuarios.some(x => x.nombre.toLowerCase() === nombre.toLowerCase())) {
       return mostrarToast("Ese nombre ya existe. ¡Elige otro!", "error");
   }
@@ -1437,12 +1447,23 @@ async function registrarse(){
     if (uploadError) return mostrarToast("Error al subir foto: " + esc(uploadError.message), "error");
     avatarUrl = db.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
   }
-  const hash = await sha256(nombre.toLowerCase() + ":" + pin);
-  const { data, error } = await db.from("usuarios").insert({ porra_id: porra.id, nombre, pin_hash: hash, emoji: '⚽', avatar_url: avatarUrl }).select().single();
-  if (error) return mostrarToast(error.code === "23505" ? "Ese nombre ya está cogido en esta porra." : error.message, "error");
   
-  me = { id: data.id, nombre: data.nombre, emoji: data.emoji, avatar_url: data.avatar_url, extras: data.extras || {} };
-  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
+  const { data, error } = await db.rpc('registrarse_seguro', {
+      p_porra: porra.id,
+      p_nombre: nombre,
+      p_pin: pin,
+      p_avatar: avatarUrl
+  });
+
+  if (error) return mostrarToast(esc(error.message), "error");
+  
+  me = data;
+  miPinClaro = pin; 
+  try { 
+      localStorage.setItem("porra_usuario", JSON.stringify(me)); 
+      localStorage.setItem("miPinClaro", pin); 
+  } catch(e){}
+  
   await cargarTodo(); 
   mostrarToast("¡Bienvenido!", "ok");
   irA("partidos");
@@ -1454,30 +1475,22 @@ async function iniciarSesion(){
   
   if (!nombreInput || !pin) return mostrarToast("Rellena todos los campos.", "error");
   
-  // 1. Buscamos al usuario en la memoria para ignorar mayúsculas/minúsculas
   const userMemoria = usuarios.find(x => x.nombre.toLowerCase() === nombreInput);
   if (!userMemoria) return mostrarToast("Usuario no encontrado.", "error");
   
-  // 2. Pedimos a la BD la fila COMPLETA (que incluye el pin_hash oculto)
   const { data: u } = await db.from("usuarios").select("*").eq("id", userMemoria.id).single();
   if (!u) return mostrarToast("Error de conexión.", "error");
   
-  // 3. Comparamos los PINs
   if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return mostrarToast("PIN incorrecto.", "error");
   
   me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url, extras: u.extras || {} };
-  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
+  miPinClaro = pin;
+  try { 
+      localStorage.setItem("porra_usuario", JSON.stringify(me)); 
+      localStorage.setItem("miPinClaro", pin); 
+  } catch(e){}
   mostrarToast("¡Sesión iniciada!", "ok");
   irA("partidos");
-}
-
-function cambiarPorra(){
-  try { 
-    localStorage.removeItem("porra_actual"); 
-    localStorage.removeItem("porra_usuario"); 
-    sessionStorage.removeItem("adminPin"); 
-  } catch(e){}
-  window.location.reload(); 
 }
 
 function actualizarCabecera(){
@@ -1490,8 +1503,9 @@ function actualizarCabecera(){
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
+// NUEVO: Subir foto por RPC Seguro
 async function subirNuevaFoto(input) {
-  if (!input.files || input.files.length === 0) return;
+  if (!input.files || input.files.length === 0 || !miPinClaro) return;
   mostrarToast("Comprimiendo y subiendo...", "nota");
   
   const file = input.files[0];
@@ -1504,7 +1518,12 @@ async function subirNuevaFoto(input) {
   if (uploadError) return mostrarToast("Error al subir foto: " + esc(uploadError.message), "error");
   
   const avatarUrl = db.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
-  const { error: dbError } = await db.from("usuarios").update({ avatar_url: avatarUrl }).eq("id", me.id);
+  
+  const { error: dbError } = await db.rpc('actualizar_avatar_seguro', {
+      p_usuario: me.id,
+      p_pin: miPinClaro,
+      p_avatar: avatarUrl
+  });
   
   if (dbError) return mostrarToast("Error BD: " + esc(dbError.message), "error");
   

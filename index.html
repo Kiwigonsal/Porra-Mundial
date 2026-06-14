@@ -447,15 +447,21 @@ async function cargarTodo(){
   
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
-  const u = await db.from("usuarios").select("id,nombre,emoji,avatar_url,puntos_extra,extras").eq("porra_id", porra.id).order("nombre");
-  if (u.error) throw new Error("BD Usuarios: " + u.error.message);
-  usuarios = u.data || [];
+  const miId = me ? me.id : null;
   
+  // 1. Descargamos usuarios con los EXTRAS censurados si aplica
+  const { data: uData, error: uErr } = await db.rpc('obtener_usuarios_seguro', { p_porra: porra.id, p_mi_id: miId });
+  if (uErr) throw new Error("BD Usuarios: " + uErr.message);
+  usuarios = uData || [];
+  
+  // 2. Descargamos pronósticos con los MARCADORES censurados si aplica
   if (usuarios.length){
-    const pr = await db.from("pronosticos").select("usuario_id,partido_id,goles_local,goles_visitante").in("usuario_id", usuarios.map(x => x.id));
-    if (pr.error) throw new Error("BD Pronósticos: " + pr.error.message);
-    pronosticos = pr.data || [];
-  } else { pronosticos = []; }
+    const { data: prData, error: prErr } = await db.rpc('obtener_pronosticos_seguro', { p_porra: porra.id, p_mi_id: miId });
+    if (prErr) throw new Error("BD Pronósticos: " + prErr.message);
+    pronosticos = prData || [];
+  } else { 
+    pronosticos = []; 
+  }
   
   if (me) { 
     const myUser = usuarios.find(x => x.id === me.id);

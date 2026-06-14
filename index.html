@@ -1454,9 +1454,15 @@ async function iniciarSesion(){
   
   if (!nombreInput || !pin) return mostrarToast("Rellena todos los campos.", "error");
   
-  const u = usuarios.find(x => x.nombre.toLowerCase() === nombreInput);
-  if (!u) return mostrarToast("Usuario no encontrado.", "error");
+  // 1. Buscamos al usuario en la memoria para ignorar mayúsculas/minúsculas
+  const userMemoria = usuarios.find(x => x.nombre.toLowerCase() === nombreInput);
+  if (!userMemoria) return mostrarToast("Usuario no encontrado.", "error");
   
+  // 2. Pedimos a la BD la fila COMPLETA (que incluye el pin_hash oculto)
+  const { data: u } = await db.from("usuarios").select("*").eq("id", userMemoria.id).single();
+  if (!u) return mostrarToast("Error de conexión.", "error");
+  
+  // 3. Comparamos los PINs
   if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return mostrarToast("PIN incorrecto.", "error");
   
   me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url, extras: u.extras || {} };

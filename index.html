@@ -1475,20 +1475,26 @@ async function iniciarSesion(){
   
   if (!nombreInput || !pin) return mostrarToast("Rellena todos los campos.", "error");
   
-  const userMemoria = usuarios.find(x => x.nombre.toLowerCase() === nombreInput);
-  if (!userMemoria) return mostrarToast("Usuario no encontrado.", "error");
+  mostrarToast("Entrando...", "nota");
   
-  const { data: u } = await db.from("usuarios").select("*").eq("id", userMemoria.id).single();
-  if (!u) return mostrarToast("Error de conexión.", "error");
+  // Llamamos a la función segura del servidor para que haga la comprobación internamente
+  const { data, error } = await db.rpc('iniciar_sesion_seguro', {
+      p_nombre: nombreInput,
+      p_pin: pin
+  });
+
+  if (error) {
+      return mostrarToast(esc(error.message), "error"); // Dirá "Usuario no encontrado" o "PIN incorrecto"
+  }
   
-  if (await sha256(u.nombre.toLowerCase() + ":" + pin) !== u.pin_hash) return mostrarToast("PIN incorrecto.", "error");
-  
-  me = { id: u.id, nombre: u.nombre, emoji: u.emoji, avatar_url: u.avatar_url, extras: u.extras || {} };
+  // Si nos devuelve data, es que el PIN era correcto
+  me = data;
   miPinClaro = pin;
   try { 
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 
       localStorage.setItem("miPinClaro", pin); 
   } catch(e){}
+  
   mostrarToast("¡Sesión iniciada!", "ok");
   irA("partidos");
 }

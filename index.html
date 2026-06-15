@@ -173,7 +173,7 @@
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
-  /* ESTILOS DE LA TABLA UNIFICADA DE PARTICIPANTES (NUEVO PODIO) */
+  /* ESTILOS DE LA TABLA UNIFICADA DE PARTICIPANTES */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
   .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s; position: relative;}
   .rank-card:active { transform:scale(0.98); }
@@ -446,7 +446,7 @@ async function cargarTodo(){
   usuarios = uData || [];
   
   if (usuarios.length){
-    const { data: prData, error: prErr } = await db.rpc('obtener_pronosticos_seguro', { p_porra: porra.id, p_mi_id: miId ? miId.toString() : null });
+    const { data: prData, error: prErr } = await db.rpc('obtener_pronosticos_seguro', { p_porra: porra.id, p_mi_id: miId });
     if (prErr) throw new Error("BD Pronósticos: " + prErr.message);
     pronosticos = prData || [];
   } else { 
@@ -732,7 +732,6 @@ function listaPartidos(conPron){
   return html;
 }
 
-// TARJETA DE PARTIDO REVISADA CONTRA FALLOS DE CUENTAS NUEVAS
 function tarjetaFeed(p, conPron){
   const vivo = esVivo(p.estado), fin = esFin(p.estado);
   const hayResultado = p.goles_local != null && p.goles_visitante != null && (vivo || fin);
@@ -1501,6 +1500,9 @@ async function iniciarSesion(){
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 
       localStorage.setItem("miPinClaro", pin); 
   } catch(e){}
+  
+  // SOLUCIÓN CLAVE: Recargar los datos inmediatamente después de verificar la contraseña
+  await cargarTodo();
   
   mostrarToast("¡Sesión iniciada!", "ok");
   irA("partidos");

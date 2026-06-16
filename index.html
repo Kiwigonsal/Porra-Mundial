@@ -401,7 +401,7 @@ function esPartidoPuntuable(p) {
     const limite = new Date("2026-06-18T18:00:00+02:00").getTime();
     return t >= limite;
   } else if (nom.includes('bunker')) {
-    // BUNKERSITOS: Anular i 4 primi match in ordine cronologico
+    // BUNKERSITOS: Anular los 4 primeros partidos en orden cronológico
     const primeros4 = [...partidos].sort((a,b) => new Date(a.fecha_utc).getTime() - new Date(b.fecha_utc).getTime()).slice(0, 4).map(x => x.id);
     return !primeros4.includes(p.id);
   }
@@ -988,8 +988,6 @@ function abrirPerfil(uid) {
   const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
   
   const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
-  
-  // FILTRO: Contamos solo pronósticos de partidos oficiales para el badge
   const pronsValidos = pronsUser.filter(pr => {
       const p = partidos.find(x => x.id === pr.partido_id);
       return p && esPartidoPuntuable(p);
@@ -1205,8 +1203,6 @@ function abrirModalPronosticos(uid) {
   
   const userProns = pronosticos.filter(x => x.usuario_id === uid);
   const userPartidosId = userProns.map(x => x.partido_id);
-  
-  // FILTRO: Vaporizziamo i match di prova dalla lista del Profilo
   const userPartidos = partidos.filter(p => userPartidosId.includes(p.id) && esPartidoPuntuable(p)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
 
   const futuros = esMio ? userPartidos.filter(p => !empezado(p)) : []; 
@@ -1281,7 +1277,6 @@ function abrirModalPronosticos(uid) {
   if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
-/* ---------- Vistas Principales ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -1441,15 +1436,43 @@ function vistaPerfil(){
       </div>
   </div>
 
-  <div style="display:flex; gap:10px; margin-bottom:24px;">
+  <div style="display:flex; gap:10px; margin-bottom:12px;">
       <button class="btn secundario" onclick="abrirModalPronosticos()">📋 PARTIDOS</button>
       <button class="btn oro" onclick="abrirModalExtras()">🔮 EXTRAS</button>
   </div>
-
-  <button class="btn secundario" style="margin-bottom:24px;" onclick="cambiarPorra()">🚪 Salir / Cambiar Porra</button>
+  
+  <div style="display:flex; gap:10px; margin-bottom:24px;">
+      <button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button>
+      <button class="btn secundario" onclick="cambiarPorra()">🚪 Salir / Cambiar</button>
+  </div>
 
   ${esKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><p>Solo per Kiwi.</p><label for="pin-admin">PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar come admin</button></div>`) : ''}
   `;
+}
+
+// NUEVA FUNCIÓN PARA CAMBIAR EL PIN
+async function cambiarMiPin() {
+    if (!miPinClaro) return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar primero.", "error");
+    
+    const nuevoPin = prompt("Introduce tu NUEVO PIN (4 a 6 números):");
+    if (!nuevoPin) return; 
+    
+    if (!/^\d{4,6}$/.test(nuevoPin)) {
+        return mostrarToast("El PIN debe tener entre 4 y 6 números.", "error");
+    }
+    
+    mostrarToast("Actualizando PIN...", "nota");
+    const { error } = await db.rpc('cambiar_pin_seguro', {
+        p_usuario: me.id,
+        p_pin_viejo: miPinClaro,
+        p_nuevo_pin: nuevoPin
+    });
+    
+    if (error) return mostrarToast("Error: " + esc(error.message), "error");
+    
+    miPinClaro = nuevoPin;
+    try { localStorage.setItem("miPinClaro", nuevoPin); } catch(e){}
+    mostrarToast("¡PIN actualizado con éxito! 🔒", "ok");
 }
 
 function vistaAcceso(){
@@ -1640,7 +1663,7 @@ function vistaAdmin(){
         <select id="adm-ter" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Tercero")}</select>
         <select id="adm-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Cuarto")}</select>
         <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
-        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP cosìgnalos abajo a mano).</p>
+        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP asígnalos abajo a mano).</p>
     </div>
 
     <label>Poner resultado a mano / Probar LIVE</label>
@@ -1674,7 +1697,7 @@ function filaAdmin(p){
 }
 async function guardarResultado(id, estado){
   const gl = parseInt($(`adm-gl-${id}`).value, 10); const gv = parseInt($(`adm-gv-${id}`).value, 10);
-  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los due marcadores.", "error");
+  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los dos marcadores.", "error");
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast("Error: " + error.message, "error");
   await cargarTodo(); render();
@@ -1731,8 +1754,8 @@ async function resetearPin(){
   if (!uid) return;
   const u = usuarios.find(x => x.id === uid);
   if (!confirm(`¿Seguro que quieres resetear el PIN de ${u.nombre} a "0000"?`)) return;
-  const nuovoHash = await sha256(u.nombre.toLowerCase() + ":0000");
-  const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuovoHash, p_porra: porra.id, pin: adminPin });
+  const nuevoHash = await sha256(u.nombre.toLowerCase() + ":0000");
+  const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuevoHash, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast(esc(error.message), "error");
   mostrarToast("PIN reseteado a '0000' ✓", "ok"); await cargarTodo(); setTimeout(render, 1500);
 }

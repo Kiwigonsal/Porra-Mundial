@@ -192,7 +192,7 @@
 
   .rank-avatar { width: 44px; height: 44px; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden;}
   .rank-info { flex: 1; min-width: 0; }
-  .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display: flex; align-items: center; }
   .rank-stats { font-size: 11px; color: var(--grada); display: flex; gap: 8px; font-weight: 600; }
   .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center;}
   .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
@@ -302,7 +302,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 
-const LIMITE_EXTRAS = new Date("2026-06-16T21:00:00+02:00").getTime();
+// --- LÍMITE EXTENDIDO A JUEVES 18 A LAS 18:00 CEST ---
+const LIMITE_EXTRAS = new Date("2026-06-18T18:00:00+02:00").getTime();
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
@@ -397,11 +398,9 @@ function esPartidoPuntuable(p) {
   const t = new Date(p.fecha_utc).getTime();
   
   if (nom.includes('factorial')) {
-    // FACTORIALES: Anular todos los partidos antes del Jueves 18 Junio 18:00 CEST (+02:00)
     const limite = new Date("2026-06-18T18:00:00+02:00").getTime();
     return t >= limite;
   } else if (nom.includes('bunker')) {
-    // BUNKERSITOS: Anular los 4 primeros partidos en orden cronológico
     const primeros4 = [...partidos].sort((a,b) => new Date(a.fecha_utc).getTime() - new Date(b.fecha_utc).getTime()).slice(0, 4).map(x => x.id);
     return !primeros4.includes(p.id);
   }
@@ -542,7 +541,7 @@ function puntosDe(pred, p){
 function clasificacion(){
   const terminados = partidos.filter(p => esFin(p.estado)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   const idUltimo = terminados.length ? terminados[terminados.length-1].id : null;
-  const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, totalAnt: u.puntos_extra || 0, plenos:0, plenosAnt:0, signos:0, jugados:0, ptsUltimo: 0 }));
+  const filas = usuarios.map(u => ({ u, total: u.puntos_extra || 0, totalAnt: u.puntos_extra || 0, plenos:0, plenosAnt:0, signos:0, jugados:0, ptsUltimo: 0, rachaFuego: false }));
   const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
 
   for (const pr of pronosticos){
@@ -575,10 +574,17 @@ function clasificacion(){
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
   const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
+  
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
       f.tendencia = f.rankAnt - f.rank;
+      
+      const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
+      const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+      const ultimos3 = jugadosUser.slice(-3);
+      f.rachaFuego = (ultimos3.length === 3 && ultimos3.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 5));
   });
+  
   return actSorted;
 }
 
@@ -985,9 +991,10 @@ function abrirPerfil(uid) {
   if(!u) return;
 
   const filas = clasificacion();
-  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
+  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
   
   const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  
   const pronsValidos = pronsUser.filter(pr => {
       const p = partidos.find(x => x.id === pr.partido_id);
       return p && esPartidoPuntuable(p);
@@ -1011,11 +1018,13 @@ function abrirPerfil(uid) {
       }
   }
 
+  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 3 plenos seguidos!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
+
   const content = `
       <div class="modal-close" onclick="cerrarModal(event)">✕</div>
       <div class="perfil-header" style="margin-bottom:16px;">
           <div class="perfil-avatar">${avatarHtml(u)}</div>
-          <h2>${esc(u.nombre)}</h2>
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
           <div class="perfil-badges">
               <span class="badge badge-pos">🏅 #${f.rank}</span>
               <span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span>
@@ -1203,6 +1212,7 @@ function abrirModalPronosticos(uid) {
   
   const userProns = pronosticos.filter(x => x.usuario_id === uid);
   const userPartidosId = userProns.map(x => x.partido_id);
+  
   const userPartidos = partidos.filter(p => userPartidosId.includes(p.id) && esPartidoPuntuable(p)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
 
   const futuros = esMio ? userPartidos.filter(p => !empezado(p)) : []; 
@@ -1346,12 +1356,14 @@ function vistaTabla(){
     else if(f.rank === 3) { specialClass = "bronce"; numberHtml = `<div class="medalla">🥉</div>`; }
     else { numberHtml = `<div class="rank-num-small">${f.rank}</div>`; }
 
+    const fuegoHTML = f.rachaFuego ? `<span title="¡3 Plenos seguidos!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
+
     return `
     <div class="rank-card ${specialClass} ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer">
       ${numberHtml}
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info">
-        <div class="rank-nombre">${esc(f.u.nombre)}</div>
+        <div class="rank-nombre" style="display:flex; align-items:center;">${esc(f.u.nombre)}${fuegoHTML}</div>
         <div class="rank-stats">
             <span title="Exactos">⭐ ${f.plenos}</span>
             <span title="Solo Ganador/Empate">✅ ${f.signos}</span>
@@ -1376,7 +1388,7 @@ function vistaPerfil(){
   if (!me) return vistaAcceso();
   
   const filas = clasificacion();
-  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-' };
+  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
   const maxPts = filas.length ? filas[0].total : 0;
   const dist = maxPts - f.total;
   const txtDist = (dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar");
@@ -1402,6 +1414,7 @@ function vistaPerfil(){
   }
 
   const esKiwi = (me.nombre ? me.nombre : "").toLowerCase() === "kiwi";
+  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 3 plenos seguidos!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
 
   return `
   <div class="perfil-header">
@@ -1411,7 +1424,7 @@ function vistaPerfil(){
       </div>
       <input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">
       
-      <h2>${esc(me.nombre)}</h2>
+      <h2 style="display:flex; align-items:center; justify-content:center;">${esc(me.nombre)} ${fuegoHTML}</h2>
       <div class="perfil-badges">
           <span class="badge badge-pos">🏅 #${f.rank}</span>
           <span class="badge badge-jugados">⚽ ${misProns.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); }).length} jugados</span>
@@ -1450,7 +1463,6 @@ function vistaPerfil(){
   `;
 }
 
-// NUEVA FUNCIÓN PARA CAMBIAR EL PIN
 async function cambiarMiPin() {
     if (!miPinClaro) return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar primero.", "error");
     
@@ -1590,8 +1602,11 @@ function actualizarCabecera(){
   if (!me){ b.hidden = true; return; }
   b.hidden = false;
   $("yo-emoji").innerHTML = avatarHtmlMini(me);
-  $("yo-nombre").textContent = me.nombre;
+  
   const fila = clasificacion().find(f => f.u.id === me.id);
+  const fuegoHeader = (fila && fila.rachaFuego) ? ` <span title="¡Estás en racha!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '';
+  
+  $("yo-nombre").innerHTML = esc(me.nombre) + fuegoHeader;
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
@@ -1663,7 +1678,7 @@ function vistaAdmin(){
         <select id="adm-ter" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Tercero")}</select>
         <select id="adm-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Cuarto")}</select>
         <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
-        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP asígnalos abajo a mano).</p>
+        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP cosìgnalos abajo a mano).</p>
     </div>
 
     <label>Poner resultado a mano / Probar LIVE</label>
@@ -1697,7 +1712,7 @@ function filaAdmin(p){
 }
 async function guardarResultado(id, estado){
   const gl = parseInt($(`adm-gl-${id}`).value, 10); const gv = parseInt($(`adm-gv-${id}`).value, 10);
-  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los dos marcadores.", "error");
+  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los due marcadores.", "error");
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast("Error: " + error.message, "error");
   await cargarTodo(); render();
@@ -1754,8 +1769,8 @@ async function resetearPin(){
   if (!uid) return;
   const u = usuarios.find(x => x.id === uid);
   if (!confirm(`¿Seguro que quieres resetear el PIN de ${u.nombre} a "0000"?`)) return;
-  const nuevoHash = await sha256(u.nombre.toLowerCase() + ":0000");
-  const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuevoHash, p_porra: porra.id, pin: adminPin });
+  const nuovoHash = await sha256(u.nombre.toLowerCase() + ":0000");
+  const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuovoHash, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast(esc(error.message), "error");
   mostrarToast("PIN reseteado a '0000' ✓", "ok"); await cargarTodo(); setTimeout(render, 1500);
 }

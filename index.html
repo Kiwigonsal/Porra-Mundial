@@ -116,7 +116,7 @@
   .modal-content > *:last-child { margin-bottom: 0; }
   .modal-overlay.open .modal-content { transform:translateY(0); }
   
-  /* NUEVO BOTON DE ATRÁS PARA NAVEGACIÓN EN MODAL */
+  /* BOTON DE ATRÁS PARA NAVEGACIÓN EN MODAL */
   .modal-back { position:absolute; top:16px; left:16px; height:32px; padding:0 12px; border-radius:16px; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:12px; font-weight:800; text-transform:uppercase; z-index:10; transition: transform 0.1s; letter-spacing:0.05em;}
   .modal-back:active { transform:scale(0.95); }
 
@@ -528,11 +528,11 @@ async function llamarSync(){
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
-  setInterval(() => { if (cargado) { render(); if (modalStack.length > 0) renderCurrentModal(); } }, 60e3);
+  setInterval(() => { if (cargado) { render(); if(modalStack.length > 0) renderCurrentModal(); } }, 60e3);
 }
 
 function puntosDe(pred, p){
-  if (!pred || !p) return null; 
+  if (!pred || !p) return null;
   if (p.goles_local == null || p.goles_visitante == null) return null;
   const aciertoLocal = pred.goles_local === p.goles_local;
   const aciertoVisitante = pred.goles_visitante === p.goles_visitante;
@@ -585,17 +585,8 @@ function clasificacion(){
       
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-      const racha5 = jugadosUser.slice(-5); 
-      
-      let estaEnRacha = false;
-      if (racha5.length === 5) {
-          estaEnRacha = true;
-          for (let p of racha5) {
-              const pr = pronsUser.find(x => x.partido_id === p.id);
-              if (puntosDe(pr, p) === 0) estaEnRacha = false;
-          }
-      }
-      f.rachaFuego = estaEnRacha;
+      const racha5 = jugadosUser.slice(-5);
+      f.rachaFuego = (racha5.length === 5 && racha5.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0));
   });
   
   return actSorted;
@@ -684,7 +675,7 @@ async function guardarPronostico(partidoId){
   
   mostrarToast("Pronóstico guardado ✓", "ok");
   await cargarTodo();
-  if (modalStack.length > 0) renderCurrentModal(); 
+  if(modalStack.length > 0) renderCurrentModal();
   render();
 }
 
@@ -1156,30 +1147,8 @@ function vistaTorneo(){
   
   const eliminatorias = partidos.filter(x => x.etapa !== "GROUP_STAGE");
   if(eliminatorias.length > 0) {
-    html += `<div class="dia-titulo">Fase Eliminatoria</div>`;
-    html += `<div class="live-banner" style="background:rgba(245,158,11,0.15); color:var(--trofeo); border-color:var(--trofeo); margin-bottom: 20px;">⚠️ CUADRO PROVISIONAL: Los cruces se irán rellenando automáticamente según terminen los grupos.</div>`;
-    
-    const etapasOrden = [
-        { id: 'LAST_32', nom: 'Dieciseisavos de Final' },
-        { id: 'LAST_16', nom: 'Octavos de Final' },
-        { id: 'QUARTER_FINALS', nom: 'Cuartos de Final' },
-        { id: 'SEMI_FINALS', nom: 'Semifinales' },
-        { id: 'THIRD_PLACE', nom: 'Tercer Puesto' },
-        { id: 'FINAL', nom: 'Gran Final' }
-    ];
-
-    for(const et of etapasOrden) {
-        const partidosEtapa = eliminatorias.filter(p => p.etapa === et.id);
-        if(partidosEtapa.length > 0) {
-            html += `<h3 style="font-family:var(--display); font-size:16px; color:var(--cal-suave); margin: 24px 0 12px; text-transform:uppercase; text-align:center; letter-spacing:0.05em;">${et.nom}</h3>`;
-            for (const p of partidosEtapa) html += tarjetaFeed(p, false); 
-        }
-    }
-    
-    const otrasEliminatorias = eliminatorias.filter(p => !etapasOrden.some(e => e.id === p.etapa));
-    if (otrasEliminatorias.length > 0) {
-         for (const p of otrasEliminatorias) html += tarjetaFeed(p, false); 
-    }
+    html += `<div class="dia-titulo">Eliminatorias</div>`;
+    for (const p of eliminatorias) html += tarjetaFeed(p, false); 
   }
   return html || `<div class="vacio">Aún no hay datos del torneo.</div>`;
 }
@@ -1339,6 +1308,30 @@ function vistaPerfil(){
   `;
 }
 
+async function cambiarMiPin() {
+    if (!miPinClaro) return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar primero.", "error");
+    
+    const nuevoPin = prompt("Introduce tu NUEVO PIN (4 a 6 números):");
+    if (!nuevoPin) return; 
+    
+    if (!/^\d{4,6}$/.test(nuevoPin)) {
+        return mostrarToast("El PIN debe tener entre 4 y 6 números.", "error");
+    }
+    
+    mostrarToast("Actualizando PIN...", "nota");
+    const { error } = await db.rpc('cambiar_pin_seguro', {
+        p_usuario: me.id,
+        p_pin_viejo: miPinClaro,
+        p_nuevo_pin: nuevoPin
+    });
+    
+    if (error) return mostrarToast("Error: " + esc(error.message), "error");
+    
+    miPinClaro = nuevoPin;
+    try { localStorage.setItem("miPinClaro", nuevoPin); } catch(e){}
+    mostrarToast("¡PIN actualizado con éxito! 🔒", "ok");
+}
+
 function vistaAcceso(){
   return `
   <div class="panel">
@@ -1406,7 +1399,7 @@ async function registrarse(){
 
   if (error) return mostrarToast(esc(error.message), "error");
   
-  me = data;
+  me = Array.isArray(data) ? data[0] : data;
   miPinClaro = pin; 
   try { 
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 
@@ -1436,7 +1429,7 @@ async function iniciarSesion(){
       return mostrarToast(esc(error.message), "error"); 
   }
   
-  me = data;
+  me = Array.isArray(data) ? data[0] : data;
   miPinClaro = pin;
   try { 
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 

@@ -116,14 +116,14 @@
   .modal-content > *:last-child { margin-bottom: 0; }
   .modal-overlay.open .modal-content { transform:translateY(0); }
   
-  /* BOTON DE ATRÁS PARA NAVEGACIÓN EN MODAL */
+  /* NUEVO BOTON ATRAS PARA MODAL */
   .modal-back { position:absolute; top:16px; left:16px; height:32px; padding:0 12px; border-radius:16px; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:12px; font-weight:800; text-transform:uppercase; z-index:10; transition: transform 0.1s; letter-spacing:0.05em;}
   .modal-back:active { transform:scale(0.95); }
 
   .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; z-index:10; transition: transform 0.1s;}
   .modal-close:active { transform:scale(0.9); }
   
-  .modal-header { text-align:center; margin-top:20px; }
+  .modal-header { text-align:center; margin-top:20px;}
   .modal-meta { font-size:11px; font-weight:800; letter-spacing:.15em; color:var(--grada); text-transform:uppercase; margin-bottom:16px; display:block;}
   .modal-marcador { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;}
   .modal-eq { display:flex; flex-direction:column; align-items:center; gap:8px; font-size:14px; font-weight:800;}
@@ -170,6 +170,7 @@
   .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
   .pron-item-scores { font-size: 12px; color: var(--cal-suave); }
   .pron-item-pts { font-family: var(--display); font-size: 20px; color: var(--cal-suave); min-width: 30px; text-align: right; }
+  .pron-item-pts.ok { color: var(--trofeo); }
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
@@ -528,11 +529,11 @@ async function llamarSync(){
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
-  setInterval(() => { if (cargado) { render(); if(modalStack.length > 0) renderCurrentModal(); } }, 60e3);
+  setInterval(() => { if (cargado) { render(); if (modalStack.length > 0) renderCurrentModal(); } }, 60e3);
 }
 
 function puntosDe(pred, p){
-  if (!pred || !p) return null;
+  if (!pred || !p) return null; 
   if (p.goles_local == null || p.goles_visitante == null) return null;
   const aciertoLocal = pred.goles_local === p.goles_local;
   const aciertoVisitante = pred.goles_visitante === p.goles_visitante;
@@ -585,8 +586,16 @@ function clasificacion(){
       
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-      const racha5 = jugadosUser.slice(-5);
-      f.rachaFuego = (racha5.length === 5 && racha5.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0));
+      const racha5 = jugadosUser.slice(-5); 
+      f.rachaFuego = false;
+      if (racha5.length === 5) {
+          let enRacha = true;
+          for (let p of racha5) {
+              const pr = pronsUser.find(x => x.partido_id === p.id);
+              if (puntosDe(pr, p) === 0) enRacha = false;
+          }
+          f.rachaFuego = enRacha;
+      }
   });
   
   return actSorted;
@@ -675,7 +684,7 @@ async function guardarPronostico(partidoId){
   
   mostrarToast("Pronóstico guardado ✓", "ok");
   await cargarTodo();
-  if(modalStack.length > 0) renderCurrentModal();
+  if (modalStack.length > 0) renderCurrentModal(); 
   render();
 }
 
@@ -696,7 +705,7 @@ function filtrarPartidos() {
 }
 
 // ----------------------------------------------------------------------
-// NAVEGACIÓN MODAL
+// NAVEGACIÓN MODAL (Manejo de historial con botón ATRÁS)
 // ----------------------------------------------------------------------
 function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
 function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
@@ -762,7 +771,7 @@ function renderCurrentModal() {
   if(!content) return;
   
   let backBtn = modalStack.length > 1 ? `<div class="modal-back" onclick="backModal()">← Atrás</div>` : ``;
-  content = content.replace(`<div class="modal-close"`, `${backBtn}<div class="modal-close"`);
+  content = content.replace(`<div class="modal-close"`, `${backBtn}\n<div class="modal-close"`);
   
   $("modal-content").innerHTML = content;
   
@@ -1308,30 +1317,6 @@ function vistaPerfil(){
   `;
 }
 
-async function cambiarMiPin() {
-    if (!miPinClaro) return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar primero.", "error");
-    
-    const nuevoPin = prompt("Introduce tu NUEVO PIN (4 a 6 números):");
-    if (!nuevoPin) return; 
-    
-    if (!/^\d{4,6}$/.test(nuevoPin)) {
-        return mostrarToast("El PIN debe tener entre 4 y 6 números.", "error");
-    }
-    
-    mostrarToast("Actualizando PIN...", "nota");
-    const { error } = await db.rpc('cambiar_pin_seguro', {
-        p_usuario: me.id,
-        p_pin_viejo: miPinClaro,
-        p_nuevo_pin: nuevoPin
-    });
-    
-    if (error) return mostrarToast("Error: " + esc(error.message), "error");
-    
-    miPinClaro = nuevoPin;
-    try { localStorage.setItem("miPinClaro", nuevoPin); } catch(e){}
-    mostrarToast("¡PIN actualizado con éxito! 🔒", "ok");
-}
-
 function vistaAcceso(){
   return `
   <div class="panel">
@@ -1399,7 +1384,7 @@ async function registrarse(){
 
   if (error) return mostrarToast(esc(error.message), "error");
   
-  me = Array.isArray(data) ? data[0] : data;
+  me = data;
   miPinClaro = pin; 
   try { 
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 
@@ -1429,7 +1414,7 @@ async function iniciarSesion(){
       return mostrarToast(esc(error.message), "error"); 
   }
   
-  me = Array.isArray(data) ? data[0] : data;
+  me = data;
   miPinClaro = pin;
   try { 
       localStorage.setItem("porra_usuario", JSON.stringify(me)); 

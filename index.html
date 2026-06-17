@@ -116,10 +116,14 @@
   .modal-content > *:last-child { margin-bottom: 0; }
   .modal-overlay.open .modal-content { transform:translateY(0); }
   
+  /* NUEVO BOTON DE ATRÁS PARA NAVEGACIÓN EN MODAL */
+  .modal-back { position:absolute; top:16px; left:16px; height:32px; padding:0 12px; border-radius:16px; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:12px; font-weight:800; text-transform:uppercase; z-index:10; transition: transform 0.1s; letter-spacing:0.05em;}
+  .modal-back:active { transform:scale(0.95); }
+
   .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; z-index:10; transition: transform 0.1s;}
   .modal-close:active { transform:scale(0.9); }
   
-  .modal-header { text-align:center; }
+  .modal-header { text-align:center; margin-top:20px; }
   .modal-meta { font-size:11px; font-weight:800; letter-spacing:.15em; color:var(--grada); text-transform:uppercase; margin-bottom:16px; display:block;}
   .modal-marcador { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;}
   .modal-eq { display:flex; flex-direction:column; align-items:center; gap:8px; font-size:14px; font-weight:800;}
@@ -166,6 +170,7 @@
   .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
   .pron-item-scores { font-size: 12px; color: var(--cal-suave); }
   .pron-item-pts { font-family: var(--display); font-size: 20px; color: var(--cal-suave); min-width: 30px; text-align: right; }
+  .pron-item-pts.ok { color: var(--trofeo); }
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
@@ -308,6 +313,7 @@ let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
 let porra = null, me = null, adminPin = null, miPinClaro = null;
 let tab = "partidos", borradores = {}, cargado = false, partidoAbiertoId = null;
+let modalStack = []; 
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => {
@@ -319,6 +325,7 @@ function mostrarToast(msg, tipo) {
   if (!tipo) tipo = 'nota';
   const container = $("toast-container");
   if (!container) return;
+  container.innerHTML = ''; 
   const toast = document.createElement("div");
   toast.className = `toast toast-${tipo}`;
   toast.innerHTML = msg;
@@ -491,7 +498,10 @@ let refrescando = false;
 async function refrescar(){
   if (refrescando) return; refrescando = true;
   setTimeout(async () => { 
-    try { await cargarTodo(); render(); if (partidoAbiertoId) renderModal(partidoAbiertoId); } catch(e){}
+    try { 
+        await cargarTodo(); render(); 
+        if (modalStack.length > 0) renderCurrentModal(); 
+    } catch(e){}
     refrescando = false; 
   }, 400);
 }
@@ -520,10 +530,11 @@ async function llamarSync(){
 function programarSync(){
   if (partidos.length === 0 || hayPartidoEnVentana()) llamarSync();
   setInterval(() => { if (hayPartidoEnVentana()) llamarSync(); }, 90e3);
-  setInterval(() => { if (cargado) { render(); if(partidoAbiertoId) renderModal(partidoAbiertoId); } }, 60e3);
+  setInterval(() => { if (cargado) { render(); if (modalStack.length > 0) renderCurrentModal(); } }, 60e3);
 }
 
 function puntosDe(pred, p){
+  if (!pred || !p) return null; 
   if (p.goles_local == null || p.goles_visitante == null) return null;
   const aciertoLocal = pred.goles_local === p.goles_local;
   const aciertoVisitante = pred.goles_visitante === p.goles_visitante;
@@ -576,8 +587,8 @@ function clasificacion(){
       
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-      const ultimos3 = jugadosUser.slice(-3);
-      f.rachaFuego = (ultimos3.length === 3 && ultimos3.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 5));
+      const racha5 = jugadosUser.slice(-5); 
+      f.rachaFuego = (racha5.length === 5 && racha5.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0));
   });
   
   return actSorted;
@@ -666,7 +677,7 @@ async function guardarPronostico(partidoId){
   
   mostrarToast("Pronóstico guardado ✓", "ok");
   await cargarTodo();
-  if(partidoAbiertoId === partidoId) renderModal(partidoId);
+  if (modalStack.length > 0) renderCurrentModal(); 
   render();
 }
 
@@ -686,152 +697,29 @@ function filtrarPartidos() {
   });
 }
 
-function vistaCodigo(){
-  return `<div class="panel">
-    <h2>¿De qué porra eres?</h2>
-    <p>Escribe el código de invitación que te han pasado por el grupo.</p>
-    <label for="codigo-porra">Código de invitación</label>
-    <input type="text" id="codigo-porra" autocomplete="off" autocapitalize="characters"
-      style="text-transform:uppercase; letter-spacing:.2em; font-weight:800; text-align:center"
-      onkeydown="if(event.key==='Enter')entrarConCodigo()">
-    <button class="btn oro" style="margin-top:16px;" onclick="entrarConCodigo()">Entrar en la porra</button>
-  </div>`;
-}
+// ----------------------------------------------------------------------
+// NAVEGACIÓN MODAL
+// ----------------------------------------------------------------------
+function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
+function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
+function abrirModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
+function abrirModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
 
-async function entrarConCodigo(){
-  const codigo = $("codigo-porra") ? $("codigo-porra").value.trim() : "";
-  if (!codigo) return mostrarToast("Escribe el código.", "error");
-  
-  const { data, error } = await db.rpc("entrar_porra", { p_codigo: codigo });
-  if (error) return mostrarToast(esc(error.message), "error");
-  if (!data || !data.length) return mostrarToast("Ese código no existe. Revisa mayúsculas.", "error");
-  
-  porra = data[0];
-  try { localStorage.setItem("porra_actual", JSON.stringify(porra)); } catch(e){}
-  
-  me = null; adminPin = null; miPinClaro = null;
-  try { localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro"); sessionStorage.removeItem("adminPin"); } catch(e){}
-  
-  pintarTitulo();
-  await cargarTodo();
-  irA("perfil");
-}
-
-function cambiarPorra(){
-  try { 
-    localStorage.removeItem("porra_actual"); 
-    localStorage.removeItem("porra_usuario"); 
-    localStorage.removeItem("miPinClaro");
-    sessionStorage.removeItem("adminPin"); 
-  } catch(e){}
-  window.location.reload(); 
-}
-
-function vistaPartidos(){
-  if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
-  
-  let html = '';
-  if (!me) html += `<div class="vacio">Para pronosticar, inicia sesión en la pestaña <b>Perfil</b> 👤</div>`;
-  
-  html += `
-  <div style="margin-bottom:12px;">
-    <input type="text" id="buscador-partidos" class="buscador-input" placeholder="🔍 Buscar selección (ej. España...)" onkeyup="filtrarPartidos()">
-  </div>`;
-  
-  html += `<div id="lista-partidos-feed">` + listaPartidos(!!me) + `</div>`;
-  return html;
-}
-
-function listaPartidos(conPron){
-  const porDia = {};
-  for (const p of partidos){
-    const clave = getFechaLogica(p.fecha_utc);
-    (porDia[clave] = porDia[clave] || []).push(p);
-  }
-  const claves = Object.keys(porDia).sort((a,b) => (a==="zzz"?Infinity:new Date(a)) - (b==="zzz"?Infinity:new Date(b)));
-  
-  let html = "";
-  for (const k of claves){
-    html += `<div class="dia-titulo">${esc(fmtDiaLogico(k))}</div>`;
-    for (const p of porDia[k]) html += tarjetaFeed(p, conPron);
-  }
-  return html;
-}
-
-function tarjetaFeed(p, conPron){
-  const vivo = esVivo(p.estado), fin = esFin(p.estado);
-  const hayResultado = p.goles_local != null && p.goles_visitante != null && (vivo || fin);
-  const etiqueta = (ETAPAS[p.etapa] || p.etapa) + (p.grupo ? ` · Grupo ${esc(p.grupo)}` : "");
-  
-  const puntua = esPartidoPuntuable(p);
-  
-  let centro;
-  if (hayResultado) centro = `<div class="tanteo-feed">${p.goles_local} - ${p.goles_visitante}</div>`;
-  else centro = `<div class="tanteo-feed"><span class="vs">vs</span></div>`;
-
-  let footer = "";
-  let resumen = "";
-
-  if(conPron){
-    const miId = me ? me.id : null;
-    const mio = pronosticos.find(x => x.usuario_id === miId && x.partido_id === p.id);
-    const tienePron = mio && mio.goles_local !== null;
-    
-    if (!empezado(p)){
-      footer = tienePron ? `<span>Tu pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span>✏️</span>` : `<span>Sin pronóstico</span> <span style="color:var(--cesped)">Pronosticar 👉</span>`;
-    } else {
-      if(!tienePron) {
-        footer = `<span>No pronosticaste este partido 😶</span>`;
-      } else {
-        const pts = puntosDe(mio, p);
-        if (!puntua) {
-            footer = `<span>Pronóstico: <b style="color:var(--grada)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span style="color:var(--grada); font-weight:800; font-size:10px; letter-spacing:0.05em; padding:4px 8px; background:rgba(255,255,255,0.05); border-radius:6px;">CALENTAMIENTO</span>`;
-        } else {
-            let colorPuntos = pts === 5 ? 'var(--trofeo)' : (pts === 3 ? 'var(--cesped)' : 'var(--tarjeta-roja)');
-            if(vivo) footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span style="color:${colorPuntos}; font-weight:800;">live ${pts>0?'+'+pts:'0'}</span>`;
-            else footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span style="color:${colorPuntos}; font-weight:800;">${pts>0?'+'+pts+' pts':'0 pts'}</span>`;
-        }
-      }
-      
-      if (!puntua && empezado(p)) {
-          resumen = `<div style="text-align:center; color:var(--grada); font-size:10.5px; font-weight:800; text-transform:uppercase; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--cal-tenue);">🛑 PARTIDO DE PRUEBA (NO SUMA PUNTOS)</div>`;
-      } else {
-          const pronsDelPartido = pronosticos.filter(x => x.partido_id === p.id);
-          if (pronsDelPartido.length > 0) {
-            let ex = 0, co = 0, se = 0;
-            pronsDelPartido.forEach(pr => {
-              const pts = puntosDe(pr, p);
-              if (pts === 5) ex++;
-              else if (pts === 3) co++;
-              else se++;
-            });
-            resumen = `<div style="display:flex; justify-content:space-between; font-size:10.5px; font-weight:800; text-transform:uppercase; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--cal-tenue);">
-              <span style="color:var(--trofeo)">⭐ ${ex} exactos</span>
-              <span style="color:var(--cesped)">✅ ${co} correctos</span>
-              <span style="color:var(--tarjeta-roja)">❌ ${se} a cero</span>
-            </div>`;
-          }
-      }
-    }
-  }
-
-  return `<article class="partido ${vivo?"en-vivo":""} ${fin?"acabado":""}" onclick="abrirModal(${p.id})">
-    <div class="partido-meta"><span>${etiqueta}</span>${chipEstado(p)}</div>
-    <div class="marcador-feed">
-      <div class="equipo-feed der"><span>${esc(p.local || "?")}</span> ${escudo(p.local_crest)}</div>
-      ${centro}
-      <div class="equipo-feed">${escudo(p.visitante_crest)} <span>${esc(p.visitante || "?")}</span></div>
-    </div>
-    ${conPron && empezado(p) ? `<div class="partido-footer" style="display:block;">${resumen}<div style="display:flex; justify-content:space-between;">${footer}</div></div>` : (conPron ? `<div class="partido-footer">${footer}</div>` : '')}
-  </article>`;
-}
-
-function abrirModal(id) {
-  partidoAbiertoId = id; renderModal(id);
+function pushModal(state) {
+  modalStack.push(state);
+  renderCurrentModal();
   const overlay = $("modal-overlay");
-  if(overlay) overlay.classList.add("open");
-  document.body.style.overflow = "hidden"; 
-  history.pushState({modalOpen: true}, "");
+  if(!overlay.classList.contains("open")){
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden"; 
+      history.pushState({modalOpen: true}, "");
+  }
+}
+
+function backModal() {
+  modalStack.pop();
+  if(modalStack.length > 0) renderCurrentModal();
+  else cerrarModalFull();
 }
 
 function cerrarModal(e) {
@@ -845,23 +733,48 @@ function cerrarModal(e) {
         return; 
     }
   }
-  
+  cerrarModalFull();
+}
+
+function cerrarModalFull() {
   const overlay = $("modal-overlay");
   if(overlay) overlay.classList.remove("open");
   document.body.style.overflow = "";
+  modalStack = [];
   setTimeout(() => { partidoAbiertoId = null; }, 300);
 }
 
 window.addEventListener('popstate', function(event) {
-  const overlay = document.getElementById("modal-overlay");
-  if (overlay && overlay.classList.contains("open")) {
-    cerrarModal(); 
+  if ($("modal-overlay") && $("modal-overlay").classList.contains("open")) {
+    cerrarModalFull(); 
   }
 });
 
-function renderModal(id) {
+function renderCurrentModal() {
+  if(modalStack.length === 0) return;
+  const state = modalStack[modalStack.length - 1];
+  let content = '';
+  
+  partidoAbiertoId = null; 
+  if(state.view === 'partido') { partidoAbiertoId = state.pid; content = htmlModalPartido(state.pid); }
+  else if(state.view === 'perfil') content = htmlModalPerfil(state.uid);
+  else if(state.view === 'pronosticos') content = htmlModalPronosticos(state.uid);
+  else if(state.view === 'extras') content = htmlModalExtras(state.uid);
+  
+  if(!content) return;
+  
+  let backBtn = modalStack.length > 1 ? `<div class="modal-back" onclick="backModal()">← Atrás</div>` : ``;
+  content = content.replace(`<div class="modal-close"`, `${backBtn}<div class="modal-close"`);
+  
+  $("modal-content").innerHTML = content;
+  
+  if(state.view === 'extras') setExtrasSelects(state.uid);
+}
+// ----------------------------------------------------------------------
+
+function htmlModalPartido(id) {
   const p = partidos.find(x => x.id === id);
-  if(!p) return;
+  if(!p) return "";
   const vivo = esVivo(p.estado), fin = esFin(p.estado);
   const hayResultado = p.goles_local != null && p.goles_visitante != null && (vivo || fin);
   const etiqueta = (ETAPAS[p.etapa] || p.etapa) + (p.grupo ? ` · Grupo ${esc(p.grupo)}` : "");
@@ -957,7 +870,7 @@ function renderModal(id) {
     }
   }
 
-  const content = `
+  return `
     <div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header">
       <span class="modal-meta">${etiqueta} · ${txtHora}</span>
@@ -975,14 +888,80 @@ function renderModal(id) {
       <div class="details-body">${htmlTodos}</div>
     </details>
   `;
-  $("modal-content").innerHTML = content;
 }
 
-function abrirModalPronosticos(uid) {
-  if(!uid && me) uid = me.id;
-  if(!uid) return;
+function htmlModalPerfil(uid) {
+  const u = usuarios.find(x => x.id === uid);
+  if(!u) return "";
+
+  const filas = clasificacion();
+  const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
   
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  
+  const pronsValidos = pronsUser.filter(pr => {
+      const p = partidos.find(x => x.id === pr.partido_id);
+      return p && esPartidoPuntuable(p);
+  });
+
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  let aciertos = 0;
+  partidosJugados.forEach(p => {
+      if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++;
+  });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else {
+          htmlForma += `<div class="forma-box forma-vacia"></div>`;
+      }
+  }
+
+  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 5 aciertos seguidos!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
+
+  return `
+      <div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="margin-bottom:16px;">
+          <div class="perfil-avatar">${avatarHtml(u)}</div>
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-badges">
+              <span class="badge badge-pos">🏅 #${f.rank}</span>
+              <span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span>
+          </div>
+      </div>
+
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card">
+              <div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div>
+              <div class="k">EFICIENCIA</div>
+          </div>
+          <div class="p-dash-card">
+              <div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div>
+              <div class="forma-row">${htmlForma}</div>
+          </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:24px;">
+          <button class="btn secundario" onclick="abrirModalPronosticos('${uid}')">📋 PARTIDOS</button>
+          <button class="btn oro" onclick="abrirModalExtras('${uid}')">🔮 EXTRAS</button>
+      </div>
+  `;
+}
+
+function htmlModalPronosticos(uid) {
   const targetUser = usuarios.find(x => x.id === uid);
+  if(!targetUser) return "";
   const esMio = (me && uid === me.id);
   
   const userProns = pronosticos.filter(x => x.usuario_id === uid);
@@ -1044,7 +1023,7 @@ function abrirModalPronosticos(uid) {
 
   const titleText = esMio ? "MIS PRONÓSTICOS" : `PRON. DE ${esc(targetUser.nombre)}`;
 
-  const content = `
+  return `
     <div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header" style="margin-bottom:20px;">
       <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${titleText}</h2>
@@ -1056,16 +1035,105 @@ function abrirModalPronosticos(uid) {
     <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
     <div>${generarHtmlProns(pasados)}</div>
   `;
-  
-  document.getElementById("modal-content").innerHTML = content;
-  
-  const overlay = document.getElementById("modal-overlay");
-  const yaAbierto = overlay.classList.contains("open");
-  overlay.classList.add("open");
-  document.body.style.overflow = "hidden";
-  if (!yaAbierto) history.pushState({modalOpen: true}, "");
 }
 
+function htmlModalExtras(uid) {
+  const targetUser = usuarios.find(x => x.id === uid) || me;
+  if(!targetUser) return "";
+  const esMio = (me && targetUser.id === me.id);
+  const dataExt = targetUser.extras || {};
+  const cerrado = Date.now() > LIMITE_EXTRAS;
+  
+  const equiposSet = new Set();
+  partidos.forEach(p => { 
+      if (p.local && p.local !== "?") equiposSet.add(p.local); 
+      if (p.visitante && p.visitante !== "?") equiposSet.add(p.visitante); 
+  });
+  const equiposArr = Array.from(equiposSet).sort();
+  const opts = `<option value="">Selecciona equipo...</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+
+  const txtTitulo = esMio ? "TUS PREDICCIONES EXTRA" : `EXTRAS DE ${esc(targetUser.nombre)}`;
+
+  let content = `
+    <div class="modal-close" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-header" style="margin-bottom:20px;">
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${txtTitulo}</h2>
+      <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
+    </div>
+  `;
+
+  if (esMio && !cerrado) {
+      content += `
+      <div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
+        <label>🥇 Campeón (10 pts)</label>
+        <select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        
+        <label>🥈 Subcampeón (7 pts)</label>
+        <select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        
+        <label>🥉 3er Puesto (5 pts)</label>
+        <select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        
+        <label>🍫 4º Puesto (3 pts)</label>
+        <select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        
+        <label>⚽ Pichichi (Libre)</label>
+        <input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
+        
+        <label>🏆 Mejor Jugador MVP (Libre)</label>
+        <input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+        
+        <button class="btn oro" onclick="guardarMisExtras()">Guardar Predicciones</button>
+      </div>`;
+  } else if (!esMio && !cerrado) {
+      content += `<div class="vacio">Las predicciones de los demás son secretas hasta que comience la Jornada 2 🔒</div>`;
+  } else {
+      content += `
+      <div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span>
+          <b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span>
+          <b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--grada); font-size:12px; font-weight:800;">🏆 MVP</span>
+          <b style="color:var(--cal); font-size:14px;">${esc(dataExt.mvp || "—")}</b>
+        </div>
+      </div>`;
+  }
+  return content;
+}
+
+function setExtrasSelects(uid) {
+  const targetUser = usuarios.find(x => x.id === uid) || me;
+  if(!targetUser) return;
+  const esMio = (me && targetUser.id === me.id);
+  const cerrado = Date.now() > LIMITE_EXTRAS;
+  if (esMio && !cerrado) {
+      const dataExt = targetUser.extras || {};
+      if(dataExt.cam && $("ext-cam")) $("ext-cam").value = dataExt.cam;
+      if(dataExt.sub && $("ext-sub")) $("ext-sub").value = dataExt.sub;
+      if(dataExt.ter && $("ext-ter")) $("ext-ter").value = dataExt.ter;
+      if(dataExt.cua && $("ext-cua")) $("ext-cua").value = dataExt.cua;
+  }
+}
+
+/* ---------- Vistas Principales ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = "";
@@ -1159,7 +1227,7 @@ function vistaTabla(){
     else if(f.rank === 3) { specialClass = "bronce"; numberHtml = `<div class="medalla">🥉</div>`; }
     else { numberHtml = `<div class="rank-num-small">${f.rank}</div>`; }
 
-    const fuegoHTML = f.rachaFuego ? `<span title="¡3 Plenos seguidos!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
+    const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 5 aciertos seguidos!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
 
     return `
     <div class="rank-card ${specialClass} ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer">
@@ -1217,7 +1285,7 @@ function vistaPerfil(){
   }
 
   const esKiwi = (me.nombre ? me.nombre : "").toLowerCase() === "kiwi";
-  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 3 plenos seguidos!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
+  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de 5 aciertos seguidos!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
 
   return `
   <div class="perfil-header">
@@ -1407,7 +1475,7 @@ function actualizarCabecera(){
   $("yo-emoji").innerHTML = avatarHtmlMini(me);
   
   const fila = clasificacion().find(f => f.u.id === me.id);
-  const fuegoHeader = (fila && fila.rachaFuego) ? ` <span title="¡Estás en racha!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '';
+  const fuegoHeader = (fila && fila.rachaFuego) ? ` <span title="¡Racha de 5 aciertos seguidos!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '';
   
   $("yo-nombre").innerHTML = esc(me.nombre) + fuegoHeader;
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
@@ -1481,7 +1549,7 @@ function vistaAdmin(){
         <select id="adm-ter" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Tercero")}</select>
         <select id="adm-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Selecciona Cuarto")}</select>
         <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
-        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP cosìgnalos abajo a mano).</p>
+        <p class="nota" style="margin-top:8px;">Repartirá 10, 7, 5 y 3 pts. (Pichichi y MVP asígnalos abajo a mano).</p>
     </div>
 
     <label>Poner resultado a mano / Probar LIVE</label>
@@ -1571,11 +1639,11 @@ async function resetearPin(){
   const uid = $("adm-puntos-usr").value;
   if (!uid) return;
   const u = usuarios.find(x => x.id === uid);
-  if (!confirm(`¿Seguro que vuoi resettare il PIN di ${u.nombre} a "0000"?`)) return;
+  if (!confirm(`¿Seguro que quieres resetear el PIN de ${u.nombre} a "0000"?`)) return;
   const nuovoHash = await sha256(u.nombre.toLowerCase() + ":0000");
   const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nuovoHash, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast(esc(error.message), "error");
-  mostrarToast("PIN reseteato a '0000' ✓", "ok"); await cargarTodo(); setTimeout(render, 1500);
+  mostrarToast("PIN reseteado a '0000' ✓", "ok"); await cargarTodo(); setTimeout(render, 1500);
 }
 </script>
 </body>

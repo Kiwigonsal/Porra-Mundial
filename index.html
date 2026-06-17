@@ -116,14 +116,13 @@
   .modal-content > *:last-child { margin-bottom: 0; }
   .modal-overlay.open .modal-content { transform:translateY(0); }
   
-  /* NUEVO: BOTÓN DE ATRÁS PARA NAVEGACIÓN EN MODAL */
   .modal-back { position:absolute; top:16px; left:16px; height:32px; padding:0 12px; border-radius:16px; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:12px; font-weight:800; text-transform:uppercase; z-index:10; transition: transform 0.1s; letter-spacing:0.05em;}
   .modal-back:active { transform:scale(0.95); }
 
   .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--campo-2); border:1px solid var(--cal-tenue); color:var(--cal); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; z-index:10; transition: transform 0.1s;}
   .modal-close:active { transform:scale(0.9); }
   
-  .modal-header { text-align:center; margin-top:20px; }
+  .modal-header { text-align:center; margin-top: 20px;}
   .modal-meta { font-size:11px; font-weight:800; letter-spacing:.15em; color:var(--grada); text-transform:uppercase; margin-bottom:16px; display:block;}
   .modal-marcador { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;}
   .modal-eq { display:flex; flex-direction:column; align-items:center; gap:8px; font-size:14px; font-weight:800;}
@@ -159,7 +158,7 @@
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(245,158,11,.1); }
 
-  /* COLORES PARA PRONÓSTICOS (FONDO ORO/VERDE/ROJO) */
+  /* COLORES PARA PRONÓSTICOS */
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
   .pron-item.pleno-bg { background: rgba(245,158,11,0.15); border-color: var(--trofeo); }
@@ -195,7 +194,7 @@
 
   .rank-avatar { width: 44px; height: 44px; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden;}
   .rank-info { flex: 1; min-width: 0; }
-  .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display:flex; align-items:center; }
+  .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display: flex; align-items: center;}
   .rank-stats { font-size: 11px; color: var(--grada); display: flex; gap: 8px; font-weight: 600; }
   .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center;}
   .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
@@ -307,15 +306,12 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 
-// LIMITE DE EXTRAS: Jueves 18 de junio a las 18:00
 const LIMITE_EXTRAS = new Date("2026-06-18T18:00:00+02:00").getTime();
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
 let porra = null, me = null, adminPin = null, miPinClaro = null;
 let tab = "partidos", borradores = {}, cargado = false, partidoAbiertoId = null;
-
-// HISTORIAL PARA NAVEGAR HACIA ATRÁS EN LAS VENTANAS
 let modalStack = []; 
 
 const $ = (id) => document.getElementById(id);
@@ -328,7 +324,7 @@ function mostrarToast(msg, tipo) {
   if (!tipo) tipo = 'nota';
   const container = $("toast-container");
   if (!container) return;
-  container.innerHTML = ''; // BORRA EL MENSAJE ANTERIOR PARA QUE NO SE SOLAPEN
+  container.innerHTML = '';
   const toast = document.createElement("div");
   toast.className = `toast toast-${tipo}`;
   toast.innerHTML = msg;
@@ -504,7 +500,7 @@ async function refrescar(){
     try { 
         await cargarTodo(); 
         render(); 
-        if(modalStack.length > 0) renderCurrentModal();
+        if (modalStack.length > 0) renderCurrentModal(); 
     } catch(e){}
     refrescando = false; 
   }, 400);
@@ -585,7 +581,6 @@ function clasificacion(){
 
   const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   
-  // ÁRBITRO DE RACHA (🔥): 5 Aciertos consecutivos (> 0 pts)
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1;
       f.tendencia = f.rankAnt - f.rank;
@@ -593,7 +588,6 @@ function clasificacion(){
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
       const racha5 = jugadosUser.slice(-5);
-      
       f.rachaFuego = false;
       if (racha5.length === 5) {
           let enRacha = true;
@@ -852,17 +846,12 @@ function tarjetaFeed(p, conPron){
 }
 
 // ----------------------------------------------------------------------
-// SISTEMA DE NAVEGACIÓN MODAL CON HISTORIAL ("← Atrás")
+// NAVEGACIÓN MODAL CON BOTÓN ATRÁS
 // ----------------------------------------------------------------------
-function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
-function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
-function abrirModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
-function abrirModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
-
 function pushModal(state) {
   modalStack.push(state);
   renderCurrentModal();
-  const overlay = document.getElementById("modal-overlay");
+  const overlay = $("modal-overlay");
   if(!overlay.classList.contains("open")){
       overlay.classList.add("open");
       document.body.style.overflow = "hidden"; 
@@ -891,7 +880,7 @@ function cerrarModal(e) {
 }
 
 function cerrarModalFull() {
-  const overlay = document.getElementById("modal-overlay");
+  const overlay = $("modal-overlay");
   if(overlay) overlay.classList.remove("open");
   document.body.style.overflow = "";
   modalStack = [];
@@ -899,7 +888,7 @@ function cerrarModalFull() {
 }
 
 window.addEventListener('popstate', function(event) {
-  if (document.getElementById("modal-overlay") && document.getElementById("modal-overlay").classList.contains("open")) {
+  if ($("modal-overlay") && $("modal-overlay").classList.contains("open")) {
     cerrarModalFull(); 
   }
 });
@@ -917,15 +906,18 @@ function renderCurrentModal() {
   
   if(!content) return;
   
-  // Inyectar botón Atrás dinámicamente si hay más de 1 vista abierta
   let backBtn = modalStack.length > 1 ? `<div class="modal-back" onclick="backModal()">← Atrás</div>` : ``;
   content = content.replace(`<div class="modal-close"`, `${backBtn}\n<div class="modal-close"`);
   
-  document.getElementById("modal-content").innerHTML = content;
+  $("modal-content").innerHTML = content;
   
   if(state.view === 'extras') setExtrasSelects(state.uid);
 }
-// ----------------------------------------------------------------------
+
+function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
+function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
+function abrirModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
+function abrirModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
 
 function htmlModalPartido(id) {
   const p = partidos.find(x => x.id === id);
@@ -1054,7 +1046,6 @@ function htmlModalPerfil(uid) {
   const f = filas.find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
   
   const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
-  
   const pronsValidos = pronsUser.filter(pr => {
       const p = partidos.find(x => x.id === pr.partido_id);
       return p && esPartidoPuntuable(p);

@@ -170,7 +170,6 @@
   .pron-item-nombres { font-size: 11.5px; color: var(--grada); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight:600;}
   .pron-item-scores { font-size: 12px; color: var(--cal-suave); }
   .pron-item-pts { font-family: var(--display); font-size: 20px; color: var(--cal-suave); min-width: 30px; text-align: right; }
-  .pron-item-pts.ok { color: var(--trofeo); }
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
@@ -287,8 +286,7 @@ window.addEventListener('unhandledrejection', function(event) {
 <div id="toast-container"></div>
 
 <div id="modal-overlay" class="modal-overlay" onclick="cerrarModal(event)">
-  <div class="modal-content" id="modal-content" onclick="event.stopPropagation()">
-    </div>
+  <div class="modal-content" id="modal-content" onclick="event.stopPropagation()"></div>
 </div>
 
 <nav>
@@ -588,7 +586,16 @@ function clasificacion(){
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
       const racha5 = jugadosUser.slice(-5); 
-      f.rachaFuego = (racha5.length === 5 && racha5.every(p => puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0));
+      
+      let estaEnRacha = false;
+      if (racha5.length === 5) {
+          estaEnRacha = true;
+          for (let p of racha5) {
+              const pr = pronsUser.find(x => x.partido_id === p.id);
+              if (puntosDe(pr, p) === 0) estaEnRacha = false;
+          }
+      }
+      f.rachaFuego = estaEnRacha;
   });
   
   return actSorted;
@@ -1165,9 +1172,7 @@ function vistaTorneo(){
         const partidosEtapa = eliminatorias.filter(p => p.etapa === et.id);
         if(partidosEtapa.length > 0) {
             html += `<h3 style="font-family:var(--display); font-size:16px; color:var(--cal-suave); margin: 24px 0 12px; text-transform:uppercase; text-align:center; letter-spacing:0.05em;">${et.nom}</h3>`;
-            for (const p of partidosEtapa) {
-                html += tarjetaFeed(p, false); 
-            }
+            for (const p of partidosEtapa) html += tarjetaFeed(p, false); 
         }
     }
     
@@ -1334,30 +1339,6 @@ function vistaPerfil(){
   `;
 }
 
-async function cambiarMiPin() {
-    if (!miPinClaro) return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar primero.", "error");
-    
-    const nuevoPin = prompt("Introduce tu NUEVO PIN (4 a 6 números):");
-    if (!nuevoPin) return; 
-    
-    if (!/^\d{4,6}$/.test(nuevoPin)) {
-        return mostrarToast("El PIN debe tener entre 4 y 6 números.", "error");
-    }
-    
-    mostrarToast("Actualizando PIN...", "nota");
-    const { error } = await db.rpc('cambiar_pin_seguro', {
-        p_usuario: me.id,
-        p_pin_viejo: miPinClaro,
-        p_nuevo_pin: nuevoPin
-    });
-    
-    if (error) return mostrarToast("Error: " + esc(error.message), "error");
-    
-    miPinClaro = nuevoPin;
-    try { localStorage.setItem("miPinClaro", nuevoPin); } catch(e){}
-    mostrarToast("¡PIN actualizado con éxito! 🔒", "ok");
-}
-
 function vistaAcceso(){
   return `
   <div class="panel">
@@ -1475,7 +1456,7 @@ function actualizarCabecera(){
   $("yo-emoji").innerHTML = avatarHtmlMini(me);
   
   const fila = clasificacion().find(f => f.u.id === me.id);
-  const fuegoHeader = (fila && fila.rachaFuego) ? ` <span title="¡Racha de 5 aciertos seguidos!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '';
+  const fuegoHeader = (fila && fila.rachaFuego) ? ` <span title="¡Estás en racha!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '';
   
   $("yo-nombre").innerHTML = esc(me.nombre) + fuegoHeader;
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";

@@ -1640,6 +1640,46 @@ async function subirNuevaFoto(input) {
   render();
 }
 
+ async function guardarMisExtras() {
+  if (!me || !miPinClaro) {
+      return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar para guardar.", "error");
+  }
+  
+  // Recogemos los valores de los select e inputs
+  const cam = $("ext-cam") ? $("ext-cam").value : "";
+  const sub = $("ext-sub") ? $("ext-sub").value : "";
+  const ter = $("ext-ter") ? $("ext-ter").value : "";
+  const cua = $("ext-cua") ? $("ext-cua").value : "";
+  const pic = $("ext-pic") ? $("ext-pic").value.trim() : "";
+  const mvp = $("ext-mvp") ? $("ext-mvp").value.trim() : "";
+  
+  mostrarToast("Guardando predicciones...", "nota");
+  
+  const payloadExtras = { cam, sub, ter, cua, pic, mvp };
+  
+  // Llamada a tu función RPC de Supabase
+  const { error } = await db.rpc('guardar_extras_seguro', {
+      p_usuario: me.id,
+      p_pin: miPinClaro,
+      p_extras: payloadExtras
+  });
+  
+  if (error) {
+      return mostrarToast("Error BD: " + esc(error.message), "error");
+  }
+  
+  // Actualizamos los datos localmente para que no tengas que recargar
+  if (!me.extras) me.extras = {};
+  me.extras = payloadExtras;
+  
+  const userIndex = usuarios.findIndex(u => u.id === me.id);
+  if (userIndex !== -1) usuarios[userIndex].extras = payloadExtras;
+  
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
+  
+  mostrarToast("¡Predicciones extra guardadas! 🏆", "ok");
+} 
+  
 /* ---------- Admin ---------- */
 async function entrarAdmin(){
   const pin = $("pin-admin").value.trim();

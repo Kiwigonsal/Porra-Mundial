@@ -41,7 +41,6 @@
 
   [hidden] { display: none !important; }
   
-  /* DISEÑO DE BOTONES */
   button { appearance: none; -webkit-appearance: none; font-family: inherit; }
   .btn { width: 100%; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; font-family: var(--body); cursor: pointer; transition: transform 0.1s; border: none; outline: none; display: flex; align-items: center; justify-content: center; line-height: 1; letter-spacing: .02em; }
   .btn:active { transform: scale(0.97); }
@@ -107,6 +106,15 @@
   
   .partido-footer{ margin-top:12px; padding-top:10px; border-top:1px dashed var(--cal-tenue); font-size:11px; color:var(--grada); display:flex; justify-content:space-between; align-items:center;}
 
+  /* ---------- Dashboard Widgets ---------- */
+  .dash-titulo { font-family: var(--display); font-size: 16px; letter-spacing: .08em; color: var(--cal-suave); text-transform: uppercase; margin-bottom: 12px; }
+  .dash-scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
+  .dash-scroll-x::-webkit-scrollbar { display: none; }
+  .dash-fire-card { background: linear-gradient(180deg, rgba(245,158,11,0.15) 0%, var(--campo-2) 100%); border: 1px solid var(--trofeo); border-radius: 16px; padding: 14px 10px; min-width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; scroll-snap-align: start; cursor: pointer; transition: transform 0.1s;}
+  .dash-fire-card:active { transform: scale(0.95); }
+  .dash-fire-card .avatar-lg { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--trofeo); display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--campo); font-size: 24px; margin-bottom: 8px;}
+  .dash-fire-card .nombre-fire { font-size: 11px; font-weight: 800; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; color: var(--cal);}
+
   /* ---------- Modal ---------- */
   .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; justify-content:center; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
   .modal-overlay.open { opacity:1; pointer-events:auto; }
@@ -158,7 +166,6 @@
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(245,158,11,.1); }
 
-  /* COLORES PARA PRONÓSTICOS */
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
   .pron-item.pleno-bg { background: rgba(245,158,11,0.15); border-color: var(--trofeo); }
@@ -175,7 +182,6 @@
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
-  /* ESTILOS DE LA TABLA UNIFICADA DE PARTICIPANTES */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
   .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s; position: relative;}
   .rank-card:active { transform:scale(0.98); }
@@ -243,8 +249,9 @@
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
 
+  /* NAVBAR: 5 COLUMNAS AHORA */
   nav{ position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
-  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); height:100%;}
+  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr); height:100%;}
   nav button{ background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
   nav button .ico{font-size:20px; display:block; line-height:1;}
   nav button.activo{color:var(--trofeo)}
@@ -292,6 +299,7 @@ window.addEventListener('unhandledrejection', function(event) {
 
 <nav>
   <div class="nav-inner">
+    <button data-tab="inicio" class="activo" onclick="irA('inicio')"><span class="ico">🏠</span>Inicio</button>
     <button data-tab="partidos" onclick="irA('partidos')"><span class="ico">⚽</span>Partidos</button>
     <button data-tab="torneo" onclick="irA('torneo')"><span class="ico">🏟️</span>Torneo</button>
     <button data-tab="tabla" onclick="irA('tabla')"><span class="ico">🏆</span>Tabla</button>
@@ -306,12 +314,13 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 
+// Aumentado un día el límite de extras según tu petición
 const LIMITE_EXTRAS = new Date("2026-06-19T12:00:00+02:00").getTime();
 
 let db = null;
 let usuarios = [], partidos = [], pronosticos = [];
 let porra = null, me = null, adminPin = null, miPinClaro = null;
-let tab = "partidos", borradores = {}, cargado = false, partidoAbiertoId = null;
+let tab = "inicio", borradores = {}, cargado = false, partidoAbiertoId = null; // AHORA LA PESTAÑA POR DEFECTO ES 'inicio'
 let modalStack = []; 
 
 const $ = (id) => document.getElementById(id);
@@ -446,7 +455,6 @@ async function init(){
     programarSync();
     cargado = true;
     render();
-    setTimeout(scrollToCurrent, 500); 
 
   } catch (e) {
     if($("vista")) $("vista").innerHTML = `<div class="vacio" style="color:var(--tarjeta-roja)">Error al iniciar: ${e.message}</div>`;
@@ -617,7 +625,8 @@ function render(){
 
     if (!porra){ v.innerHTML = vistaCodigo(); return; }
     
-    if (tab === "partidos") v.innerHTML = vistaPartidos();
+    if (tab === "inicio") v.innerHTML = vistaInicio();
+    else if (tab === "partidos") v.innerHTML = vistaPartidos();
     else if (tab === "torneo") v.innerHTML = vistaTorneo();
     else if (tab === "tabla") v.innerHTML = vistaTabla();
     else v.innerHTML = vistaPerfil();
@@ -629,7 +638,7 @@ function render(){
 function scrollToCurrent() {
   const target = document.querySelector('.partido.en-vivo') || document.querySelector('.partido:not(.acabado):not(.en-vivo)');
   if (target) {
-    const y = target.getBoundingClientRect().top + window.scrollY - 100;
+    const y = target.getBoundingClientRect().top - 100;
     window.scrollTo({top: y, behavior: 'smooth'});
   }
 }
@@ -745,6 +754,64 @@ function cambiarPorra(){
   } catch(e){}
   window.location.reload(); 
 }
+
+/* ---------- VISTA DASHBOARD (INICIO) ---------- */
+function vistaInicio() {
+    if (!me) return vistaAcceso();
+    if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
+
+    let html = `<div style="padding-top:4px;">`;
+
+    // 1. PARTIDOS EN VIVO
+    const vivos = partidos.filter(p => esVivo(p.estado));
+    if (vivos.length > 0) {
+        html += `<h2 class="dash-titulo">🔴 EN DIRECTO</h2>`;
+        vivos.forEach(p => { html += tarjetaFeed(p, !!me); });
+    }
+
+    // 2. USUARIOS ON FIRE 🔥
+    const filas = clasificacion();
+    const onFire = filas.filter(f => f.rachaFuego);
+    if (onFire.length > 0) {
+        html += `<h2 class="dash-titulo" style="margin-top:24px;">🔥 ON FIRE</h2>`;
+        html += `<div class="dash-scroll-x">`;
+        onFire.forEach(f => {
+            html += `
+            <div class="dash-fire-card" onclick="abrirPerfil('${f.u.id}')">
+                <div class="avatar-lg">${avatarHtml(f.u)}</div>
+                <div class="nombre-fire">${esc(f.u.nombre)}</div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    // 3. PARTIDOS DE HOY / PRÓXIMOS
+    const hoyLogico = getFechaLogica(new Date().toISOString());
+    const pendientes = partidos.filter(p => !esFin(p.estado) && !esVivo(p.estado) && p.fecha_utc).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+    const proximosHoy = pendientes.filter(p => getFechaLogica(p.fecha_utc) === hoyLogico);
+    
+    if (proximosHoy.length > 0) {
+        html += `<h2 class="dash-titulo" style="margin-top:24px;">📅 PARTIDOS DE HOY</h2>`;
+        proximosHoy.forEach(p => html += tarjetaFeed(p, !!me));
+    } else if (pendientes.length > 0) {
+        // Si no hay partidos hoy, mostramos los próximos de mañana
+        const mañanaLogico = getFechaLogica(pendientes[0].fecha_utc);
+        const proximosDias = pendientes.filter(p => getFechaLogica(p.fecha_utc) === mañanaLogico);
+        html += `<h2 class="dash-titulo" style="margin-top:24px;">⏭️ PRÓXIMA JORNADA</h2>`;
+        proximosDias.forEach(p => html += tarjetaFeed(p, !!me));
+    }
+
+    // 4. ÚLTIMOS RESULTADOS (4 partidos más recientes)
+    const terminados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc)).slice(0, 4);
+    if (terminados.length > 0) {
+        html += `<h2 class="dash-titulo" style="margin-top:24px;">🔙 ÚLTIMOS ACIERTOS</h2>`;
+        terminados.forEach(p => html += tarjetaFeed(p, !!me));
+    }
+
+    html += `</div>`;
+    return html;
+}
+/* ---------------------------------------------- */
 
 function vistaPartidos(){
   if (partidos.length === 0) return `<div class="vacio">Todavía no hay partidos cargados.</div>`;
@@ -1233,7 +1300,7 @@ function htmlModalExtras(uid) {
         <button class="btn oro" onclick="guardarMisExtras()">Guardar Predicciones</button>
       </div>`;
   } else if (!esMio && !cerrado) {
-      content += `<div class="vacio">Las predicciones de los demás son secretas hasta viernes 19 a las 12:00 UTC+2 🔒</div>`;
+      content += `<div class="vacio">Las predicciones de los demás son secretas hasta que comience la Jornada 2 🔒</div>`;
   } else {
       content += `
       <div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
@@ -1557,7 +1624,7 @@ async function registrarse(){
   
   await cargarTodo(); 
   mostrarToast("¡Bienvenido!", "ok");
-  irA("partidos");
+  irA("inicio");
 }
 
 async function iniciarSesion(){
@@ -1588,7 +1655,7 @@ async function iniciarSesion(){
   await cargarTodo();
   
   mostrarToast("¡Sesión iniciada!", "ok");
-  irA("partidos");
+  irA("inicio");
 }
 
 function actualizarCabecera(){
@@ -1640,12 +1707,11 @@ async function subirNuevaFoto(input) {
   render();
 }
 
- async function guardarMisExtras() {
+async function guardarMisExtras() {
   if (!me || !miPinClaro) {
       return mostrarToast("Por seguridad, cierra sesión y vuelve a entrar para guardar.", "error");
   }
   
-  // Recogemos los valores de los select e inputs
   const cam = $("ext-cam") ? $("ext-cam").value : "";
   const sub = $("ext-sub") ? $("ext-sub").value : "";
   const ter = $("ext-ter") ? $("ext-ter").value : "";
@@ -1657,7 +1723,6 @@ async function subirNuevaFoto(input) {
   
   const payloadExtras = { cam, sub, ter, cua, pic, mvp };
   
-  // Llamada a tu función RPC de Supabase
   const { error } = await db.rpc('guardar_extras_seguro', {
       p_usuario: me.id,
       p_pin: miPinClaro,
@@ -1668,7 +1733,6 @@ async function subirNuevaFoto(input) {
       return mostrarToast("Error BD: " + esc(error.message), "error");
   }
   
-  // Actualizamos los datos localmente para que no tengas que recargar
   if (!me.extras) me.extras = {};
   me.extras = payloadExtras;
   
@@ -1678,8 +1742,8 @@ async function subirNuevaFoto(input) {
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
   
   mostrarToast("¡Predicciones extra guardadas! 🏆", "ok");
-} 
-  
+}
+
 /* ---------- Admin ---------- */
 async function entrarAdmin(){
   const pin = $("pin-admin").value.trim();

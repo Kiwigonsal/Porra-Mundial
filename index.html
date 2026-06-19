@@ -261,7 +261,7 @@
   .vacio{text-align:center; color:var(--grada); padding:40px 16px; font-size:14px; line-height:1.6}
   .cargando{text-align:center; color:var(--grada); padding:40px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 
-  .chat-mensajes { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+  .chat-mensajes { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch;}
   .msg-row { display: flex; gap: 8px; align-items: flex-start; }
   .msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; overflow: hidden; border: 1px solid var(--cal-tenue); }
   .msg-content { background: var(--campo-2); padding: 8px 12px; border-radius: 4px 12px 12px 12px; font-size: 13px; color: var(--cal); line-height: 1.4; border: 1px solid rgba(255,255,255,0.05); }
@@ -270,7 +270,7 @@
   .msg-row.mio .msg-content { background: rgba(16, 185, 129, 0.15); border-color: var(--cesped); border-radius: 12px 4px 12px 12px; }
   .msg-row.mio .msg-content strong { text-align: right; color: var(--cesped); }
   .chat-input-area { padding: 12px; border-top: 1px solid var(--cal-tenue); display: flex; gap: 8px; background: rgba(0,0,0,0.2); }
-  .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--cal-tenue); background: var(--campo); color: var(--cal); font-size: 13px; outline: none; transition: border 0.2s;}
+  .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--cal-tenue); background: var(--campo); color: var(--cal); font-size: 13px; outline: none; transition: border 0.2s; -webkit-user-select: text; user-select: text;}
   .chat-input-area input:focus { border-color: var(--cesped); }
   .chat-input-area button { background: var(--trofeo); color: #0B1120; border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; font-size: 16px; transition: transform 0.1s;}
   .chat-input-area button:active { transform: scale(0.9); }
@@ -336,9 +336,14 @@ window.addEventListener('unhandledrejection', function(event) { console.error("P
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
-const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
-const LIMITE_EXTRAS = new Date("2026-06-19T15:00:00+02:00").getTime();
+// ==========================================
+// 🕒 FECHAS LÍMITE PARA LAS PREDICCIONES EXTRA
+// Puedes cambiar estos valores cuando quieras
+// ==========================================
+const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-06-25T15:00:00+02:00").getTime(); // Campeón, Subcampeón, 3º, 4º
+const LIMITE_OTROS_EXTRAS = new Date("2026-06-30T15:00:00+02:00").getTime();       // MVP y Pichichi
 
+const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 const COLORES_EQUIPOS = {
   "Argentina": ["#43a1d5", "#ffffff"], "Brasil": ["#009c3b", "#ffdf00"], "España": ["#c60b1e", "#ffc400"], "Francia": ["#002395", "#ed2939"],
   "Inglaterra": ["#ffffff", "#ce1124"], "Alemania": ["#ffffff", "#000000"], "Portugal": ["#e42518", "#046a38"], "Italia": ["#0064aa", "#ffffff"],
@@ -526,9 +531,9 @@ function clasificacion(){
       f.rank = idx + 1; f.tendencia = f.rankAnt - f.rank;
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-      const racha5 = jugadosUser.slice(-5); f.rachaFuego = false;
-      if (racha5.length === 5) {
-          let enRacha = true; for (let p of racha5) { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
+      const racha4 = jugadosUser.slice(-4); f.rachaFuego = false;
+      if (racha4.length === 4) {
+          let enRacha = true; for (let p of racha4) { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
           f.rachaFuego = enRacha;
       }
   });
@@ -686,7 +691,7 @@ function vistaInicio() {
     const terminados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc)).slice(0, 5);
 
     html += `<div class="panel" style="margin-top:0; padding:16px 20px; margin-bottom:24px;"><div class="dash-titulo" style="margin-top:0;">RESUMEN DE LA FECHA</div><div style="display:flex; flex-direction:column; gap:8px;">`;
-    onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> tiene racha de 5 partidos</span></div>`; });
+    onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> tiene racha de 4 partidos</span></div>`; });
     terminados.forEach(p => {
         const prons = pronosticos.filter(x => x.partido_id === p.id); let plenos = 0, aciertos = 0;
         prons.forEach(pr => { const pts = puntosDe(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
@@ -833,11 +838,13 @@ function abrirChatModal() { pushModal({ view: 'chat' }); }
 function htmlModalChat() {
     setTimeout(() => renderChat('chat-container-mobile'), 50);
     return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-    <div class="modal-header" style="margin-bottom:16px;"><h2 style="font-family:var(--display); font-size:24px; color:var(--cal); text-transform:uppercase;">💬 COMUNIDAD</h2></div>
-    <div id="chat-container-mobile" class="chat-mensajes" style="height:55vh; background:var(--campo); border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:16px;"></div>
-    <div class="chat-input-area" style="background:transparent; padding:0; border:none;">
-        <input type="text" id="chat-input-mobile" maxlength="150" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter') enviarChat('chat-input-mobile')">
-        <button onclick="enviarChat('chat-input-mobile')">➔</button>
+    <div class="modal-header" style="margin-bottom:16px; flex-shrink:0;"><h2 style="font-family:var(--display); font-size:24px; color:var(--cal); text-transform:uppercase;">💬 COMUNIDAD</h2></div>
+    <div style="display:flex; flex-direction:column; height:65vh;">
+        <div id="chat-container-mobile" class="chat-mensajes" style="flex:1; background:var(--campo); border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:12px; overflow-y:auto; padding-bottom:10px;"></div>
+        <div class="chat-input-area" style="background:transparent; padding:0; border:none; flex-shrink:0;">
+            <input type="text" id="chat-input-mobile" maxlength="150" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter') enviarChat('chat-input-mobile')" onfocus="setTimeout(() => this.scrollIntoView({behavior:'smooth', block:'center'}), 300)">
+            <button onclick="enviarChat('chat-input-mobile')">➔</button>
+        </div>
     </div>`;
 }
 
@@ -994,7 +1001,10 @@ function htmlModalExtras(uid) {
   const targetUser = usuarios.find(x => x.id === uid) || me; if(!targetUser) return "";
   const esMio = (me && targetUser.id === me.id);
   const dataExt = targetUser.extras || {};
-  const cerrado = Date.now() > LIMITE_EXTRAS;
+  
+  // Novedad: Controlamos cada sección por separado
+  const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
+  const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
   
   const equiposArr = Array.from(new Set(partidos.flatMap(p => [p.local, p.visitante]).filter(e => e && e !== "?"))).sort();
   const opts = `<option value="">Selecciona equipo...</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
@@ -1018,40 +1028,66 @@ function htmlModalExtras(uid) {
       </div>`;
   }
 
-  if (esMio && !cerrado) {
-      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
+  let formTorneo = "";
+  if (esMio && !cerradoTorneo) {
+      formTorneo = `
         <label>🥇 Campeón (10 pts)</label><select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
         <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
-        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
-        <button class="btn oro" onclick="guardarMisExtras()">Guardar Predicciones</button>
-      </div>`;
-  } else if (!esMio && !cerrado) {
-      content += `<div class="vacio">Las predicciones de los demás son secretas hasta la Jornada 2 🔒</div>`;
+      `;
+  } else if (!esMio && !cerradoTorneo) {
+      formTorneo = `<div class="vacio" style="padding:10px 0;">Pronósticos secretos hasta la Jornada 2 🔒</div>`;
   } else {
-      content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
+      formTorneo = `
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b></div>
+      `;
+  }
+
+  let formOtros = "";
+  if (esMio && !cerradoOtros) {
+      formOtros = `
+        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
+        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+      `;
+  } else if (!esMio && !cerradoOtros) {
+      formOtros = `<div class="vacio" style="padding:10px 0;">Pronósticos de jugadores secretos 🔒</div>`;
+  } else {
+      formOtros = `
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b></div>
         <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🏆 MVP</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.mvp || "—")}</b></div>
-      </div>`;
+      `;
   }
+
+  content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
+    <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo (Equipos)</h3>
+    ${formTorneo}`;
+
+  content += `<h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Jugadores</h3>
+    ${formOtros}`;
+
+  if (esMio && (!cerradoTorneo || !cerradoOtros)) {
+      content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Guardar Predicciones</button>`;
+  }
+
+  content += `</div>`;
   return content;
 }
 
 function setExtrasSelects(uid) {
   const targetUser = usuarios.find(x => x.id === uid) || me; if(!targetUser) return;
-  if (me && targetUser.id === me.id && Date.now() <= LIMITE_EXTRAS) {
+  if (me && targetUser.id === me.id) {
       const dataExt = targetUser.extras || {};
-      if(dataExt.favorito && $("ext-fav")) $("ext-fav").value = dataExt.favorito;
-      if(dataExt.cam && $("ext-cam")) $("ext-cam").value = dataExt.cam;
-      if(dataExt.sub && $("ext-sub")) $("ext-sub").value = dataExt.sub;
-      if(dataExt.ter && $("ext-ter")) $("ext-ter").value = dataExt.ter;
-      if(dataExt.cua && $("ext-cua")) $("ext-cua").value = dataExt.cua;
+      if($("ext-fav") && dataExt.favorito) $("ext-fav").value = dataExt.favorito;
+      if($("ext-cam") && dataExt.cam) $("ext-cam").value = dataExt.cam;
+      if($("ext-sub") && dataExt.sub) $("ext-sub").value = dataExt.sub;
+      if($("ext-ter") && dataExt.ter) $("ext-ter").value = dataExt.ter;
+      if($("ext-cua") && dataExt.cua) $("ext-cua").value = dataExt.cua;
+      if($("ext-pic") && dataExt.pic) $("ext-pic").value = dataExt.pic;
+      if($("ext-mvp") && dataExt.mvp) $("ext-mvp").value = dataExt.mvp;
   }
 }
 
@@ -1230,9 +1266,15 @@ async function subirNuevaFoto(input) {
 
 async function guardarMisExtras() {
   if (!me || !miPinClaro) return mostrarToast("Por seguridad, inicia sesión.", "error");
-  const fav = $("ext-fav") ? $("ext-fav").value : "";
-  const payloadExtras = { cam: $("ext-cam")?.value || "", sub: $("ext-sub")?.value || "", ter: $("ext-ter")?.value || "", cua: $("ext-cua")?.value || "", pic: $("ext-pic")?.value.trim() || "", mvp: $("ext-mvp")?.value.trim() || "", favorito: fav };
-  
+  const fav = $("ext-fav") ? $("ext-fav").value : (me.extras?.favorito || "");
+  const cam = $("ext-cam") ? $("ext-cam").value : (me.extras?.cam || "");
+  const sub = $("ext-sub") ? $("ext-sub").value : (me.extras?.sub || "");
+  const ter = $("ext-ter") ? $("ext-ter").value : (me.extras?.ter || "");
+  const cua = $("ext-cua") ? $("ext-cua").value : (me.extras?.cua || "");
+  const pic = $("ext-pic") ? $("ext-pic").value.trim() : (me.extras?.pic || "");
+  const mvp = $("ext-mvp") ? $("ext-mvp").value.trim() : (me.extras?.mvp || "");
+
+  const payloadExtras = { cam, sub, ter, cua, pic, mvp, favorito: fav };
   mostrarToast("Guardando predicciones...", "nota");
   const { error } = await db.rpc('guardar_extras_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_extras: payloadExtras });
   if (error) return mostrarToast("Error BD: " + esc(error.message), "error");

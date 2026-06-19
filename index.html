@@ -67,6 +67,17 @@
   .btn.peligro { background: rgba(239,68,68,0.1); border: 1px solid var(--tarjeta-roja); color: var(--tarjeta-roja); }
   .btn.oro { background: var(--trofeo); color: #0B1120; box-shadow: 0 4px 12px rgba(245,158,11,0.2); }
 
+  /* ESTILOS DE INPUTS REPARADOS */
+  input[type=text], input[type=password], input[type=number], select {
+    width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--cal-tenue);
+    background: var(--campo-3); color: var(--cal); font-size: 15px; font-family: var(--body);
+    outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none;
+    transition: border-color 0.2s, background-color 0.2s; margin-bottom: 16px;
+  }
+  input:focus, select:focus { border-color: var(--cesped); background: var(--campo-2); }
+  label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--grada); margin: 0 0 8px 4px; }
+  input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
+
   header{ display:flex; align-items:center; justify-content:space-between; padding:18px 2px 14px; gap:10px; position:sticky; top:0; z-index:40; background:rgba(15,23,42,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--cal-tenue); margin:0 -14px 14px; padding-left:16px; padding-right:16px;}
   .marca{display:flex; flex-direction:column; line-height:1}
   .marca .anyo{font-family:var(--display); font-size:13px; letter-spacing:.35em; color:var(--cal-suave); text-transform:uppercase}
@@ -81,9 +92,6 @@
   .toast-error { background: var(--tarjeta-roja); }
   .toast-nota { background: var(--campo-3); }
   .toast.fade-out { opacity: 0; transform: translateY(10px); }
-
-  .buscador-input { width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo-2); color:var(--cal); font-size:14px; font-family:var(--body); outline:none; transition:border-color 0.2s; margin-bottom: 8px; }
-  .buscador-input:focus { border-color:var(--cesped); }
 
   .dia-titulo{ font-size:11px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--grada); margin:24px 4px 12px; display:flex; align-items:center; gap:10px; }
   .dia-titulo::after{content:""; flex:1; height:1px; background:var(--cal-tenue)}
@@ -160,7 +168,7 @@
   .stepper-controles { display:flex; justify-content:space-between; align-items:center; background:var(--campo-3); border-radius:16px; padding:8px; width: 130px; border:1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}
   .stepper button { width:40px; height:40px; border-radius:12px; border:none; background:transparent; color:var(--cal); font-size:24px; font-weight:400; cursor:pointer; transition: background 0.2s; display:flex; align-items:center; justify-content:center; padding-bottom:4px;}
   .stepper button:active{background:rgba(255,255,255,.1)}
-  .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1;}
+  .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1; color:var(--cal);}
   
   .lista-amigos { display:flex; flex-direction:column; gap:8px;}
   .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
@@ -236,9 +244,22 @@
   .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
   .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
 
+  /* ESTILOS DE TABLAS DE GRUPOS REPARADOS */
+  .grupo-card { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; }
+  .grupo-card h3 { font-family: var(--display); font-weight: 400; letter-spacing: .1em; color: var(--cal-suave); font-size: 16px; margin-bottom: 12px; text-transform: uppercase; }
+  .tabla-posiciones { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; table-layout: fixed; }
+  .tabla-posiciones th { padding: 8px 4px; color: var(--grada); font-size: 10px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+  .tabla-posiciones td { padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.02); text-align: center; }
+  .tabla-posiciones th:first-child, .tabla-posiciones td:first-child { text-align: left; width: 45%; }
+  .tabla-posiciones td:last-child { font-weight: 800; color: var(--cal); }
+
+  .panel{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:20px; margin-top:16px}
+  .panel h2{font-family:var(--display); font-weight:400; letter-spacing:.05em; font-size:20px; margin-bottom:6px; text-transform:uppercase}
+  .panel p{color:var(--grada); font-size:13px; margin-bottom:16px; line-height:1.5}
+
   .admin-partido { display:flex; align-items:center; justify-content:space-between; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:12px; margin-bottom:8px; font-size:13px; font-weight:800; gap:10px; }
   .admin-partido .mini { display:flex; gap:6px; align-items:center; }
-  .admin-partido input { width:46px; padding:8px; text-align:center; border-radius:8px; font-family:var(--display); font-size:16px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); }
+  .admin-partido input { width:46px; padding:8px; text-align:center; border-radius:8px; font-family:var(--display); font-size:16px; margin-bottom:0; background:var(--campo); }
   .btn-mini { padding:8px 12px; border-radius:8px; border:1px solid var(--cal-tenue); background:var(--campo-3); color:var(--cal); font-size:11px; font-weight:800; text-transform:uppercase; cursor:pointer; }
   .btn-mini:active { transform:scale(0.95); }
 
@@ -254,7 +275,7 @@
   .msg-row.mio .msg-content { background: rgba(16, 185, 129, 0.15); border-color: var(--cesped); border-radius: 12px 4px 12px 12px; }
   .msg-row.mio .msg-content strong { text-align: right; color: var(--cesped); }
   .chat-input-area { padding: 12px; border-top: 1px solid var(--cal-tenue); display: flex; gap: 8px; background: rgba(0,0,0,0.2); }
-  .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--cal-tenue); background: var(--campo); color: var(--cal); font-size: 13px; outline: none; transition: border 0.2s; -webkit-user-select: text; user-select: text;}
+  .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--cal-tenue); background: var(--campo); color: var(--cal); font-size: 13px; outline: none; transition: border 0.2s; -webkit-user-select: text; user-select: text; margin-bottom:0;}
   .chat-input-area input:focus { border-color: var(--cesped); }
   .chat-input-area button { background: var(--trofeo); color: #0B1120; border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; font-size: 16px; transition: transform 0.1s;}
   .chat-input-area button:active { transform: scale(0.9); }
@@ -366,13 +387,23 @@ function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= D
 function fmtHora(p){ return !p.fecha_utc ? "Por definir" : new Date(p.fecha_utc).toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"}); }
 function chipEstado(p){ return esVivo(p.estado) ? `<span class="chip vivo">En juego</span>` : (esFin(p.estado) ? `<span class="chip fin">Final</span>` : `<span class="chip">${fmtHora(p)}</span>`); }
 function escudo(url){ return url ? `<img src="${esc(url)}" loading="lazy">` : `<div class="sin-escudo">❔</div>`; }
-function getEstiloFav(fav) {
+
+// NUEVA FUNCIÓN PARA COLORES DE RELLENO
+function hexToRgba(hex, alpha) {
+  if(!hex) return "";
+  let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function getEstiloFav(fav, rank) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
-    return `border: 2px solid transparent; background-image: linear-gradient(var(--campo-2), var(--campo-2)), linear-gradient(135deg, ${COLORES_EQUIPOS[fav][0]}, ${COLORES_EQUIPOS[fav][1]}); background-origin: border-box; background-clip: padding-box, border-box;`;
+    if (rank && rank <= 3) return ""; // No pisamos los del podio
+    const colorHex = COLORES_EQUIPOS[fav][0];
+    return `background: linear-gradient(90deg, ${hexToRgba(colorHex, 0.15)} 0%, var(--campo-2) 100%); border-color: ${hexToRgba(colorHex, 0.3)};`;
 }
 function getEstiloFavPerfil(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
-    return `border: 3px solid transparent; background-image: linear-gradient(180deg, var(--campo-3), var(--campo-2)), linear-gradient(135deg, ${COLORES_EQUIPOS[fav][0]}, ${COLORES_EQUIPOS[fav][1]}); background-origin: border-box; background-clip: padding-box, border-box;`;
+    const colorHex = COLORES_EQUIPOS[fav][0];
+    return `background: linear-gradient(180deg, ${hexToRgba(colorHex, 0.25)} 0%, var(--campo-2) 100%); border-color: ${hexToRgba(colorHex, 0.5)};`;
 }
 
 function esPartidoPuntuable(p) {
@@ -577,8 +608,8 @@ function renderMiniTabla() {
     
     let html = `<div style="padding:16px; display:flex; flex-direction:column; gap:12px;">`;
     filas.forEach(f => {
-        const favStyle = getEstiloFav(f.u.extras?.favorito);
-        const borderStyle = favStyle || `border: 1px solid var(--cal-tenue); background: var(--campo-2);`;
+        const favStyle = getEstiloFav(f.u.extras?.favorito, f.rank);
+        const styleText = favStyle ? favStyle : `background: var(--campo-2); border-color: var(--cal-tenue);`;
         const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
         const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
         const ultimos5 = jugadosUser.slice(-5);
@@ -590,7 +621,7 @@ function renderMiniTabla() {
             } else htmlForma += `<div class="forma-box forma-vacia" style="width:14px;height:14px;border-radius:4px;"></div>`;
         }
         html += `
-        <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; cursor:pointer; ${borderStyle}" onclick="abrirPerfil('${f.u.id}')">
+        <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; cursor:pointer; border: 1px solid; ${styleText}" onclick="abrirPerfil('${f.u.id}')">
             <span style="font-family:var(--display); font-size:14px; color:var(--grada); min-width:18px;">${f.rank}</span>
             <div style="width:28px; height:28px; border-radius:50%; background:var(--campo); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">${avatarHtmlMini(f.u)}</div>
             <div style="flex:1; min-width:0;"><div style="font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(f.u.nombre)}</div><div style="display:flex; gap:2px; margin-top:4px;">${htmlForma}</div></div>
@@ -634,7 +665,7 @@ function vistaCodigo(){
   return `<div class="panel"><h2>¿De qué porra eres?</h2><p>Escribe el código de invitación.</p>
     <label>Código de invitación</label>
     <input type="text" id="codigo-porra" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase; letter-spacing:.2em; font-weight:800; text-align:center" onkeydown="if(event.key==='Enter')entrarConCodigo()">
-    <button class="btn oro" style="margin-top:16px;" onclick="entrarConCodigo()">Entrar en la porra</button></div>`;
+    <button class="btn oro" onclick="entrarConCodigo()">Entrar en la porra</button></div>`;
 }
 
 async function entrarConCodigo(){
@@ -849,7 +880,7 @@ function htmlModalPartido(id) {
             <div class="stepper"><div class="stepper-controles"><button type="button" onclick="ajustar(${p.id},'gl',-1)">−</button><span class="num" id="num-${p.id}-gl">${d.gl}</span><button type="button" onclick="ajustar(${p.id},'gl',1)">+</button></div><span style="font-size:10px; color:var(--grada); font-weight:800;">${esc(p.local || "LOCAL")}</span></div>
             <div class="stepper"><div class="stepper-controles"><button type="button" onclick="ajustar(${p.id},'gv',-1)">−</button><span class="num" id="num-${p.id}-gv">${d.gv}</span><button type="button" onclick="ajustar(${p.id},'gv',1)">+</button></div><span style="font-size:10px; color:var(--grada); font-weight:800;">${esc(p.visitante || "VISIT.")}</span></div>
           </div>
-          <button class="btn oro" style="margin-top:16px;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
+          <button class="btn oro" onclick="guardarPronostico(${p.id})">GUARDAR</button>
         </div>`;
     } else {
       if(!tienePron) bannerMio = `<div class="banner-resultado">No pronosticaste este partido 😶</div>`;
@@ -916,7 +947,7 @@ function htmlModalPerfil(uid) {
   const headerStyle = getEstiloFavPerfil(u.extras?.favorito);
 
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-      <div class="perfil-header" style="margin-bottom:16px; ${headerStyle}">
+      <div class="perfil-header" style="${headerStyle}">
           <div class="perfil-avatar">${avatarHtml(u)}</div>
           <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
           <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
@@ -995,7 +1026,7 @@ function htmlModalExtras(uid) {
   if (esMio) {
       content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
         <label>❤️ Equipo Favorito (Siempre Abierto)</label>
-        <select id="ext-fav" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${optsFav}</select>
+        <select id="ext-fav">${optsFav}</select>
         <button class="btn oro" onclick="guardarMiFavorito()">Actualizar Favorito</button>
       </div>`;
   } else {
@@ -1007,10 +1038,10 @@ function htmlModalExtras(uid) {
   let formTorneo = "";
   if (esMio && !cerradoTorneo) {
       formTorneo = `
-        <label>🥇 Campeón (10 pts)</label><select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥇 Campeón (10 pts)</label><select id="ext-cam">${opts}</select>
+        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub">${opts}</select>
+        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter">${opts}</select>
+        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua">${opts}</select>
       `;
   } else if (!esMio && !cerradoTorneo) {
       formTorneo = `<div class="vacio" style="padding:10px 0;">Pronósticos de Torneo secretos 🔒</div>`;
@@ -1026,8 +1057,8 @@ function htmlModalExtras(uid) {
   let formOtros = "";
   if (esMio && !cerradoOtros) {
       formOtros = `
-        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
-        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador...">
+        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador...">
       `;
   } else if (!esMio && !cerradoOtros) {
       formOtros = `<div class="vacio" style="padding:10px 0;">Pronósticos individuales secretos 🔒</div>`;
@@ -1095,7 +1126,7 @@ function tablaGrupo(letra, ps){
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid rgba(248,250,252,.06); font-size:12px; cursor:pointer;" onclick="abrirModal(${p.id})"><span style="flex:1; font-weight:600; color:var(--cal-suave)">${esc(p.local||'?')}</span><span style="padding:4px 10px; background:var(--campo); border-radius:8px; font-family:var(--display); letter-spacing:.05em">${(p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`}</span><span style="flex:1; text-align:right; font-weight:600; color:var(--cal-suave)">${esc(p.visitante||'?')}</span></div>`;
   }).join("");
 
-  return `<div class="grupo-card"><h3>Grupo ${esc(letra)}</h3><table><tr><th>Equipo</th><th>PJ</th><th>GF</th><th>GC</th><th>Pts</th></tr>${filas.map(f => `<tr><td><img src="${f.crest}" style="width:16px; vertical-align:middle; margin-right:6px; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5))">${esc(f.n)}</td><td>${f.pj}</td><td>${f.gf}</td><td>${f.gc}</td><td style="color:var(--cal); font-weight:800">${f.pts}</td></tr>`).join("")}</table><div style="margin-top:8px">${htmlPartidos}</div></div>`;
+  return `<div class="grupo-card"><h3>Grupo ${esc(letra)}</h3><table class="tabla-posiciones"><tr><th>Equipo</th><th>PJ</th><th>GF</th><th>GC</th><th>Pts</th></tr>${filas.map(f => `<tr><td><img src="${f.crest}" style="width:16px; vertical-align:middle; margin-right:6px; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5))">${esc(f.n)}</td><td>${f.pj}</td><td>${f.gf}</td><td>${f.gc}</td><td>${f.pts}</td></tr>`).join("")}</table><div style="margin-top:8px">${htmlPartidos}</div></div>`;
 }
 
 function vistaTabla(){
@@ -1110,7 +1141,7 @@ function vistaTabla(){
     else { numberHtml = `<div class="rank-num-small">${f.rank}</div>`; }
     
     const fuegoHTML = f.rachaFuego ? `<span title="¡On Fire!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
-    const favStyle = getEstiloFav(f.u.extras?.favorito);
+    const favStyle = getEstiloFav(f.u.extras?.favorito, f.rank);
     const inyectStyle = favStyle ? `style="${favStyle}"` : '';
 
     return `<div class="rank-card ${specialClass} ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" ${inyectStyle}>
@@ -1135,7 +1166,7 @@ function vistaPerfil(){
   const ultimos5 = partidosJugados.sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc)).slice(-5);
   let htmlForma = '';
   for(let i=0; i<5; i++){
-      if(ultimos5[i]) { const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]); htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`; } 
+      if(ultimos5[i]) { const pts = puntosDe(misProns.find(x => x.partido_id === p.id), ultimos5[i]); htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`; } 
       else htmlForma += `<div class="forma-box forma-vacia"></div>`;
   }
   const fuegoHTML = f.rachaFuego ? `<span title="¡On Fire!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
@@ -1175,15 +1206,15 @@ async function cambiarMiPin() {
 function vistaAcceso(){
   return `<div class="panel"><h2>Inicia sesión</h2><p>Estás en <b style="color:var(--trofeo)">${esc(porra ? porra.nombre : "")}</b>.</p>
     <label>Tu nombre</label><input type="text" id="login-nombre" autocomplete="off" placeholder="Ej. Kiwi">
-    <label style="margin-top:12px;">Tu PIN</label><input type="password" id="pin-login" inputmode="numeric" autocomplete="off">
-    <button class="btn oro" style="margin-top:20px" onclick="iniciarSesion()">Entrar</button>
+    <label>Tu PIN</label><input type="password" id="pin-login" inputmode="numeric" autocomplete="off">
+    <button class="btn oro" onclick="iniciarSesion()">Entrar</button>
     <button class="btn secundario" style="margin-top:12px" onclick="cambiarPorra()">Cambiar porra</button>
   </div>
   <div class="panel"><h2>¿Primera vez? Únete</h2>
     <label>Tu nombre</label><input type="text" id="reg-nombre" maxlength="20" autocomplete="off">
     <label>Elige un PIN (4 a 6 números)</label><input type="password" id="reg-pin" inputmode="numeric" autocomplete="off">
-    <label>Tu Foto (Opcional)</label><input type="file" id="reg-avatar" accept="image/*" style="padding:10px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; width:100%; color:var(--cal);">
-    <button class="btn oro" style="margin-top:14px;" onclick="registrarse()">Crear mi perfil</button>
+    <label>Tu Foto (Opcional)</label><input type="file" id="reg-avatar" accept="image/*">
+    <button class="btn oro" onclick="registrarse()">Crear mi perfil</button>
   </div>`;
 }
 
@@ -1286,10 +1317,10 @@ function vistaAdmin(){
   return `<div class="panel"><h2>🛠️ Panel de admin</h2><button class="btn secundario" onclick="sincronizarAhora()" style="margin-bottom:24px;">🔄 Sincronizar ahora</button>
     <label>🏆 Cerrar Torneo (Puntos Auto)</label>
     <div style="background:var(--campo); padding:16px; border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:24px;">
-        <select id="adm-cam" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Campeón")}</select>
-        <select id="adm-sub" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Subcampeón")}</select>
-        <select id="adm-ter" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Tercero")}</select>
-        <select id="adm-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Cuarto")}</select>
+        <select id="adm-cam">${opts.replace("---", "Campeón")}</select>
+        <select id="adm-sub">${opts.replace("---", "Subcampeón")}</select>
+        <select id="adm-ter">${opts.replace("---", "Tercero")}</select>
+        <select id="adm-cua">${opts.replace("---", "Cuarto")}</select>
         <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
     </div>
     <label>Poner resultado a mano / Probar LIVE</label>
@@ -1297,8 +1328,8 @@ function vistaAdmin(){
     ${recientes.length ? `<label style="margin-top:18px">Corregir reciente</label>` + recientes.map(filaAdmin).join("") : ""}
     <label style="margin-top:24px">👥 Participantes</label>
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
-      <select id="adm-puntos-usr" style="width:100%; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)} (${u.puntos_extra || 0} ex)</option>`).join("")}</select>
-      <div style="display:flex; gap:8px;"><input type="number" id="adm-puntos-val" placeholder="+/- pts" style="flex:1; text-align:center; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);"><button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Asignar</button></div>
+      <select id="adm-puntos-usr">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)} (${u.puntos_extra || 0} ex)</option>`).join("")}</select>
+      <div style="display:flex; gap:8px;"><input type="number" id="adm-puntos-val" placeholder="+/- pts" style="margin-bottom:0;"><button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Asignar</button></div>
       <button class="btn peligro" style="margin-top:4px;" onclick="resetearPin()">🔒 Resetear PIN a "0000"</button>
     </div>
     <button class="btn secundario" onclick="salirAdmin()" style="margin-top:30px;">Salir de admin</button></div>`;

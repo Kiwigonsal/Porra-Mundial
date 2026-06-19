@@ -4,10 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B1120">
+<meta name="description" content="La porra del Mundial 2026 entre amigos.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>La Porra del Mundial 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2 family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --campo:#0f172a;          
@@ -39,7 +43,7 @@
   .desktop-aside { display: none; width: 280px; flex-shrink: 0; background: rgba(15,23,42,0.6); border: 1px solid var(--cal-tenue); border-radius: var(--radius); height: calc(100vh - 28px); position: sticky; top: 14px; overflow-y: hidden; flex-direction: column; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   .aside-titulo { padding: 16px; font-family: var(--display); font-size: 16px; letter-spacing: 0.05em; color: var(--cal); text-transform: uppercase; border-bottom: 1px solid var(--cal-tenue); background: rgba(0,0,0,0.2); margin:0;}
   
-  nav{ position:fixed; bottom:0; width:100%; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
+  nav{ position:fixed; bottom:0; width:100%; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; left:0;}
   .nav-inner{width:100%; max-width:560px; margin:0 auto; display:flex; justify-content:space-evenly; align-items:center; height:100%;}
   nav button{ flex:1; background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
   nav button .ico{font-size:20px; display:block; line-height:1;}
@@ -1069,6 +1073,7 @@ function vistaTorneo(){
   for (const p of partidos.filter(x => x.etapa === "GROUP_STAGE" && x.grupo)) { (grupos[p.grupo] = grupos[p.grupo] || []).push(p); }
   const letras = Object.keys(grupos).sort();
   if (letras.length){ html += `<div class="dia-titulo" style="margin-top:0">Fase de grupos</div>`; for (const g of letras) html += tablaGrupo(g, grupos[g]); }
+  
   const eliminatorias = partidos.filter(x => x.etapa !== "GROUP_STAGE");
   if(eliminatorias.length > 0) { html += `<div class="dia-titulo">Eliminatorias</div>`; for (const p of eliminatorias) html += tarjetaFeed(p, false); }
   return html || `<div class="vacio">Aún no hay datos del torneo.</div>`;
@@ -1089,6 +1094,7 @@ function tablaGrupo(letra, ps){
   let htmlPartidos = ps.sort((a,b)=> new Date(a.fecha_utc) - new Date(b.fecha_utc)).map(p => {
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid rgba(248,250,252,.06); font-size:12px; cursor:pointer;" onclick="abrirModal(${p.id})"><span style="flex:1; font-weight:600; color:var(--cal-suave)">${esc(p.local||'?')}</span><span style="padding:4px 10px; background:var(--campo); border-radius:8px; font-family:var(--display); letter-spacing:.05em">${(p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`}</span><span style="flex:1; text-align:right; font-weight:600; color:var(--cal-suave)">${esc(p.visitante||'?')}</span></div>`;
   }).join("");
+
   return `<div class="grupo-card"><h3>Grupo ${esc(letra)}</h3><table><tr><th>Equipo</th><th>PJ</th><th>GF</th><th>GC</th><th>Pts</th></tr>${filas.map(f => `<tr><td><img src="${f.crest}" style="width:16px; vertical-align:middle; margin-right:6px; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5))">${esc(f.n)}</td><td>${f.pj}</td><td>${f.gf}</td><td>${f.gc}</td><td style="color:var(--cal); font-weight:800">${f.pts}</td></tr>`).join("")}</table><div style="margin-top:8px">${htmlPartidos}</div></div>`;
 }
 
@@ -1113,6 +1119,7 @@ function vistaTabla(){
       <div class="rank-pts-box"><div class="rank-pts-val">${f.total}</div><div class="rank-pts-lbl">PTS</div></div>
     </div>`;
   }).join("") + `</div>`;
+
   return `${partidos.some(p => esVivo(p.estado)) ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}${listaHtml}<p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></p>`;
 }
 

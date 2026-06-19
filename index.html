@@ -43,6 +43,16 @@
   .desktop-aside { display: none; width: 280px; flex-shrink: 0; background: rgba(15,23,42,0.6); border: 1px solid var(--cal-tenue); border-radius: var(--radius); height: calc(100vh - 28px); position: sticky; top: 14px; overflow-y: hidden; flex-direction: column; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   .aside-titulo { padding: 16px; font-family: var(--display); font-size: 16px; letter-spacing: 0.05em; color: var(--cal); text-transform: uppercase; border-bottom: 1px solid var(--cal-tenue); background: rgba(0,0,0,0.2); margin:0;}
   
+  /* ========================================================
+     LA BARRA DI NAVIGAZIONE È STATA SPOSTATA QUI
+     Così non sovrascrive il layout del desktop!
+     ======================================================== */
+  nav{ position:fixed; bottom:0; width:100%; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
+  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:flex; justify-content:space-evenly; align-items:center; height:100%;}
+  nav button{ flex:1; background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
+  nav button .ico{font-size:20px; display:block; line-height:1;}
+  nav button.activo{color:var(--trofeo)}
+
   @media (max-width: 1023px) {
     #layout-desktop { display: block; padding: 0; }
     #app { margin: 0 auto; padding: 0 14px calc(86px + env(safe-area-inset-bottom)); }
@@ -230,28 +240,6 @@
   .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
   .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
 
-  .grupo-card{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:16px; margin-bottom:24px}
-  .grupo-card h3{font-family:var(--display); font-weight:400; letter-spacing:.1em; color:var(--cal-suave); font-size:16px; margin-bottom:12px; text-transform:uppercase}
-  .grupo-card table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:16px;}
-  .grupo-card td,.grupo-card th{padding:6px 4px; text-align:right; font-variant-numeric:tabular-nums}
-  .grupo-card td:first-child,.grupo-card th:first-child{text-align:left}
-  .grupo-card th{color:var(--grada); font-size:10px; letter-spacing:.1em; text-transform:uppercase}
-  .grupo-card td{border-top:1px solid rgba(248,250,252,.06)}
-
-  .panel{background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:20px; margin-top:16px}
-  .panel h2{font-family:var(--display); font-weight:400; letter-spacing:.05em; font-size:20px; margin-bottom:6px; text-transform:uppercase}
-  .panel p{color:var(--grada); font-size:13px; margin-bottom:16px; line-height:1.5}
-  label{display:block; font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grada); margin:12px 0 6px}
-  input[type=text],input[type=password],input[type=datetime-local],select{ width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); font-size:16px; font-family:var(--body); }
-  input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
-  input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
-
-  nav{ position:fixed; bottom:0; width:100%; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
-  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:flex; justify-content:space-evenly; align-items:center; height:100%;}
-  nav button{ flex:1; background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
-  nav button .ico{font-size:20px; display:block; line-height:1;}
-  nav button.activo{color:var(--trofeo)}
-
   .admin-partido { display:flex; align-items:center; justify-content:space-between; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:12px; margin-bottom:8px; font-size:13px; font-weight:800; gap:10px; }
   .admin-partido .mini { display:flex; gap:6px; align-items:center; }
   .admin-partido input { width:46px; padding:8px; text-align:center; border-radius:8px; font-family:var(--display); font-size:16px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); }
@@ -289,7 +277,7 @@ window.addEventListener('unhandledrejection', function(event) { console.error("P
       <h2 class="aside-titulo">💬 Comunidad</h2>
       <div id="chat-container-desktop" class="chat-mensajes"></div>
       <div class="chat-input-area">
-          <input type="text" id="chat-input-desktop" maxlength="150" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter') enviarChat('chat-input-desktop')">
+          <input type="text" id="chat-input-desktop" maxlength="150" placeholder="Escribe un messaggio..." onkeydown="if(event.key==='Enter') enviarChat('chat-input-desktop')">
           <button onclick="enviarChat('chat-input-desktop')">➔</button>
       </div>
   </aside>
@@ -337,11 +325,11 @@ const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
 // ==========================================
-// 🕒 FECHAS LÍMITE PARA LAS PREDICCIONES EXTRA
-// Puedes cambiar estos valores cuando quieras
+// 🕒 DATE POSTERIORI COME RICHIESTO
+// Impostato a Settembre 2026. Sarà il frontend a comandare.
 // ==========================================
-const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-06-25T15:00:00+02:00").getTime(); // Campeón, Subcampeón, 3º, 4º
-const LIMITE_OTROS_EXTRAS = new Date("2026-06-30T15:00:00+02:00").getTime();       // MVP y Pichichi
+const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-09-01T15:00:00+02:00").getTime(); 
+const LIMITE_OTROS_EXTRAS = new Date("2026-09-01T15:00:00+02:00").getTime();       
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 const COLORES_EQUIPOS = {
@@ -498,7 +486,7 @@ function programarSync(){
   setInterval(() => { if (cargado) { render(); if(modalStack.length > 0) renderCurrentModal(); } }, 60e3);
 }
 
-function puntosDe(pred, p){
+function puntiGara(pred, p){
   if (!pred || !p || p.goles_local == null || p.goles_visitante == null) return null;
   const aciertoLocal = pred.goles_local === p.goles_local, aciertoVisitante = pred.goles_visitante === p.goles_visitante;
   const aciertoSigno = Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante);
@@ -515,7 +503,7 @@ function clasificacion(){
   for (const pr of pronosticos){
     const p = partidos.find(x => x.id === pr.partido_id); const f = porUsuario[pr.usuario_id];
     if (!p || !f || !esPartidoPuntuable(p) || (!esFin(p.estado) && !esVivo(p.estado))) continue;
-    const pts = puntosDe(pr, p); if (pts == null) continue;
+    const pts = puntiGara(pr, p); if (pts == null) continue;
     
     if (esFin(p.estado)) f.jugados++; f.total += pts;
     if (pts === 5) f.plenos++; else if (pts > 0) f.signos++;
@@ -531,9 +519,11 @@ function clasificacion(){
       f.rank = idx + 1; f.tendencia = f.rankAnt - f.rank;
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+      
+      // Controllo esatto a 4 partite (ON FIRE)
       const racha4 = jugadosUser.slice(-4); f.rachaFuego = false;
       if (racha4.length === 4) {
-          let enRacha = true; for (let p of racha4) { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
+          let enRacha = true; for (let p of racha4) { if (puntiGara(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
           f.rachaFuego = enRacha;
       }
   });
@@ -607,7 +597,7 @@ function renderMiniTabla() {
         let htmlForma = '';
         for(let i=0; i<5; i++){
             if(ultimos5[i]) {
-                const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+                const pts = puntiGara(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
                 htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}" style="width:14px;height:14px;border-radius:4px;"></div>`;
             } else htmlForma += `<div class="forma-box forma-vacia" style="width:14px;height:14px;border-radius:4px;"></div>`;
         }
@@ -672,7 +662,7 @@ async function entrarConCodigo(){
   await cargarTodo(); irA("perfil");
 }
 
-function cambiarPorra(){ try { localStorage.removeItem("porra_actual"); localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro"); sessionStorage.removeItem("adminPin"); } catch(e){} window.location.reload(); }
+function cambiarePorra(){ try { localStorage.removeItem("porra_actual"); localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro"); sessionStorage.removeItem("adminPin"); } catch(e){} window.location.reload(); }
 
 function vistaInicio() {
     if (!me) return vistaAcceso();
@@ -691,10 +681,10 @@ function vistaInicio() {
     const terminados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc)).slice(0, 5);
 
     html += `<div class="panel" style="margin-top:0; padding:16px 20px; margin-bottom:24px;"><div class="dash-titulo" style="margin-top:0;">RESUMEN DE LA FECHA</div><div style="display:flex; flex-direction:column; gap:8px;">`;
-    onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> tiene racha de 4 partidos</span></div>`; });
+    onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> ha una racha di 4 partite</span></div>`; });
     terminados.forEach(p => {
         const prons = pronosticos.filter(x => x.partido_id === p.id); let plenos = 0, aciertos = 0;
-        prons.forEach(pr => { const pts = puntosDe(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
+        prons.forEach(pr => { const pts = puntiGara(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
         let textoAciertos = [];
         if(plenos > 0) textoAciertos.push(`<span style="color:var(--trofeo)">${plenos} Plenos</span>`);
         if(aciertos > 0) textoAciertos.push(`<span style="color:var(--cesped)">${aciertos} Aciertos</span>`);
@@ -778,7 +768,7 @@ function tarjetaFeed(p, conPron){
     else {
       if(!tienePron) footer = `<span>No pronosticaste 😶</span>`;
       else {
-        const pts = puntosDe(mio, p);
+        const pts = puntiGara(mio, p);
         if (!puntua) footer = `<span>Pronóstico: <b style="color:var(--grada)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span style="color:var(--grada); font-weight:800; font-size:10px; background:rgba(255,255,255,0.05); border-radius:6px; padding:4px 8px;">CALENTAMIENTO</span>`;
         else {
             let col = pts === 5 ? 'var(--trofeo)' : (pts === 3 ? 'var(--cesped)' : 'var(--tarjeta-roja)');
@@ -790,7 +780,7 @@ function tarjetaFeed(p, conPron){
           const pronsDelPartido = pronosticos.filter(x => x.partido_id === p.id);
           if (pronsDelPartido.length > 0) {
             let ex = 0, co = 0, se = 0;
-            pronsDelPartido.forEach(pr => { const pts = puntosDe(pr, p); if (pts === 5) ex++; else if (pts === 3) co++; else se++; });
+            pronsDelPartido.forEach(pr => { const pts = puntiGara(pr, p); if (pts === 5) ex++; else if (pts === 3) co++; else se++; });
             resumen = `<div style="display:flex; justify-content:space-between; font-size:10.5px; font-weight:800; text-transform:uppercase; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--cal-tenue);"><span style="color:var(--trofeo)">⭐ ${ex} exactos</span><span style="color:var(--cesped)">✅ ${co} correctos</span><span style="color:var(--tarjeta-roja)">❌ ${se} a cero</span></div>`;
           }
       }
@@ -829,10 +819,10 @@ function renderCurrentModal() {
   if(state.view === 'extras') setExtrasSelects(state.uid);
 }
 
-function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
-function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
-function abrirModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
-function abrirModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
+function aprireModal(id) { pushModal({ view: 'partido', pid: id }); }
+function aprirePerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
+function aprireModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
+function aprireModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
 function abrirChatModal() { pushModal({ view: 'chat' }); }
 
 function htmlModalChat() {
@@ -856,7 +846,7 @@ function htmlModalPartido(id) {
   const txtHora = p.fecha_utc ? new Date(p.fecha_utc).toLocaleString("es-ES", {weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "Por definir";
   const puntua = esPartidoPuntuable(p);
   
-  let scoreHTML = hayResultado ? `<div class="modal-tanteo">${p.goles_local} - ${p.goles_visitante}<small>${fin?'final':'en juego'}</small></div>` : `<div class="modal-tanteo"><span style="color:var(--cal-tenue); font-size:32px">vs</span><small>${fmtHora(p)}</small></div>`;
+  let scoreHTML = hayResultado ? `<div class="modal-tanteo">${p.goles_local} - ${p.goles_visitante}<small>${fin?'final':'en gioco'}</small></div>` : `<div class="modal-tanteo"><span style="color:var(--cal-tenue); font-size:32px">vs</span><small>${fmtHora(p)}</small></div>`;
   
   let bannerMio = "";
   if (me) {
@@ -867,36 +857,36 @@ function htmlModalPartido(id) {
       const d = borradores[p.id] || { gl: tienePron ? mio.goles_local : 0, gv: tienePron ? mio.goles_visitante : 0 }; borradores[p.id] = d;
       bannerMio = `
         <div style="background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:14px; padding:16px;">
-          <div style="font-size:10px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; color:var(--cal-suave); margin-bottom:12px; text-align:center;">${tienePron ? "Tu pronóstico guardado ✓" : "Ingresa tu pronóstico"}</div>
+          <div style="font-size:10px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; color:var(--cal-suave); margin-bottom:12px; text-align:center;">${tienePron ? "Pronóstico salvato ✓" : "Inserisci pronostico"}</div>
           <div class="pron-fila">
             <div class="stepper"><div class="stepper-controles"><button type="button" onclick="ajustar(${p.id},'gl',-1)">−</button><span class="num" id="num-${p.id}-gl">${d.gl}</span><button type="button" onclick="ajustar(${p.id},'gl',1)">+</button></div><span style="font-size:10px; color:var(--grada); font-weight:800;">${esc(p.local || "LOCAL")}</span></div>
             <div class="stepper"><div class="stepper-controles"><button type="button" onclick="ajustar(${p.id},'gv',-1)">−</button><span class="num" id="num-${p.id}-gv">${d.gv}</span><button type="button" onclick="ajustar(${p.id},'gv',1)">+</button></div><span style="font-size:10px; color:var(--grada); font-weight:800;">${esc(p.visitante || "VISIT.")}</span></div>
           </div>
-          <button class="btn oro" style="margin-top:16px;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
+          <button class="btn oro" style="margin-top:16px;" onclick="guardarPronostico(${p.id})">SALVA</button>
         </div>`;
     } else {
-      if(!tienePron) bannerMio = `<div class="banner-resultado">No pronosticaste este partido 😶</div>`;
+      if(!tienePron) bannerMio = `<div class="banner-resultado">Non hai pronosticato 😶</div>`;
       else {
-        const pts = puntosDe(mio, p);
-        if (!puntua) bannerMio = `<div class="banner-resultado" style="border-color:var(--cal-tenue); background:rgba(255,255,255,0.02); color:var(--grada)">Tu pronóstico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;">🛑 Prueba (No suma)</span></div>`;
+        const pts = puntiGara(mio, p);
+        if (!puntua) bannerMio = `<div class="banner-resultado" style="border-color:var(--cal-tenue); background:rgba(255,255,255,0.02); color:var(--grada)">Tuo pronostico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;">🛑 Prova (Non somma)</span></div>`;
         else {
             let clBanner = pts === 5 ? 'exito' : (pts === 3 ? 'ok' : 'error');
-            if(vivo) bannerMio = `<div class="banner-resultado ${clBanner}">Tu pronóstico era <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block;">Puntos provisorios: ${pts>0?'+'+pts:'0'}</span></div>`;
-            else bannerMio = `<div class="banner-resultado ${clBanner}">Tu pronóstico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:12px; margin-top:4px; display:block; color:${pts===0?'var(--tarjeta-roja)':''};">${pts === 5 ? "⭐ ¡Pleno exacto! +5 puntos" : (pts === 3 ? "✅ ¡Resultado correcto! +3 puntos" : "❌ 0 puntos")}</span></div>`;
+            if(vivo) bannerMio = `<div class="banner-resultado ${clBanner}">Tuo pronostico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:11px; margin-top:4px; display:block;">Punti provvisori: ${pts>0?'+'+pts:'0'}</span></div>`;
+            else bannerMio = `<div class="banner-resultado ${clBanner}">Tuo pronostico: <b>${mio.goles_local}-${mio.goles_visitante}</b><br><span style="font-size:12px; margin-top:4px; display:block; color:${pts===0?'var(--tarjeta-roja)':''};">${pts === 5 ? "⭐ Pleno esatto! +5 punti" : (pts === 3 ? "✅ Risultato corretto! +3 punti" : "❌ 0 punti")}</span></div>`;
         }
       }
     }
   }
 
-  let htmlTodos = `<div class="vacio" style="padding:10px">Se abrirán cuando comience el partido 🔒</div>`;
+  let htmlTodos = `<div class="vacio" style="padding:10px">Visibili a inizio partita 🔒</div>`;
   if(empezado(p)){
     const todos = pronosticos.filter(x => x.partido_id === p.id);
-    if(todos.length === 0) htmlTodos = `<div class="vacio" style="padding:10px">Nadie pronosticó 😶</div>`;
+    if(todos.length === 0) htmlTodos = `<div class="vacio" style="padding:10px">Nessun pronostico 😶</div>`;
     else {
       htmlTodos = `<div class="lista-amigos">` + todos.map(pr => {
         const u = usuarios.find(x => x.id === pr.usuario_id); if(!u) return "";
-        const pts = puntosDe(pr, p); let cls = "", sufijo = "";
-        if (!puntua) sufijo = `<span style="font-size:10px; color:var(--grada); font-weight:800;">PRUEBA</span>`;
+        const pts = puntiGara(pr, p); let cls = "", sufijo = "";
+        if (!puntua) sufijo = `<span style="font-size:10px; color:var(--grada); font-weight:800;">PRUEVA</span>`;
         else { cls = pts === 5 ? "pleno" : (pts === 3 ? "ok" : "bad"); sufijo = `<span style="font-size:11px; color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">${pts===0?'0':'+'+pts}</span>`; }
         return `<div class="amigo-pick ${cls}" style="cursor:pointer" onclick="abrirPerfil('${pr.usuario_id}')">
             <div class="amigo-info"><div class="amigo-avatar">${avatarHtml(u)}</div> ${esc(u.nombre)}</div>
@@ -925,24 +915,24 @@ function htmlModalPerfil(uid) {
   const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
   const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   
-  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntiGara(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
   const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
   const ultimos5 = partidosJugados.slice(-5);
   let htmlForma = '';
   for(let i=0; i<5; i++){
       if(ultimos5[i]) {
-          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          const pts = puntiGara(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
           htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
       } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
   }
-  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
+  const fuegoHTML = f.rachaFuego ? `<span title="On Fire!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
   const headerStyle = getEstiloFavPerfil(u.extras?.favorito);
 
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
       <div class="perfil-header" style="margin-bottom:16px; ${headerStyle}">
           <div class="perfil-avatar">${avatarHtml(u)}</div>
           <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
-          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
+          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} giocate</span></div>
       </div>
       <div class="perfil-stats-row">
           <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
@@ -967,19 +957,19 @@ function htmlModalPronosticos(uid) {
   const userPartidos = partidos.filter(p => userPartidosId.includes(p.id) && esPartidoPuntuable(p)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
 
   const generarHtmlProns = (lista) => {
-    if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico aquí.</div>`;
+    if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Nessun pronostico qui.</div>`;
     return lista.map(p => {
       const pr = userProns.find(x => x.partido_id === p.id);
       const fin = esFin(p.estado), vivo = esVivo(p.estado);
-      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
+      const pts = (fin || vivo) ? puntiGara(pr, p) : null;
       let badgePts = "", realScore = "", bgClass = "";
       if (fin || vivo) { bgClass = pts === 5 ? "pleno-bg" : (pts === 3 ? "ok-bg" : "bad-bg"); }
       if (fin) {
           badgePts = `<div class="pron-item-pts" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')}); font-weight:800;">${pts===0?'0':'+'+pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">reale</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else if (vivo) {
           badgePts = `<div class="pron-item-pts vivo" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">Live ${pts===0?'0':'+'+pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local ?? 0}-${p.goles_visitante ?? 0}</b>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">reale</span> <b style="color:var(--tarjeta-roja)">${p.goles_local ?? 0}-${p.goles_visitante ?? 0}</b>`;
       } else badgePts = `<div class="pron-item-pts pending">-</div>`;
 
       const predScore = (pr.goles_local === null || pr.goles_visitante === null) ? `<span style="color:var(--trofeo); font-size:11px; letter-spacing:0.05em">🔒 Segreto</span>` : `<b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b>`;
@@ -991,9 +981,9 @@ function htmlModalPronosticos(uid) {
   };
 
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-    <div class="modal-header" style="margin-bottom:20px;"><h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "MIS PRONÓSTICOS" : `PRON. DE ${esc(targetUser.nombre)}`}</h2></div>
-    ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4><div style="margin-bottom:24px;">${generarHtmlProns(userPartidos.filter(p => !empezado(p)))}</div>` : ''}
-    <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
+    <div class="modal-header" style="margin-bottom:20px;"><h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "I MIEI PRONOSTICI" : `PRON. DI ${esc(targetUser.nombre)}`}</h2></div>
+    ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PROSSIMI</h4><div style="margin-bottom:24px;">${generarHtmlProns(userPartidos.filter(p => !empezado(p)))}</div>` : ''}
+    <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASSATI / IN CORSO</h4>
     <div>${generarHtmlProns(userPartidos.filter(p => empezado(p)).reverse())}</div>`;
 }
 
@@ -1002,7 +992,6 @@ function htmlModalExtras(uid) {
   const esMio = (me && targetUser.id === me.id);
   const dataExt = targetUser.extras || {};
   
-  // Novedad: Controlamos cada sección por separado
   const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
   const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
   
@@ -1012,49 +1001,49 @@ function htmlModalExtras(uid) {
 
   let content = `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header" style="margin-bottom:20px;">
-      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "TUS PREDICCIONES EXTRA" : `EXTRAS DE ${esc(targetUser.nombre)}`}</h2>
-      <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "TUE PREDICCIONI EXTRA" : `EXTRAS DI ${esc(targetUser.nombre)}`}</h2>
+      <p class="nota">10pts Campione · 7pts Subcampione · 5pts 3º · 3pts 4º</p>
     </div>`;
 
   if (esMio) {
       content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
-        <label>❤️ Equipo Favorito (Decorativo)</label>
+        <label>❤️ Squadra Preferita (Sempre aperta)</label>
         <select id="ext-fav" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${optsFav}</select>
-        <button class="btn oro" onclick="guardarMiFavorito()">Actualizar Favorito</button>
+        <button class="btn oro" onclick="guardarMiFavorito()">Aggiorna Squadra</button>
       </div>`;
   } else {
       content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ EQUIPO FAVORITO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ SQUADRA PREFERITA</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
       </div>`;
   }
 
   let formTorneo = "";
   if (esMio && !cerradoTorneo) {
       formTorneo = `
-        <label>🥇 Campeón (10 pts)</label><select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥇 Campione (10 pts)</label><select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥈 Secondo (7 pts)</label><select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥉 Terzo (5 pts)</label><select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🍫 Quarto (3 pts)</label><select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
       `;
   } else if (!esMio && !cerradoTorneo) {
-      formTorneo = `<div class="vacio" style="padding:10px 0;">Pronósticos secretos hasta la Jornada 2 🔒</div>`;
+      formTorneo = `<div class="vacio" style="padding:10px 0;">Pronostici segreti 🔒</div>`;
   } else {
       formTorneo = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPIONE</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SECONDO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERZO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 QUARTO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b></div>
       `;
   }
 
   let formOtros = "";
   if (esMio && !cerradoOtros) {
       formOtros = `
-        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
-        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+        <label>⚽ Pichichi / Capocannoniere</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nome del giocatore..." style="margin-bottom:12px;">
+        <label>🏆 Miglior Giocatore MVP</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nome del giocatore..." style="margin-bottom:20px;">
       `;
   } else if (!esMio && !cerradoOtros) {
-      formOtros = `<div class="vacio" style="padding:10px 0;">Pronósticos de jugadores secretos 🔒</div>`;
+      formOtros = `<div class="vacio" style="padding:10px 0;">Pronostici segreti 🔒</div>`;
   } else {
       formOtros = `
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b></div>
@@ -1063,14 +1052,14 @@ function htmlModalExtras(uid) {
   }
 
   content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
-    <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo (Equipos)</h3>
+    <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo (Squadre)</h3>
     ${formTorneo}`;
 
-  content += `<h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Jugadores</h3>
+  content += `<h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Giocatori</h3>
     ${formOtros}`;
 
   if (esMio && (!cerradoTorneo || !cerradoOtros)) {
-      content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Guardar Predicciones</button>`;
+      content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Salva Predicciones</button>`;
   }
 
   content += `</div>`;
@@ -1133,7 +1122,7 @@ function vistaTabla(){
     else if(f.rank === 3) { specialClass = "bronce"; numberHtml = `<div class="medalla">🥉</div>`; }
     else { numberHtml = `<div class="rank-num-small">${f.rank}</div>`; }
     
-    const fuegoHTML = f.rachaFuego ? `<span title="¡Racha!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
+    const fuegoHTML = f.rachaFuego ? `<span title="On Fire!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
     const favStyle = getEstiloFav(f.u.extras?.favorito);
     const inyectStyle = favStyle ? `style="${favStyle}"` : '';
 
@@ -1155,14 +1144,14 @@ function vistaPerfil(){
   
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
   const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && misProns.some(pr => pr.partido_id === p.id));
-  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(misProns.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntiGara(misProns.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
   const ultimos5 = partidosJugados.sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc)).slice(-5);
   let htmlForma = '';
   for(let i=0; i<5; i++){
-      if(ultimos5[i]) { const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]); htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`; } 
+      if(ultimos5[i]) { const pts = puntiGara(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]); htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`; } 
       else htmlForma += `<div class="forma-box forma-vacia"></div>`;
   }
-  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
+  const fuegoHTML = f.rachaFuego ? `<span title="On Fire!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
   const headerStyle = getEstiloFavPerfil(me.extras?.favorito);
 
   return `
@@ -1181,7 +1170,7 @@ function vistaPerfil(){
       <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
   </div>
   <div style="display:flex; gap:10px; margin-bottom:12px;"><button class="btn secundario" onclick="abrirModalPronosticos()">📋 PARTIDOS</button><button class="btn oro" onclick="abrirModalExtras()">🔮 EXTRAS</button></div>
-  <div style="display:flex; gap:10px; margin-bottom:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button></div>
+  <div style="display:flex; gap:10px; margin-bottom:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarePorra()">🚪 Salir</button></div>
   ${((me.nombre ? me.nombre : "").toLowerCase() === "kiwi") ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>`) : ''}`;
 }
 
@@ -1201,11 +1190,11 @@ function vistaAcceso(){
     <label>Tu nombre</label><input type="text" id="login-nombre" autocomplete="off" placeholder="Ej. Kiwi">
     <label style="margin-top:12px;">Tu PIN</label><input type="password" id="pin-login" inputmode="numeric" autocomplete="off">
     <button class="btn oro" style="margin-top:20px" onclick="iniciarSesion()">Entrar</button>
-    <button class="btn secundario" style="margin-top:12px" onclick="cambiarPorra()">Cambiar porra</button>
+    <button class="btn secundario" style="margin-top:12px" onclick="cambiarePorra()">Cambiar porra</button>
   </div>
   <div class="panel"><h2>¿Primera vez? Únete</h2>
     <label>Tu nombre</label><input type="text" id="reg-nombre" maxlength="20" autocomplete="off">
-    <label>Elige un PIN (4 a 6 números)</label><input type="password" id="reg-pin" inputmode="numeric" autocomplete="off">
+    <label>Elige un PIN (4 a 6 numeri)</label><input type="password" id="reg-pin" inputmode="numeric" autocomplete="off">
     <label>Tu Foto (Opcional)</label><input type="file" id="reg-avatar" accept="image/*" style="padding:10px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; width:100%; color:var(--cal);">
     <button class="btn oro" style="margin-top:14px;" onclick="registrarse()">Crear mi perfil</button>
   </div>`;
@@ -1227,32 +1216,32 @@ async function registrarse(){
   const { data, error } = await db.rpc('registrarse_seguro', { p_porra: porra.id, p_nombre: nombre, p_pin: pin, p_avatar: avatarUrl });
   if (error) return mostrarToast(esc(error.message), "error");
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
-  await cargarTodo(); mostrarToast("¡Bienvenido!", "ok"); irA("inicio");
+  await cargarTodo(); mostrarToast("¡Bienvenuto!", "ok"); irA("inicio");
 }
 
 async function iniciarSesion(){
   const nombreInput = $("login-nombre").value.trim().toLowerCase(), pin = $("pin-login").value.trim();
-  if (!nombreInput || !pin) return mostrarToast("Faltan datos.", "error");
+  if (!nombreInput || !pin) return mostrarToast("Faltano dati.", "error");
   mostrarToast("Entrando...", "nota");
   const { data, error } = await db.rpc('iniciar_sesion_seguro', { p_porra: porra.id, p_nombre: nombreInput, p_pin: pin });
   if (error) return mostrarToast(esc(error.message), "error"); 
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
-  await cargarTodo(); mostrarToast("¡Sesión iniciada!", "ok"); irA("inicio");
+  await cargarTodo(); mostrarToast("¡Sesión iniziata!", "ok"); irA("inicio");
 }
 
 function actualizarCabecera(){
   const b = $("btn-yo"); if (!me){ b.hidden = true; return; }
   b.hidden = false; $("yo-emoji").innerHTML = avatarHtmlMini(me);
   const fila = clasificacion().find(f => f.u.id === me.id);
-  $("yo-nombre").innerHTML = esc(me.nombre) + ((fila && fila.rachaFuego) ? ` <span title="¡Racha!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '');
+  $("yo-nombre").innerHTML = esc(me.nombre) + ((fila && fila.rachaFuego) ? ` <span title="On Fire!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '');
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 
 async function subirNuevaFoto(input) {
   if (!input.files || input.files.length === 0) return;
-  if (!miPinClaro) return mostrarToast("Cierra sesión para subir fotos.", "error");
-  mostrarToast("Subiendo...", "nota"); const file = input.files[0];
-  if (file.size > 5*1024*1024) return mostrarToast("La foto pesa mucho.", "error");
+  if (!miPinClaro) return mostrarToast("Chiudi la sessione per cambiare foto.", "error");
+  mostrarToast("Caricando...", "nota"); const file = input.files[0];
+  if (file.size > 5*1024*1024) return mostrarToast("Foto troppo pesante.", "error");
   const compressedBlob = await comprimirImagen(file); const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`;
   const { error: uploadError } = await db.storage.from('avatars').upload(fileName, compressedBlob, { cacheControl: '3600', upsert: false });
   if (uploadError) return mostrarToast("Error al subir foto: " + esc(uploadError.message), "error");
@@ -1261,11 +1250,11 @@ async function subirNuevaFoto(input) {
   if (dbError) return mostrarToast("Error BD: " + esc(dbError.message), "error");
   me.avatar_url = avatarUrl; const uIdx = usuarios.findIndex(u => u.id === me.id); if (uIdx !== -1) usuarios[uIdx].avatar_url = avatarUrl;
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
-  mostrarToast("¡Foto actualizada! ✓", "ok"); render();
+  mostrarToast("¡Foto aggiornata! ✓", "ok"); render();
 }
 
 async function guardarMisExtras() {
-  if (!me || !miPinClaro) return mostrarToast("Por seguridad, inicia sesión.", "error");
+  if (!me || !miPinClaro) return mostrarToast("Per sicurezza, inizia la sessione.", "error");
   const fav = $("ext-fav") ? $("ext-fav").value : (me.extras?.favorito || "");
   const cam = $("ext-cam") ? $("ext-cam").value : (me.extras?.cam || "");
   const sub = $("ext-sub") ? $("ext-sub").value : (me.extras?.sub || "");
@@ -1275,7 +1264,7 @@ async function guardarMisExtras() {
   const mvp = $("ext-mvp") ? $("ext-mvp").value.trim() : (me.extras?.mvp || "");
 
   const payloadExtras = { cam, sub, ter, cua, pic, mvp, favorito: fav };
-  mostrarToast("Guardando predicciones...", "nota");
+  mostrarToast("Salvando pronostici...", "nota");
   const { error } = await db.rpc('guardar_extras_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_extras: payloadExtras });
   if (error) return mostrarToast("Error BD: " + esc(error.message), "error");
   
@@ -1289,18 +1278,18 @@ async function guardarMiFavorito() {
   if (!me || !miPinClaro) return mostrarToast("Inicia sesión.", "error");
   const fav = $("ext-fav") ? $("ext-fav").value : "";
   const payloadExtras = { ...(me.extras || {}), favorito: fav };
-  mostrarToast("Actualizando...", "nota");
+  mostrarToast("Aggiornando...", "nota");
   const { error } = await db.rpc('guardar_extras_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_extras: payloadExtras });
   if (error) return mostrarToast("Error: " + esc(error.message), "error");
   me.extras = payloadExtras;
   const userIndex = usuarios.findIndex(u => u.id === me.id); if (userIndex !== -1) usuarios[userIndex].extras = payloadExtras;
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
-  mostrarToast("Equipo favorito actualizado ✓", "ok"); render();
+  mostrarToast("Squadra preferita aggiornata ✓", "ok"); render();
 }
 
 async function entrarAdmin(){
   const pin = $("pin-admin").value.trim(); const { data, error } = await db.rpc("es_admin_pin", { p_porra: porra.id, pin });
-  if (error || !data) return mostrarToast("PIN incorrecto.", "error");
+  if (error || !data) return mostrarToast("PIN scorretto.", "error");
   adminPin = pin; try { sessionStorage.setItem("adminPin", pin); } catch(e){} render();
 }
 function vistaAdmin(){
@@ -1308,24 +1297,24 @@ function vistaAdmin(){
   const recientes = partidos.filter(p => esFin(p.estado)).slice(-5).reverse();
   const opts = `<option value="">---</option>` + Array.from(new Set(partidos.flatMap(p => [p.local, p.visitante]).filter(e => e && e !== "?"))).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
   return `<div class="panel"><h2>🛠️ Panel de admin</h2><button class="btn secundario" onclick="sincronizarAhora()" style="margin-bottom:24px;">🔄 Sincronizar ahora</button>
-    <label>🏆 Cerrar Torneo (Puntos Auto)</label>
+    <label>🏆 Cerrar Torneo (Punti Auto)</label>
     <div style="background:var(--campo); padding:16px; border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:24px;">
         <select id="adm-cam" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Campeón")}</select>
         <select id="adm-sub" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Subcampeón")}</select>
         <select id="adm-ter" style="margin-bottom:8px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Tercero")}</select>
         <select id="adm-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts.replace("---", "Cuarto")}</select>
-        <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Puntos</button>
+        <button class="btn oro" onclick="calcularYAsignarExtras()">🏅 Repartir Punti</button>
     </div>
-    <label>Poner resultado a mano / Probar LIVE</label>
-    ${pendientes.length === 0 ? `<p class="nota">No hay partidos en juego ahora.</p>` : pendientes.map(filaAdmin).join("")}
-    ${recientes.length ? `<label style="margin-top:18px">Corregir reciente</label>` + recientes.map(filaAdmin).join("") : ""}
-    <label style="margin-top:24px">👥 Participantes</label>
+    <label>Risultato manuale / Prova LIVE</label>
+    ${pendientes.length === 0 ? `<p class="nota">Non ci sono partite in corso.</p>` : pendientes.map(filaAdmin).join("")}
+    ${recientes.length ? `<label style="margin-top:18px">Correggi recente</label>` + recientes.map(filaAdmin).join("") : ""}
+    <label style="margin-top:24px">👥 Partecipanti</label>
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
       <select id="adm-puntos-usr" style="width:100%; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${usuarios.map(u => `<option value="${u.id}">${esc(u.nombre)} (${u.puntos_extra || 0} ex)</option>`).join("")}</select>
-      <div style="display:flex; gap:8px;"><input type="number" id="adm-puntos-val" placeholder="+/- pts" style="flex:1; text-align:center; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);"><button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Asignar</button></div>
-      <button class="btn peligro" style="margin-top:4px;" onclick="resetearPin()">🔒 Resetear PIN a "0000"</button>
+      <div style="display:flex; gap:8px;"><input type="number" id="adm-puntos-val" placeholder="+/- pts" style="flex:1; text-align:center; padding:12px; font-size:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);"><button class="btn oro" style="margin-top:0; width:auto; padding:12px 16px;" onclick="darPuntos()">Assegna</button></div>
+      <button class="btn peligro" style="margin-top:4px;" onclick="resetearPin()">🔒 Reset PIN a "0000"</button>
     </div>
-    <button class="btn secundario" onclick="salirAdmin()" style="margin-top:30px;">Salir de admin</button></div>`;
+    <button class="btn secundario" onclick="salirAdmin()" style="margin-top:30px;">Esci da admin</button></div>`;
 }
 
 function filaAdmin(p) {
@@ -1346,36 +1335,36 @@ function filaAdmin(p) {
 
 async function guardarResultado(id, estado){
   const gl = parseInt($(`adm-gl-${id}`).value, 10), gv = parseInt($(`adm-gv-${id}`).value, 10);
-  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los marcadores.", "error");
+  if (isNaN(gl) || isNaN(gv)) return mostrarToast("Metti i gol.", "error");
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast("Error: " + error.message, "error"); await cargarTodo(); render();
 }
 async function sincronizarAhora(){ mostrarToast("Sincronizando...", "nota"); const r = await llamarSync(); if (!r || !r.ok) mostrarToast(esc((r && r.error) ? r.error : "Error desconocido"), "error"); else mostrarToast("Sincronizado ✓", "ok"); await cargarTodo(); setTimeout(render, 900); }
 async function calcularYAsignarExtras() {
-  if (!confirm("¿Seguro? Sumará puntos a los que acertaron el cuadro.")) return;
+  if (!confirm("Sicuro? Questo sommerà i punti a chi ha indovinato il podio.")) return;
   const vCam = $("adm-cam").value, vSub = $("adm-sub").value, vTer = $("adm-ter").value, vCua = $("adm-cua").value;
-  if (!vCam || !vSub) return mostrarToast("Falta Campeón o Subcampeón.", "error");
-  mostrarToast("Repartiendo...", "nota");
+  if (!vCam || !vSub) return mostrarToast("Manca Campione o Secondo.", "error");
+  mostrarToast("Distribuendo...", "nota");
   for (const u of usuarios) {
       let pts = 0; const ex = u.extras || {};
       if (ex.cam === vCam) pts += 10; if (ex.sub === vSub) pts += 7; if (ex.ter === vTer) pts += 5; if (ex.cua === vCua) pts += 3;
       if (pts > 0) await db.rpc("asignar_puntos_extra", { p_usuario: u.id, p_puntos: pts, p_porra: porra.id, pin: adminPin });
   }
-  mostrarToast("¡Puntos repartidos! 🏆", "ok"); await cargarTodo(); setTimeout(render, 1000);
+  mostrarToast("¡Punti assegnati! 🏆", "ok"); await cargarTodo(); setTimeout(render, 1000);
 }
 function salirAdmin(){ adminPin = null; try{sessionStorage.removeItem("adminPin");}catch(e){} render(); }
 async function darPuntos(){
   const uid = $("adm-puntos-usr").value, pts = parseInt($("adm-puntos-val").value, 10);
-  if (!uid || isNaN(pts)) return mostrarToast("Faltan datos.", "error");
+  if (!uid || isNaN(pts)) return mostrarToast("Faltan dati.", "error");
   const { error } = await db.rpc("asignar_puntos_extra", { p_usuario: uid, p_puntos: pts, p_porra: porra.id, pin: adminPin });
-  if (error) return mostrarToast(esc(error.message), "error"); mostrarToast("Puntos asignados ✓", "ok"); await cargarTodo(); setTimeout(render, 800);
+  if (error) return mostrarToast(esc(error.message), "error"); mostrarToast("Punti assegnati ✓", "ok"); await cargarTodo(); setTimeout(render, 800);
 }
 async function resetearPin(){
   const uid = $("adm-puntos-usr").value; if (!uid) return;
-  if (!confirm(`¿Resetear a "0000"?`)) return;
+  if (!confirm(`Vuoi resettare il PIN a "0000"?`)) return;
   const nHash = await sha256(usuarios.find(x => x.id === uid).nombre.toLowerCase() + ":0000");
   const { error } = await db.rpc("resetear_pin_admin", { p_usuario: uid, p_nuevo_hash: nHash, p_porra: porra.id, pin: adminPin });
-  if (error) return mostrarToast(esc(error.message), "error"); mostrarToast("Reseteado a '0000'", "ok"); await cargarTodo(); setTimeout(render, 1500);
+  if (error) return mostrarToast(esc(error.message), "error"); mostrarToast("Resettato a '0000'", "ok"); await cargarTodo(); setTimeout(render, 1500);
 }
 </script>
 </body>

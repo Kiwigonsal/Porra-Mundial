@@ -48,9 +48,25 @@ module.exports = async function(req, res) {
         return res.status(200).json({ ok: true, partidos: 0, error: "Ningún partido encontrado en la API para el Mundial." });
     }
 
-    const partidos = datos.matches.map(mapearPartidoFD).filter(Boolean);
+    // 2.5 Consultar qué partidos están bloqueados por el admin
+    const bloqueadosResp = await fetch(`${SUPA}/rest/v1/partidos?bloqueo_admin=eq.true&select=id`, { headers: headersSupa });
+    let idsBloqueados = [];
+    if (bloqueadosResp.ok) {
+        const bloqueadosData = await bloqueadosResp.json();
+        idsBloqueados = bloqueadosData.map(b => b.id);
+    }
 
-    // 3. Carga en Supabase
+    // Filtramos los partidos: excluimos los que están en la lista de bloqueados
+    const partidos = datos.matches
+      .map(mapearPartidoFD)
+      .filter(Boolean)
+      .filter(p => !idsBloqueados.includes(p.id)); // <-- El escudo en acción 🛡️
+
+    if (partidos.length === 0) {
+        return res.status(200).json({ ok: true, partidos: 0, omitido: true, nota: "Todos los partidos actualizables están bloqueados por el admin." });
+    }
+
+    // 3. Carga en Supabase (solo los no bloqueados)
     const upsert = await fetch(`${SUPA}/rest/v1/partidos`, {
       method: "POST",
       headers: { ...headersSupa, Prefer: "resolution=merge-duplicates,return=minimal" },

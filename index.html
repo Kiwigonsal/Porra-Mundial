@@ -38,14 +38,11 @@
       repeating-linear-gradient(90deg, transparent 0 72px, rgba(248,250,252,.015) 72px 144px);
   }
   
-  /* --- SISTEMA DESKTOP --- */
   #layout-desktop { display: flex; justify-content: center; align-items: flex-start; max-width: 1200px; margin: 0 auto; gap: 20px; padding: 14px; }
   #app { flex: 1; max-width: 560px; min-width: 0; width: 100%; position: relative; padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
   .desktop-aside { display: none; width: 280px; flex-shrink: 0; background: rgba(15,23,42,0.6); border: 1px solid var(--cal-tenue); border-radius: var(--radius); height: calc(100vh - 28px); position: sticky; top: 14px; overflow-y: hidden; flex-direction: column; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  
   .aside-titulo { padding: 16px; font-family: var(--display); font-size: 16px; letter-spacing: 0.05em; color: var(--cal); text-transform: uppercase; border-bottom: 1px solid var(--cal-tenue); background: rgba(0,0,0,0.2); margin:0;}
   
-  /* Responsive */
   @media (max-width: 1023px) {
     #layout-desktop { display: block; padding: 0; }
     #app { margin: 0 auto; padding: 0 14px calc(86px + env(safe-area-inset-bottom)); }
@@ -108,9 +105,7 @@
   .tanteo-feed .vs{ color:var(--cal-tenue); font-size:18px; }
   .partido-footer{ margin-top:12px; padding-top:10px; border-top:1px dashed var(--cal-tenue); font-size:11px; color:var(--grada); display:flex; justify-content:space-between; align-items:center;}
 
-  /* ---------- Dashboard Home Widgets ---------- */
   .dash-titulo { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--grada); margin-bottom: 12px; }
-  
   .live-bar { background: var(--campo-2); border: 1px solid var(--tarjeta-roja); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.15); transition: transform 0.1s;}
   .live-bar:active { transform: scale(0.98); }
   .live-indicator { color: var(--tarjeta-roja); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; animation: lat 1.1s infinite; text-transform: uppercase;}
@@ -127,7 +122,6 @@
   .tabs-inicio button { flex: 1; padding: 10px; text-align: center; font-size: 11px; font-weight: 800; color: var(--grada); border-radius: 8px; text-transform: uppercase; transition: 0.2s; border: none; background: transparent; cursor: pointer; letter-spacing: .05em;}
   .tabs-inicio button.activo { background: var(--campo-3); color: var(--cal); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-  /* ---------- Modales ---------- */
   .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; justify-content:center; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s ease; backdrop-filter:blur(4px); }
   .modal-overlay.open { opacity:1; pointer-events:auto; }
   .modal-content { background:var(--campo); width:100%; max-width:560px; max-height:85vh; border-radius: 24px 24px 0 0; padding: 24px 16px max(24px, env(safe-area-inset-bottom)); overflow-y:auto; -webkit-overflow-scrolling: touch; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); display:block; position:relative; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
@@ -252,16 +246,21 @@
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--cesped); outline-offset:1px}
 
-  nav{ position:fixed; bottom:0; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
-  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr); height:100%;}
-  nav button{ background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
+  nav{ position:fixed; bottom:0; width:100%; z-index:50; background:rgba(15,23,42,.92); backdrop-filter:blur(12px); border-top:1px solid var(--cal-tenue); padding-bottom:env(safe-area-inset-bottom); height:64px; display:flex; align-items:center; }
+  .nav-inner{width:100%; max-width:560px; margin:0 auto; display:flex; justify-content:space-evenly; align-items:center; height:100%;}
+  nav button{ flex:1; background:none; border:0; color:var(--grada); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-family:var(--body); transition:color 0.2s; height:100%; padding:0;}
   nav button .ico{font-size:20px; display:block; line-height:1;}
   nav button.activo{color:var(--trofeo)}
+
+  .admin-partido { display:flex; align-items:center; justify-content:space-between; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:12px; margin-bottom:8px; font-size:13px; font-weight:800; gap:10px; }
+  .admin-partido .mini { display:flex; gap:6px; align-items:center; }
+  .admin-partido input { width:46px; padding:8px; text-align:center; border-radius:8px; font-family:var(--display); font-size:16px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal); }
+  .btn-mini { padding:8px 12px; border-radius:8px; border:1px solid var(--cal-tenue); background:var(--campo-3); color:var(--cal); font-size:11px; font-weight:800; text-transform:uppercase; cursor:pointer; }
+  .btn-mini:active { transform:scale(0.95); }
 
   .vacio{text-align:center; color:var(--grada); padding:40px 16px; font-size:14px; line-height:1.6}
   .cargando{text-align:center; color:var(--grada); padding:40px; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
 
-  /* --- CHAT CSS --- */
   .chat-mensajes { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
   .msg-row { display: flex; gap: 8px; align-items: flex-start; }
   .msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; overflow: hidden; border: 1px solid var(--cal-tenue); }
@@ -306,9 +305,7 @@ window.addEventListener('unhandledrejection', function(event) { console.error("P
       </button>
     </header>
     
-    <main id="vista">
-      <div class="cargando">Saltando al campo…</div>
-    </main>
+    <main id="vista"><div class="cargando">Saltando al campo…</div></main>
 
     <nav>
       <div class="nav-inner">
@@ -342,28 +339,14 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 const LIMITE_EXTRAS = new Date("2026-06-19T15:00:00+02:00").getTime();
 
-// DICCIONARIO DE COLORES DE EQUIPOS FAVORITOS
 const COLORES_EQUIPOS = {
-  "Argentina": ["#43a1d5", "#ffffff"],
-  "Brasil": ["#009c3b", "#ffdf00"],
-  "España": ["#c60b1e", "#ffc400"],
-  "Francia": ["#002395", "#ed2939"],
-  "Inglaterra": ["#ffffff", "#ce1124"],
-  "Alemania": ["#ffffff", "#000000"],
-  "Portugal": ["#e42518", "#046a38"],
-  "Italia": ["#0064aa", "#ffffff"],
-  "Uruguay": ["#0038a8", "#ffffff"],
-  "Colombia": ["#fcd116", "#003893"],
-  "México": ["#006847", "#ce1126"],
-  "Estados Unidos": ["#bf0a30", "#002868"],
-  "Países Bajos": ["#f36c21", "#ffffff"],
-  "Bélgica": ["#e30613", "#ffd200"],
-  "Croacia": ["#ffffff", "#ff0000"],
-  "Marruecos": ["#c1272d", "#006233"]
+  "Argentina": ["#43a1d5", "#ffffff"], "Brasil": ["#009c3b", "#ffdf00"], "España": ["#c60b1e", "#ffc400"], "Francia": ["#002395", "#ed2939"],
+  "Inglaterra": ["#ffffff", "#ce1124"], "Alemania": ["#ffffff", "#000000"], "Portugal": ["#e42518", "#046a38"], "Italia": ["#0064aa", "#ffffff"],
+  "Uruguay": ["#0038a8", "#ffffff"], "Colombia": ["#fcd116", "#003893"], "México": ["#006847", "#ce1126"], "Estados Unidos": ["#bf0a30", "#002868"],
+  "Países Bajos": ["#f36c21", "#ffffff"], "Bélgica": ["#e30613", "#ffd200"], "Croacia": ["#ffffff", "#ff0000"], "Marruecos": ["#c1272d", "#006233"]
 };
 
-let db = null;
-let usuarios = [], partidos = [], pronosticos = [], chatMsgs = [];
+let db = null; let usuarios = [], partidos = [], pronosticos = [], chatMsgs = [];
 let porra = null, me = null, adminPin = null, miPinClaro = null;
 let tab = "inicio", inicioTab = "hoy", borradores = {}, cargado = false, partidoAbiertoId = null; 
 let modalStack = []; 
@@ -373,10 +356,8 @@ const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&a
 
 function mostrarToast(msg, tipo = 'nota') {
   const container = $("toast-container"); if (!container) return;
-  container.innerHTML = '';
-  const toast = document.createElement("div");
-  toast.className = `toast toast-${tipo}`; toast.innerHTML = msg;
-  container.appendChild(toast);
+  container.innerHTML = ''; const toast = document.createElement("div");
+  toast.className = `toast toast-${tipo}`; toast.innerHTML = msg; container.appendChild(toast);
   setTimeout(() => { toast.classList.add("fade-out"); setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
@@ -386,12 +367,10 @@ function comprimirImagen(file, maxWidth=300, maxHeight=300, quality=0.8) {
     reader.onload = (e) => {
       const img = new Image(); img.src = e.target.result;
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width, height = img.height;
+        const canvas = document.createElement('canvas'); let width = img.width, height = img.height;
         if (width > height) { if (width > maxWidth) { height = Math.round(height * maxWidth / width); width = maxWidth; } } 
         else { if (height > maxHeight) { width = Math.round(width * maxHeight / height); height = maxHeight; } }
-        canvas.width = width; canvas.height = height;
-        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+        canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
         canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
       };
     };
@@ -428,8 +407,7 @@ function esPartidoPuntuable(p) {
 }
 
 async function sha256(texto){
-  const data = new TextEncoder().encode(texto);
-  const hash = await crypto.subtle.digest("SHA-256", data);
+  const data = new TextEncoder().encode(texto); const hash = await crypto.subtle.digest("SHA-256", data);
   return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
@@ -454,17 +432,14 @@ async function init(){
 }
 
 async function cargarTodo(){
-  const p = await db.from("partidos").select("*").order("fecha_utc");
-  partidos = p.data || [];
+  const p = await db.from("partidos").select("*").order("fecha_utc"); partidos = p.data || [];
   if (!porra){ usuarios = []; pronosticos = []; return; }
   
   const miId = me ? me.id : null;
-  const { data: uData } = await db.rpc('obtener_usuarios_seguro', { p_porra: porra.id, p_mi_id: miId });
-  usuarios = uData || [];
+  const { data: uData } = await db.rpc('obtener_usuarios_seguro', { p_porra: porra.id, p_mi_id: miId }); usuarios = uData || [];
   
   if (usuarios.length){
-    const { data: prData } = await db.rpc('obtener_pronosticos_seguro', { p_porra: porra.id, p_mi_id: miId ? miId.toString() : null });
-    pronosticos = prData || [];
+    const { data: prData } = await db.rpc('obtener_pronosticos_seguro', { p_porra: porra.id, p_mi_id: miId ? miId.toString() : null }); pronosticos = prData || [];
   } else { pronosticos = []; }
 
   const { data: cData } = await db.from('comentarios').select('*').eq('porra_id', porra.id).order('creado_en', {ascending: true});
@@ -508,10 +483,9 @@ async function llamarSync(){
     if (!res.ok) return { ok: false, error: "Error servidor: " + res.status };
     const texto = await res.text();
     try { return JSON.parse(texto); } catch(e) { return { ok: false, error: "Respuesta API inválida." }; }
-  } catch(e){
-    return { ok: false, error: "Error de red" };
-  } 
+  } catch(e){ return { ok: false, error: "Error de red" }; } 
 }
+
 function programarSync(){
   const hayPartido = () => partidos.some(p => esVivo(p.estado) || (p.fecha_utc && Date.now() >= new Date(p.fecha_utc).getTime() - 5*60e3 && Date.now() <= new Date(p.fecha_utc).getTime() + 4*3600e3));
   if (partidos.length === 0 || hayPartido()) llamarSync();
@@ -524,8 +498,7 @@ function puntosDe(pred, p){
   const aciertoLocal = pred.goles_local === p.goles_local, aciertoVisitante = pred.goles_visitante === p.goles_visitante;
   const aciertoSigno = Math.sign(pred.goles_local - pred.goles_visitante) === Math.sign(p.goles_local - p.goles_visitante);
   if (aciertoLocal && aciertoVisitante) return 5;
-  if (aciertoSigno) return 3;
-  return 0; 
+  if (aciertoSigno) return 3; return 0; 
 }
 
 function clasificacion(){
@@ -535,14 +508,11 @@ function clasificacion(){
   const porUsuario = Object.fromEntries(filas.map(f => [f.u.id, f]));
 
   for (const pr of pronosticos){
-    const p = partidos.find(x => x.id === pr.partido_id);
-    const f = porUsuario[pr.usuario_id];
+    const p = partidos.find(x => x.id === pr.partido_id); const f = porUsuario[pr.usuario_id];
     if (!p || !f || !esPartidoPuntuable(p) || (!esFin(p.estado) && !esVivo(p.estado))) continue;
-    const pts = puntosDe(pr, p);
-    if (pts == null) continue;
+    const pts = puntosDe(pr, p); if (pts == null) continue;
     
-    if (esFin(p.estado)) f.jugados++; 
-    f.total += pts;
+    if (esFin(p.estado)) f.jugados++; f.total += pts;
     if (pts === 5) f.plenos++; else if (pts > 0) f.signos++;
     if (esFin(p.estado) && p.id !== idUltimo) { f.totalAnt += pts; if (pts === 5) f.plenosAnt++; } 
     else if (esFin(p.estado) && p.id === idUltimo) { f.ptsUltimo += pts; }
@@ -556,11 +526,9 @@ function clasificacion(){
       f.rank = idx + 1; f.tendencia = f.rankAnt - f.rank;
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-      const racha5 = jugadosUser.slice(-5);
-      f.rachaFuego = false;
+      const racha5 = jugadosUser.slice(-5); f.rachaFuego = false;
       if (racha5.length === 5) {
-          let enRacha = true;
-          for (let p of racha5) { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
+          let enRacha = true; for (let p of racha5) { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) === 0) enRacha = false; }
           f.rachaFuego = enRacha;
       }
   });
@@ -576,11 +544,7 @@ function render(){
     actualizarCabecera();
     const v = $("vista"); if(!v) return;
 
-    if (!porra){
-        document.body.classList.add("sin-porra");
-        v.innerHTML = vistaCodigo(); 
-        return; 
-    }
+    if (!porra){ document.body.classList.add("sin-porra"); v.innerHTML = vistaCodigo(); return; }
     
     document.body.classList.remove("sin-porra");
     if($("btn-chat-mobile")) $("btn-chat-mobile").hidden = !me;
@@ -591,8 +555,7 @@ function render(){
     else if (tab === "tabla") v.innerHTML = vistaTabla();
     else v.innerHTML = vistaPerfil();
 
-    renderChat('chat-container-desktop');
-    renderMiniTabla();
+    renderChat('chat-container-desktop'); renderMiniTabla();
   } catch (error) { console.error(error); }
 }
 
@@ -621,8 +584,7 @@ async function enviarChat(inputId) {
     const txt = input.value.trim(); if(!txt || !me) return;
     input.value = "";
     const { error } = await db.rpc('enviar_comentario_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_texto: txt, p_porra: porra.id });
-    if (error) mostrarToast("Error al enviar", "error");
-    else refrescarChat();
+    if (error) mostrarToast("Error al enviar", "error"); else refrescarChat();
 }
 
 function renderMiniTabla() {
@@ -634,7 +596,6 @@ function renderMiniTabla() {
     filas.forEach(f => {
         const favStyle = getEstiloFav(f.u.extras?.favorito);
         const borderStyle = favStyle || `border: 1px solid var(--cal-tenue); background: var(--campo-2);`;
-
         const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
         const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
         const ultimos5 = jugadosUser.slice(-5);
@@ -643,24 +604,17 @@ function renderMiniTabla() {
             if(ultimos5[i]) {
                 const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
                 htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}" style="width:14px;height:14px;border-radius:4px;"></div>`;
-            } else {
-                htmlForma += `<div class="forma-box forma-vacia" style="width:14px;height:14px;border-radius:4px;"></div>`;
-            }
+            } else htmlForma += `<div class="forma-box forma-vacia" style="width:14px;height:14px;border-radius:4px;"></div>`;
         }
-
         html += `
         <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; cursor:pointer; ${borderStyle}" onclick="abrirPerfil('${f.u.id}')">
             <span style="font-family:var(--display); font-size:14px; color:var(--grada); min-width:18px;">${f.rank}</span>
             <div style="width:28px; height:28px; border-radius:50%; background:var(--campo); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">${avatarHtmlMini(f.u)}</div>
-            <div style="flex:1; min-width:0;">
-                <div style="font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(f.u.nombre)}</div>
-                <div style="display:flex; gap:2px; margin-top:4px;">${htmlForma}</div>
-            </div>
+            <div style="flex:1; min-width:0;"><div style="font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(f.u.nombre)}</div><div style="display:flex; gap:2px; margin-top:4px;">${htmlForma}</div></div>
             <div style="font-family:var(--display); font-size:18px; color:var(--cal);">${f.total}</div>
         </div>`;
     });
-    html += `</div>`;
-    container.innerHTML = html;
+    container.innerHTML = html + `</div>`;
 }
 
 function getFechaLogica(isoString) {
@@ -671,23 +625,18 @@ function fmtDiaLogico(clave){
   if(clave === "zzz" || clave === "Invalid Date") return "Fecha por definir";
   try { const txt = new Date(clave).toLocaleDateString("es-ES", {weekday:"long", day:"numeric", month:"long"}); return txt.charAt(0).toUpperCase() + txt.slice(1); } catch(e) { return "Fecha desconocida"; }
 }
-
 function ajustar(id, campo, delta){
   const d = borradores[id]; if (!d) return; d[campo] = Math.max(0, Math.min(99, d[campo] + delta));
   const el = document.getElementById("num-" + id + "-" + campo); if (el) el.textContent = d[campo];
 }
 
 async function guardarPronostico(partidoId){
-  const p = partidos.find(x => x.id === partidoId);
-  if (!p || empezado(p) || !me) return;
-  if (!miPinClaro) return mostrarToast("Cierra sesión y vuelve a entrar para guardar.", "error");
-  
+  const p = partidos.find(x => x.id === partidoId); if (!p || empezado(p) || !me) return;
+  if (!miPinClaro) return mostrarToast("Cierra sesión y vuelve a entrar.", "error");
   const d = borradores[partidoId]; mostrarToast("Guardando...", "nota");
   const { error } = await db.rpc('guardar_pronostico_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_partido: partidoId, p_gl: d.gl, p_gv: d.gv });
   if (error){ mostrarToast("Error: " + esc(error.message), "error"); return; }
-  
-  mostrarToast("Pronóstico guardado ✓", "ok");
-  await cargarTodo(); if(modalStack.length > 0) renderCurrentModal(); render();
+  mostrarToast("Pronóstico guardado ✓", "ok"); await cargarTodo(); if(modalStack.length > 0) renderCurrentModal(); render();
 }
 
 function filtrarPartidos() {
@@ -720,11 +669,9 @@ async function entrarConCodigo(){
 
 function cambiarPorra(){ try { localStorage.removeItem("porra_actual"); localStorage.removeItem("porra_usuario"); localStorage.removeItem("miPinClaro"); sessionStorage.removeItem("adminPin"); } catch(e){} window.location.reload(); }
 
-/* ---------- INICIO ---------- */
 function vistaInicio() {
     if (!me) return vistaAcceso();
     let html = `<div style="padding-top:4px;">`;
-
     const vivos = partidos.filter(p => esVivo(p.estado));
     if (vivos.length > 0) {
         vivos.forEach(p => {
@@ -738,14 +685,10 @@ function vistaInicio() {
     const onFire = clasificacion().filter(f => f.rachaFuego); 
     const terminados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p)).sort((a,b) => new Date(b.fecha_utc) - new Date(a.fecha_utc)).slice(0, 5);
 
-    html += `<div class="panel" style="margin-top:0; padding:16px 20px; margin-bottom:24px;">
-        <div class="dash-titulo" style="margin-top:0;">RESUMEN DE LA FECHA</div><div style="display:flex; flex-direction:column; gap:8px;">`;
-
+    html += `<div class="panel" style="margin-top:0; padding:16px 20px; margin-bottom:24px;"><div class="dash-titulo" style="margin-top:0;">RESUMEN DE LA FECHA</div><div style="display:flex; flex-direction:column; gap:8px;">`;
     onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> tiene racha de 5 partidos</span></div>`; });
-
     terminados.forEach(p => {
-        const prons = pronosticos.filter(x => x.partido_id === p.id);
-        let plenos = 0, aciertos = 0;
+        const prons = pronosticos.filter(x => x.partido_id === p.id); let plenos = 0, aciertos = 0;
         prons.forEach(pr => { const pts = puntosDe(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
         let textoAciertos = [];
         if(plenos > 0) textoAciertos.push(`<span style="color:var(--trofeo)">${plenos} Plenos</span>`);
@@ -753,11 +696,8 @@ function vistaInicio() {
         if(textoAciertos.length === 0) textoAciertos.push(`<span style="color:var(--grada)">0 Aciertos</span>`);
         html += `<div class="resumen-item" onclick="abrirModal(${p.id})"><div><img src="${esc(p.local_crest)}"> ${p.goles_local ?? 0} - ${p.goles_visitante ?? 0} <img src="${esc(p.visitante_crest)}"></div><div>${textoAciertos.join(' · ')}</div></div>`;
     });
-    
     if(onFire.length === 0 && terminados.length === 0) html += `<div style="font-size:12px; color:var(--grada)">No hay novedades en esta jornada.</div>`;
-    html += `</div></div>`;
-
-    html += `
+    html += `</div></div>
     <div class="tabs-inicio">
         <button class="${inicioTab==='ayer'?'activo':''}" onclick="setInicioTab('ayer')">AYER</button>
         <button class="${inicioTab==='hoy'?'activo':''}" onclick="setInicioTab('hoy')">HOY</button>
@@ -784,9 +724,9 @@ function generarListaInicio(tabSeleccionado) {
         if (tabSeleccionado === 'ayer' && fLog === ayerLogico) filtrados.push(p);
         else if (tabSeleccionado === 'hoy' && fLog === hoyLogico) filtrados.push(p);
         else if (tabSeleccionado === 'proximo') {
-            if(fLog !== "zzz" && p.fecha_utc) {
+            if(fLog !== "zzz" && p.fecha_utc && fLog !== hoyLogico) { 
                 const tPart = new Date(p.fecha_utc).getTime();
-                if (tPart > ahora.getTime() && tPart <= ahora.getTime() + 172800000) filtrados.push(p); // Max 48h (2 días)
+                if (tPart > ahora.getTime() && tPart <= ahora.getTime() + 172800000) filtrados.push(p); 
             }
         }
     }
@@ -840,7 +780,6 @@ function tarjetaFeed(p, conPron){
             footer = `<span>Pronóstico: <b style="color:var(--cal)">${mio.goles_local}-${mio.goles_visitante}</b></span> <span style="color:${col}; font-weight:800;">${vivo ? 'live ' : ''}${pts>0?'+'+pts:'0'}${!vivo?' pts':''}</span>`;
         }
       }
-      
       if (!puntua && empezado(p)) resumen = `<div style="text-align:center; color:var(--grada); font-size:10.5px; font-weight:800; text-transform:uppercase; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--cal-tenue);">🛑 DE PRUEBA (NO SUMA PUNTOS)</div>`;
       else {
           const pronsDelPartido = pronosticos.filter(x => x.partido_id === p.id);
@@ -861,8 +800,7 @@ function tarjetaFeed(p, conPron){
 }
 
 function pushModal(state) {
-  modalStack.push(state); renderCurrentModal();
-  const overlay = $("modal-overlay");
+  modalStack.push(state); renderCurrentModal(); const overlay = $("modal-overlay");
   if(!overlay.classList.contains("open")){ overlay.classList.add("open"); document.body.style.overflow = "hidden"; history.pushState({modalOpen: true}, ""); }
 }
 function backModal() { modalStack.pop(); if(modalStack.length > 0) renderCurrentModal(); else cerrarModalFull(); }
@@ -950,13 +888,9 @@ function htmlModalPartido(id) {
     else {
       htmlTodos = `<div class="lista-amigos">` + todos.map(pr => {
         const u = usuarios.find(x => x.id === pr.usuario_id); if(!u) return "";
-        const pts = puntosDe(pr, p);
-        let cls = "", sufijo = "";
+        const pts = puntosDe(pr, p); let cls = "", sufijo = "";
         if (!puntua) sufijo = `<span style="font-size:10px; color:var(--grada); font-weight:800;">PRUEBA</span>`;
-        else {
-            cls = pts === 5 ? "pleno" : (pts === 3 ? "ok" : "bad");
-            sufijo = `<span style="font-size:11px; color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">${pts===0?'0':'+'+pts}</span>`;
-        }
+        else { cls = pts === 5 ? "pleno" : (pts === 3 ? "ok" : "bad"); sufijo = `<span style="font-size:11px; color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">${pts===0?'0':'+'+pts}</span>`; }
         return `<div class="amigo-pick ${cls}" style="cursor:pointer" onclick="abrirPerfil('${pr.usuario_id}')">
             <div class="amigo-info"><div class="amigo-avatar">${avatarHtml(u)}</div> ${esc(u.nombre)}</div>
             <div style="display:flex; align-items:center; gap:8px;"><span class="amigo-score">${pr.goles_local} - ${pr.goles_visitante}</span>${sufijo}</div>
@@ -1072,29 +1006,32 @@ function htmlModalExtras(uid) {
       <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
     </div>`;
 
-  if (esMio && !cerrado) {
-      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
+  if (esMio) {
+      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
         <label>❤️ Equipo Favorito (Decorativo)</label>
         <select id="ext-fav" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${optsFav}</select>
-        <label>🥇 Campeón (10 pts)</label>
-        <select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥈 Subcampeón (7 pts)</label>
-        <select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🥉 3er Puesto (5 pts)</label>
-        <select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>🍫 4º Puesto (3 pts)</label>
-        <select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
-        <label>⚽ Pichichi (Libre)</label>
-        <input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
-        <label>🏆 Mejor Jugador MVP (Libre)</label>
-        <input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
+        <button class="btn oro" onclick="guardarMiFavorito()">Actualizar Favorito</button>
+      </div>`;
+  } else {
+      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ EQUIPO FAVORITO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
+      </div>`;
+  }
+
+  if (esMio && !cerrado) {
+      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue);">
+        <label>🥇 Campeón (10 pts)</label><select id="ext-cam" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua" style="margin-bottom:12px; width:100%; padding:14px; border-radius:12px; border:1px solid var(--cal-tenue); background:var(--campo); color:var(--cal);">${opts}</select>
+        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador..." style="margin-bottom:12px;">
+        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador..." style="margin-bottom:20px;">
         <button class="btn oro" onclick="guardarMisExtras()">Guardar Predicciones</button>
       </div>`;
   } else if (!esMio && !cerrado) {
       content += `<div class="vacio">Las predicciones de los demás son secretas hasta la Jornada 2 🔒</div>`;
   } else {
       content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ EQUIPO FAVORITO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
@@ -1118,7 +1055,6 @@ function setExtrasSelects(uid) {
   }
 }
 
-/* ---------- Vistas Principales ---------- */
 function vistaTorneo(){
   if (partidos.length === 0) return `<div class="vacio">Aún no hay datos del torneo.</div>`;
   let html = ""; const grupos = {};
@@ -1203,18 +1139,11 @@ function vistaPerfil(){
       <h2 style="display:flex; align-items:center; justify-content:center;">${esc(me.nombre)} ${fuegoHTML}</h2>
       <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${misProns.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); }).length} jugados</span></div>
   </div>
-
-  <div class="perfil-stats-row">
-      <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
-      <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
-      <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
-  </div>
-
+  <div class="perfil-stats-row"><div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div><div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div><div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div></div>
   <div class="perfil-dash-row">
       <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0}%, var(--cal-tenue) 0);"><span>${partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0}%</span></div><div class="k">EFICIENCIA</div></div>
       <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
   </div>
-
   <div style="display:flex; gap:10px; margin-bottom:12px;"><button class="btn secundario" onclick="abrirModalPronosticos()">📋 PARTIDOS</button><button class="btn oro" onclick="abrirModalExtras()">🔮 EXTRAS</button></div>
   <div style="display:flex; gap:10px; margin-bottom:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button></div>
   ${((me.nombre ? me.nombre : "").toLowerCase() === "kiwi") ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>`) : ''}`;
@@ -1301,17 +1230,8 @@ async function subirNuevaFoto(input) {
 
 async function guardarMisExtras() {
   if (!me || !miPinClaro) return mostrarToast("Por seguridad, inicia sesión.", "error");
-  
   const fav = $("ext-fav") ? $("ext-fav").value : "";
-  const payloadExtras = { 
-      cam: $("ext-cam")?.value || "", 
-      sub: $("ext-sub")?.value || "", 
-      ter: $("ext-ter")?.value || "", 
-      cua: $("ext-cua")?.value || "", 
-      pic: $("ext-pic")?.value.trim() || "", 
-      mvp: $("ext-mvp")?.value.trim() || "",
-      favorito: fav 
-  };
+  const payloadExtras = { cam: $("ext-cam")?.value || "", sub: $("ext-sub")?.value || "", ter: $("ext-ter")?.value || "", cua: $("ext-cua")?.value || "", pic: $("ext-pic")?.value.trim() || "", mvp: $("ext-mvp")?.value.trim() || "", favorito: fav };
   
   mostrarToast("Guardando predicciones...", "nota");
   const { error } = await db.rpc('guardar_extras_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_extras: payloadExtras });
@@ -1320,11 +1240,22 @@ async function guardarMisExtras() {
   if (!me.extras) me.extras = {}; me.extras = payloadExtras;
   const userIndex = usuarios.findIndex(u => u.id === me.id); if (userIndex !== -1) usuarios[userIndex].extras = payloadExtras;
   try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
-  mostrarToast("¡Predicciones guardadas! 🏆", "ok");
-  render();
+  mostrarToast("¡Predicciones guardadas! 🏆", "ok"); render();
 }
 
-/* ---------- ADMIN ---------- */
+async function guardarMiFavorito() {
+  if (!me || !miPinClaro) return mostrarToast("Inicia sesión.", "error");
+  const fav = $("ext-fav") ? $("ext-fav").value : "";
+  const payloadExtras = { ...(me.extras || {}), favorito: fav };
+  mostrarToast("Actualizando...", "nota");
+  const { error } = await db.rpc('guardar_extras_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_extras: payloadExtras });
+  if (error) return mostrarToast("Error: " + esc(error.message), "error");
+  me.extras = payloadExtras;
+  const userIndex = usuarios.findIndex(u => u.id === me.id); if (userIndex !== -1) usuarios[userIndex].extras = payloadExtras;
+  try { localStorage.setItem("porra_usuario", JSON.stringify(me)); } catch(e){}
+  mostrarToast("Equipo favorito actualizado ✓", "ok"); render();
+}
+
 async function entrarAdmin(){
   const pin = $("pin-admin").value.trim(); const { data, error } = await db.rpc("es_admin_pin", { p_porra: porra.id, pin });
   if (error || !data) return mostrarToast("PIN incorrecto.", "error");
@@ -1355,9 +1286,22 @@ function vistaAdmin(){
     <button class="btn secundario" onclick="salirAdmin()" style="margin-top:30px;">Salir de admin</button></div>`;
 }
 
-function filaAdmin(p){
-  return `<div class="admin-partido"><span style="flex:1">${esc(p.local||"?")} – ${esc(p.visitante||"?")}</span><span class="mini"><input type="text" inputmode="numeric" id="adm-gl-${p.id}" value="${p.goles_local ?? ""}" placeholder="0"><input type="text" inputmode="numeric" id="adm-gv-${p.id}" value="${p.goles_visitante ?? ""}" placeholder="0"><button class="btn-mini" style="color:var(--tarjeta-roja); border-color:var(--tarjeta-roja)" onclick="guardarResultado(${p.id}, 'IN_PLAY')">Live</button><button class="btn-mini" onclick="guardarResultado(${p.id}, 'FINISHED')">Final ✓</button></span></div>`;
+function filaAdmin(p) {
+  return `
+    <div class="admin-partido">
+      <span style="flex:1">
+         <b>${esc(p.local || "?")}</b> vs <b>${esc(p.visitante || "?")}</b>
+         <div style="font-size:9px; color:var(--grada); margin-top:2px;">ID: ${p.id}</div>
+      </span>
+      <span class="mini">
+        <input type="text" inputmode="numeric" id="adm-gl-${p.id}" value="${p.goles_local ?? ""}" placeholder="0">
+        <input type="text" inputmode="numeric" id="adm-gv-${p.id}" value="${p.goles_visitante ?? ""}" placeholder="0">
+        <button class="btn-mini" style="color:var(--tarjeta-roja); border-color:var(--tarjeta-roja)" onclick="guardarResultado(${p.id}, 'IN_PLAY')">Live</button>
+        <button class="btn-mini" onclick="guardarResultado(${p.id}, 'FINISHED')">Final ✓</button>
+      </span>
+    </div>`;
 }
+
 async function guardarResultado(id, estado){
   const gl = parseInt($(`adm-gl-${id}`).value, 10), gv = parseInt($(`adm-gv-${id}`).value, 10);
   if (isNaN(gl) || isNaN(gv)) return mostrarToast("Pon los marcadores.", "error");

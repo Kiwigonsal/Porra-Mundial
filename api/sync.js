@@ -131,3 +131,10 @@ function mapearPartidoFD(m) {
     actualizado_en: new Date().toISOString()
   };
 }
+// 5. Limpieza Automática de la "Community" (Chat)
+    // Borramos los mensajes que tengan más de 48 horas (172.800.000 milisegundos)
+    const limiteHoras = new Date(Date.now() - 172800000).toISOString();
+    await fetch(`${SUPA}/rest/v1/comentarios?creado_en=lt.${limiteHoras}`, {
+      method: 'DELETE',
+      headers: headersSupa
+    });

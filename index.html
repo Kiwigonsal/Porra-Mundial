@@ -503,7 +503,14 @@ async function refrescarChat(){
 }
 
 async function llamarSync(){ 
-  try { await fetch("/api/sync"); } catch(e){} 
+  try { 
+    const res = await fetch("/api/sync"); 
+    if (!res.ok) return { ok: false, error: "Error servidor: " + res.status };
+    const texto = await res.text();
+    try { return JSON.parse(texto); } catch(e) { return { ok: false, error: "Respuesta API inválida." }; }
+  } catch(e){
+    return { ok: false, error: "Error de red" };
+  } 
 }
 function programarSync(){
   const hayPartido = () => partidos.some(p => esVivo(p.estado) || (p.fecha_utc && Date.now() >= new Date(p.fecha_utc).getTime() - 5*60e3 && Date.now() <= new Date(p.fecha_utc).getTime() + 4*3600e3));

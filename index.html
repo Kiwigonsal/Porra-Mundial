@@ -578,8 +578,20 @@ async function enviarChat(inputId) {
     const input = $(inputId); if(!input) return;
     const txt = input.value.trim(); if(!txt || !me) return;
     input.value = "";
-    const { error } = await db.rpc('enviar_comentario_seguro', { p_usuario: me.id, p_pin: miPinClaro, p_texto: txt, p_porra: porra.id });
-    if (error) mostrarToast("Error al enviar", "error"); else refrescarChat();
+    
+    const { error } = await db.rpc('enviar_comentario_seguro', { 
+        p_usuario: me.id, 
+        p_pin: miPinClaro, 
+        p_texto: txt, 
+        p_porra: porra.id 
+    });
+    
+    if (error) {
+        mostrarToast("Error DB: " + esc(error.message), "error");
+        console.error("Detalle del error:", error);
+    } else {
+        refrescarChat();
+    }
 }
 
 function renderMiniTabla() {

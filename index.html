@@ -198,17 +198,17 @@
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
-  /* DISEÑO DEL PODIO DE 3 PRIMEROS (Desaplastado) */
+  /* DISEÑO DEL PODIO DE 3 PRIMEROS (Desaplastado y alineado a la base) */
   .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 32px 0 24px; padding: 0 6px; }
   .podio-item { 
-    flex: 1; min-width:0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    flex: 1; min-width:0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     border-radius: 16px 16px 8px 8px; position: relative; cursor: pointer; transition: transform 0.1s; 
-    border: 1px solid var(--cal-tenue); box-shadow: 0 8px 25px rgba(0,0,0,0.5); padding-bottom: 16px;
+    border: 1px solid var(--cal-tenue); box-shadow: 0 8px 25px rgba(0,0,0,0.5); padding: 24px 4px 12px;
   }
   .podio-item:active { transform: scale(0.96); }
-  .podio-item.rank-1 { height: 190px; z-index: 3; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); }
-  .podio-item.rank-2 { height: 160px; z-index: 2; border-color: var(--cal-suave); }
-  .podio-item.rank-3 { height: 140px; z-index: 1; border-color: #d97706; }
+  .podio-item.rank-1 { height: 180px; z-index: 3; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); }
+  .podio-item.rank-2 { height: 150px; z-index: 2; border-color: var(--cal-suave); }
+  .podio-item.rank-3 { height: 130px; z-index: 1; border-color: #d97706; }
   
   .podio-avatar { 
     width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--campo); 
@@ -368,7 +368,7 @@ const COLORES_EQUIPOS = {
   "Francia": ["#0044ff", "#ff003c"],       
   "Inglaterra": ["#ffffff", "#ff003c"],    
   "Alemania": ["#ffb300", "#000000"],      
-  "Portugal": ["#ff003c", "#00ff55"],      
+  "Portugal": ["#00ff55", "#ff003c"],      
   "Italia": ["#0066ff", "#ffffff"],        
   "Uruguay": ["#00d4ff", "#ffee00"],       
   "Colombia": ["#ffee00", "#0044ff"],      
@@ -647,7 +647,7 @@ function render(){
     else if (tab === "partidos") v.innerHTML = vistaPartidos();
     else if (tab === "torneo") v.innerHTML = vistaTorneo();
     else if (tab === "tabla") v.innerHTML = vistaTabla();
-    else v.innerHTML = vistaPerfil();
+    else { v.innerHTML = vistaPerfil(); if(me) setTimeout(() => setExtrasSelects(me.id), 50); }
 
     renderChat('chat-container-desktop'); renderMiniTabla();
   } catch (error) { console.error(error); }
@@ -1006,50 +1006,6 @@ function htmlModalPartido(id) {
     <details ${empezado(p) ? 'open' : ''}><summary>Pronósticos</summary><div class="details-body">${htmlTodos}</div></details>`;
 }
 
-function htmlModalPerfil(uid) {
-  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
-  const esMio = (me && uid === me.id);
-  const f = clasificacion().find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
-  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
-  const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
-  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-  
-  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
-  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
-  const ultimos5 = partidosJugados.slice(-5);
-  let htmlForma = '';
-  for(let i=0; i<5; i++){
-      if(ultimos5[i]) {
-          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
-          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
-      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
-  }
-  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
-  const headerStyle = getEstiloFavPerfil(targetUser.extras?.favorito);
-  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
-
-  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-      <div class="perfil-header" style="${headerStyle}">
-          <div class="perfil-avatar" style="${esMio ? 'cursor:pointer' : ''}" onclick="${esMio ? "document.getElementById('input-cambiar-foto').click()" : ""}">${avatarHtml(targetUser)}</div>
-          ${esMio ? `<div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div><input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">` : ''}
-          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
-          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
-      </div>
-      <div class="perfil-stats-row">
-          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
-          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
-          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
-      </div>
-      <div class="perfil-dash-row">
-          <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
-          <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
-      </div>
-      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
-      ${extrasHtml}
-      ${esMio ? `<div style="display:flex; gap:10px; margin-top:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button></div>` : ''}
-      ${(esMio && (me.nombre || "").toLowerCase() === "kiwi" && adminPin) ? vistaAdmin() : ((esMio && (me.nombre || "").toLowerCase() === "kiwi") ? `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off" style="margin-bottom:0;"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>` : '')}`;
-}
-
 function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
   const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
   const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
@@ -1059,7 +1015,7 @@ function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
   const optsFav = `<option value="">Selecciona equipo...</option>` + Object.keys(COLORES_EQUIPOS).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
 
   let content = `
-    <div style="margin-bottom:20px; text-align:center;">
+    <div style="margin-top:30px; margin-bottom:20px; text-align:center;">
       <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">EXTRAS</h2>
       <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
     </div>`;
@@ -1121,6 +1077,47 @@ function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
   }
   content += `</div>`;
   return content;
+}
+
+function htmlModalPerfil(uid) {
+  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
+  const esMio = (me && uid === me.id);
+  const f = clasificacion().find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
+  }
+  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
+  const headerStyle = getEstiloFavPerfil(targetUser.extras?.favorito);
+  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
+
+  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="${headerStyle}">
+          <div class="perfil-avatar">${avatarHtml(targetUser)}</div>
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
+      </div>
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
+          <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
+      </div>
+      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+      ${extrasHtml}`;
 }
 
 function htmlModalPronosticos(uid) {
@@ -1228,13 +1225,13 @@ function vistaTabla(){
           else if(isThird) { bgStyle = `background: linear-gradient(180deg, rgba(217,119,6,0.15) 0%, var(--campo-2) 100%);`; borderStyle = `border-color: #d97706;`; }
       }
 
-      const paddingBottom = isFirst ? '30px' : (isSecond ? '15px' : '0px');
+      const altura = isFirst ? '180px' : (isSecond ? '150px' : '130px');
       const medalla = isFirst ? '🥇' : (isSecond ? '🥈' : '🥉');
       const fuego = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
       const arrow = getArrow(f.tendencia);
 
       podiumHtml += `
-      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle} padding-bottom: ${paddingBottom}; margin-top: ${isFirst ? '0' : '24px'};">
+      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle} height: ${altura};">
           <div style="display:flex; justify-content:center; width:100%; margin-bottom:8px;">${arrow}</div>
           <div class="podio-medalla">${medalla}</div>
           <div class="podio-avatar">${avatarHtml(f.u)}</div>
@@ -1259,6 +1256,64 @@ function vistaTabla(){
   }).join("") + `</div>`;
 
   return `${partidos.some(p => esVivo(p.estado)) ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}${podiumHtml}${listaHtml}<p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></p>`;
+}
+
+function vistaPerfil(){
+  if (!me) return vistaAcceso();
+  const filas = clasificacion();
+  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const dist = (filas.length ? filas[0].total : 0) - f.total;
+  
+  const misProns = pronosticos.filter(x => x.usuario_id === me.id);
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && misProns.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(misProns.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
+  }
+  
+  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
+  const headerStyle = getEstiloFavPerfil(me.extras?.favorito);
+  const extrasHtml = generarHtmlSeccionExtras(me.id, true, me, me.extras || {});
+  const isKiwi = (me.nombre || "").toLowerCase() === "kiwi";
+
+  return `
+  <div class="perfil-header" style="${headerStyle}">
+      <div style="position:relative; width:80px; height:80px; margin: 0 auto 12px;">
+          <div class="perfil-avatar" style="margin:0; width:100%; height:100%; cursor:pointer;" onclick="document.getElementById('input-cambiar-foto').click()">${avatarHtml(me)}</div>
+          <div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; cursor:pointer; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div>
+      </div>
+      <input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">
+      <h2 style="display:flex; align-items:center; justify-content:center;">${esc(me.nombre)} ${fuegoHTML}</h2>
+      <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${partidosJugados.length} jugados</span></div>
+  </div>
+  <div class="perfil-stats-row">
+      <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+      <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+      <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+  </div>
+  <div class="perfil-dash-row">
+      <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
+      <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
+  </div>
+  
+  <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${me.id}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+  
+  ${extrasHtml}
+  
+  <div style="display:flex; gap:10px; margin-top:24px; margin-bottom:24px;">
+      <button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button>
+      <button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button>
+  </div>
+  
+  ${isKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off" style="margin-bottom:0;"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>`) : ''}
+  `;
 }
 
 async function cambiarMiPin() {

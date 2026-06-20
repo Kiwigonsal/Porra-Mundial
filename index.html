@@ -199,26 +199,26 @@
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
-  /* DISEÑO DEL PODIO REAL (Desaplastado, avatares flotantes) */
-  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 40px 0 24px; padding: 0 4px; }
-  .podio-item { 
-    flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; 
-    border-radius: 16px 16px 8px 8px; position: relative; cursor: pointer; transition: transform 0.1s; 
-    border: 1px solid var(--cal-tenue); padding: 0 4px 12px; box-sizing: border-box;
-  }
-  .podio-item:active { transform: scale(0.96); }
-  .podio-item.rank-1 { height: 140px; z-index: 3; box-shadow: 0 0 20px rgba(255,234,0,0.15); border-color: var(--trofeo); }
-  .podio-item.rank-2 { height: 120px; z-index: 2; border-color: var(--cal-suave); }
-  .podio-item.rank-3 { height: 105px; z-index: 1; border-color: #d97706; }
+  /* DISEÑO DEL PODIO DESAPLASTADO (Alineado abajo, foto flotante) */
+  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 40px 0 24px; padding: 0 4px; }
+  .podio-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; }
+  .podio-col:active { transform: scale(0.96); }
   
-  .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-  .podio-avatar { width: 50px; height: 50px; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; }
+  .podio-pedestal { 
+    width: 100%; border-radius: 16px 16px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    padding: 0 4px 12px; border: 1px solid var(--cal-tenue); position: relative;
+  }
+  .podio-col.rank-1 .podio-pedestal { height: 140px; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); z-index:3; }
+  .podio-col.rank-2 .podio-pedestal { height: 115px; border-color: var(--cal-suave); z-index:2; }
+  .podio-col.rank-3 .podio-pedestal { height: 95px; border-color: #d97706; z-index:1; }
+
+  .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; pointer-events: none; width: 100%;}
+  .podio-avatar { width: 50px; height: 50px; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; flex-shrink:0; pointer-events: auto;}
   .podio-medalla { position: absolute; top: -14px; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12; }
   
-  .podio-content { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: auto; }
-  .podio-nombre { font-size: 12px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
   .podio-pts { font-family: var(--display); font-size: 22px; color: var(--cal); line-height: 1; margin-bottom: 4px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
   /* LISTA NORMAL CLASIFICACIÓN */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
@@ -359,7 +359,6 @@ const LIMITE_OTROS_EXTRAS = new Date("2026-06-18T13:00:00Z").getTime();
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 
-// COLORES CYBERPUNK DISTINTIVOS
 const COLORES_EQUIPOS = {
   "Argentina": ["#00e5ff", "#ffffff"],     
   "Brasil": ["#ffee00", "#00ff55"],        
@@ -419,7 +418,6 @@ function fmtHora(p){ return !p.fecha_utc ? "Por definir" : new Date(p.fecha_utc)
 function chipEstado(p){ return esVivo(p.estado) ? `<span class="chip vivo">En juego</span>` : (esFin(p.estado) ? `<span class="chip fin">Final</span>` : `<span class="chip">${fmtHora(p)}</span>`); }
 function escudo(url){ return url ? `<img src="${esc(url)}" loading="lazy">` : `<div class="sin-escudo">❔</div>`; }
 
-// FUNCIÓN PARA OBTENER COLORES DOBLES AL 30%
 function hexToRgba(hex, alpha) {
   if(!hex) return "";
   let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
@@ -450,8 +448,7 @@ function getArrow(tendencia) {
 }
 
 function irATorneoEquipo(equipo) {
-    cerrarModalFull();
-    irA('torneo');
+    cerrarModalFull(); irA('torneo');
     setTimeout(() => {
         const els = Array.from(document.querySelectorAll('.grupo-card td'));
         const td = els.find(el => el.textContent.trim().includes(equipo));
@@ -459,8 +456,7 @@ function irATorneoEquipo(equipo) {
             const card = td.closest('.grupo-card');
             if(card) {
                 card.scrollIntoView({behavior: 'smooth', block: 'center'});
-                card.style.transition = 'box-shadow 0.3s';
-                card.style.boxShadow = '0 0 20px var(--trofeo)';
+                card.style.transition = 'box-shadow 0.3s'; card.style.boxShadow = '0 0 20px var(--trofeo)';
                 setTimeout(() => card.style.boxShadow = 'none', 2000);
             }
         }
@@ -525,7 +521,6 @@ async function cargarTodo(){
   }
 }
 
-// FIX DDOS: Inyectamos el mensaje directamente
 function suscribirRealtime(){
   db.channel("cambios")
     .on("postgres_changes", { event:"*", schema:"public", table:"partidos" }, refrescar)
@@ -562,7 +557,6 @@ async function llamarSync(){
   } catch(e){ return { ok: false, error: "Error de red" }; } 
 }
 
-// FIX UX INTERRUPT: Comprueba que no estés escribiendo
 function programarSync(){
   const hayPartido = () => partidos.some(p => esVivo(p.estado) || (p.fecha_utc && Date.now() >= new Date(p.fecha_utc).getTime() - 5*60e3 && Date.now() <= new Date(p.fecha_utc).getTime() + 4*3600e3));
   if (partidos.length === 0 || hayPartido()) llamarSync();
@@ -571,10 +565,7 @@ function programarSync(){
     if (cargado) { 
       const activeEl = document.activeElement;
       const inputActivo = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'SELECT');
-      if (!inputActivo) {
-          render(); 
-          if(modalStack.length > 0) renderCurrentModal(); 
-      }
+      if (!inputActivo) { render(); if(modalStack.length > 0) renderCurrentModal(); }
     } 
   }, 60e3);
 }
@@ -604,7 +595,6 @@ function clasificacion(){
     else if (esFin(p.estado) && p.id === idUltimo) { f.ptsUltimo += pts; }
   }
 
-  // TIE BREAKER: Puntos > Plenos > Signos > Alfabético
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || b.signos - a.signos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
@@ -659,7 +649,7 @@ function renderChat(containerId) {
         const u = usuarios.find(x => x.id === m.usuario_id); if (!u) return;
         const esMio = (m.usuario_id === me.id);
         html += `<div class="msg-row ${esMio ? 'mio' : ''}">
-            <div class="msg-avatar" onclick="abrirPerfil('${u.id}')" style="cursor:pointer">${avatarHtmlMini(u)}</div>
+            <div class="msg-avatar" onclick="abrirPerfil('${u.id}')" style="cursor:pointer; pointer-events:auto;">${avatarHtmlMini(u)}</div>
             <div class="msg-content"><strong>${esc(u.nombre)}</strong>${esc(m.texto)}</div>
         </div>`;
     });
@@ -1181,16 +1171,17 @@ function vistaTabla(){
       const arrow = getArrow(f.tendencia);
 
       podiumHtml += `
-      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle}">
-          <div class="podio-avatar-wrapper">
-              <div class="podio-medalla">${medalla}</div>
-              <div class="podio-avatar">${avatarHtml(f.u)}</div>
-          </div>
-          <div class="podio-content">
-              <div class="podio-nombre">${esc(f.u.nombre)}${fuego}</div>
+      <div class="podio-col rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer; pointer-events:auto;">
+          <div class="podio-pedestal" style="${bgStyle} ${borderStyle}">
+              <div class="podio-avatar-wrapper">
+                  <div class="podio-medalla">${medalla}</div>
+                  <div class="podio-avatar">${avatarHtml(f.u)}</div>
+                  ${fuego}
+              </div>
+              <div class="podio-nombre">${esc(f.u.nombre)}</div>
               <div class="podio-pts">${f.total} pts</div>
               <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
-              <div style="margin-top:2px;">${arrow}</div>
+              <div style="margin-top:6px;">${arrow}</div>
           </div>
       </div>`;
   });
@@ -1201,7 +1192,7 @@ function vistaTabla(){
     const inyectStyle = getEstiloFav(f.u.extras?.favorito);
     const arrow = getArrow(f.tendencia);
 
-    return `<div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle}">
+    return `<div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle} cursor:pointer; pointer-events:auto;">
       <div class="rank-num-small" style="display:flex; flex-direction:column; align-items:center; gap:2px;">${arrow}<span>${f.rank}</span></div>
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info"><div class="rank-nombre">${esc(f.u.nombre)}${fuegoHTML}</div><div class="rank-stats"><span>⭐ ${f.plenos}</span><span>✅ ${f.signos}</span><span>📝 ${f.jugados}</span></div></div>
@@ -1211,13 +1202,13 @@ function vistaTabla(){
 
   const panelDesempate = `
   <div style="background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:16px; margin-top:24px; font-size:11px; color:var(--grada); line-height:1.6;">
-      <div style="text-align:center; margin-bottom:8px;"><b style="color:var(--cal); letter-spacing:0.05em; text-transform:uppercase;">SISTEMA DE PUNTUACIÓN</b></div>
+      <div style="text-align:center; margin-bottom:8px;"><b style="color:var(--cal); letter-spacing:0.05em; text-transform:uppercase;">SISTEMA DE PUNTUACIÓN Y DESEMPATE</b></div>
       <div style="display:flex; justify-content:space-around; margin-bottom:12px;">
-          <span>Pleno exacto: <b style="color:var(--trofeo)">5 pts</b></span>
-          <span>Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></span>
+          <span>Pleno: <b style="color:var(--trofeo)">5 pts</b></span>
+          <span>Correcto: <b style="color:var(--cesped)">3 pts</b></span>
       </div>
       <div style="border-top:1px dashed var(--cal-tenue); padding-top:12px;">
-          <b style="color:var(--cal); letter-spacing:0.05em; text-transform:uppercase;">CRITERIOS DE DESEMPATE:</b><br>
+          <b style="color:var(--cal); letter-spacing:0.05em; text-transform:uppercase;">CRITERIOS EN CASO DE EMPATE:</b><br>
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
               <span>1º Mayor cantidad de Plenos Exactos (⭐).</span>
               <span>2º Mayor cantidad de Aciertos (✅).</span>

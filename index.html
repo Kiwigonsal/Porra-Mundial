@@ -14,15 +14,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --campo: #030712;          /* Ultra dark cyber-blue */
-    --campo-2: #0f172a;        /* Slate 900 */
-    --campo-3: #1e293b;        /* Slate 800 */
+    --campo: #030712;          
+    --campo-2: #0f172a;        
+    --campo-3: #1e293b;        
     --cal: #ffffff;            
     --cal-suave: #94a3b8;
     --cal-tenue: rgba(255, 255, 255, 0.1);
-    --cesped: #00ff66;         /* Verde Neón para aciertos */
-    --trofeo: #ffea00;         /* Oro Brillante */
-    --tarjeta-roja: #ff0055;   /* Magenta Cyberpunk */
+    --cesped: #00ff66;         
+    --trofeo: #ffea00;         
+    --tarjeta-roja: #ff0055;   
     --grada: #64748b;          
     --radius: 16px;
     --display: 'Anton', Impact, sans-serif;
@@ -177,7 +177,6 @@
   .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
   .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
-  .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); opacity:0.8; }
@@ -199,28 +198,30 @@
 
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
-  /* DISEÑO DEL PODIO DE 3 PRIMEROS (Desaplastado, anclado arriba) */
-  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 32px 0 24px; padding: 0 6px; }
-  .podio-item { 
-    flex: 1; min-width:0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    border-radius: 16px 16px 8px 8px; position: relative; cursor: pointer; transition: transform 0.1s; 
-    border: 1px solid var(--cal-tenue); box-shadow: 0 8px 25px rgba(0,0,0,0.5); padding: 20px 4px 12px; gap: 6px;
-  }
-  .podio-item:active { transform: scale(0.96); }
-  .podio-item.rank-1 { height: 195px; z-index: 3; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); }
-  .podio-item.rank-2 { height: 175px; z-index: 2; border-color: var(--cal-suave); }
-  .podio-item.rank-3 { height: 160px; z-index: 1; border-color: #d97706; }
+  /* DISEÑO DEL PODIO REAL 3D (Desaplastado y con avatares anclados arriba) */
+  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 42px 0 24px; padding: 0 6px; }
+  .podio-col { flex: 1; min-width:0; display: flex; flex-direction: column; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; }
+  .podio-col:active { transform: scale(0.96); }
   
-  .podio-avatar { 
-    width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%; border: 2px solid var(--campo); 
-    background: var(--campo-3); display: flex; align-items: center; justify-content: center; 
-    font-size: 20px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5); overflow: hidden;
+  .podio-pedestal { 
+    width: 100%; border-radius: 16px 16px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 34px 4px 12px; border: 1px solid var(--cal-tenue); box-shadow: 0 8px 25px rgba(0,0,0,0.5); position: relative;
   }
-  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
-  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin: 0; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}
-  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8);}
-  .podio-medalla { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 28px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); z-index: 10;}
-  .podio-tendencia { position: absolute; top: 8px; left: 8px; }
+  .podio-col.rank-1 .podio-pedestal { height: 140px; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); z-index:3; }
+  .podio-col.rank-2 .podio-pedestal { height: 115px; border-color: var(--cal-suave); z-index:2; }
+  .podio-col.rank-3 .podio-pedestal { height: 95px; border-color: #d97706; z-index:1; }
+
+  .podio-avatar-wrapper { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center;}
+  .podio-avatar { 
+    width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--campo); 
+    background: var(--campo-3); display: flex; align-items: center; justify-content: center; 
+    font-size: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); overflow: hidden;
+  }
+  .podio-medalla { position: absolute; top: -14px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12;}
+  
+  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
+  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin-bottom: 4px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}
+  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8);}
 
   /* LISTA NORMAL CLASIFICACIÓN */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
@@ -370,7 +371,7 @@ const COLORES_EQUIPOS = {
   "Francia": ["#0044ff", "#ff003c"],       
   "Inglaterra": ["#ffffff", "#ff003c"],    
   "Alemania": ["#ffb300", "#000000"],      
-  "Portugal": ["#ff003c", "#00ff55"],      
+  "Portugal": ["#00ff55", "#ff003c"],      
   "Italia": ["#0066ff", "#ffffff"],        
   "Uruguay": ["#00d4ff", "#ffee00"],       
   "Colombia": ["#ffee00", "#0044ff"],      
@@ -429,14 +430,12 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-// Estilo de Relleno para lista normal
 function getEstiloFav(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
     return `background: linear-gradient(135deg, ${hexToRgba(c1, 0.3)} 0%, ${hexToRgba(c2, 0.3)} 100%); border: 1px solid ${hexToRgba(c1, 0.5)}; border-left: 4px solid ${c1};`;
 }
 
-// Estilo de Relleno para el Perfil
 function getEstiloFavPerfil(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
@@ -445,17 +444,15 @@ function getEstiloFavPerfil(fav) {
 
 function getFuegoHtml(racha) {
     if(!racha) return '';
-    return `<span title="¡Racha de ${racha}!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px var(--cesped));">🔥</span>`;
+    return `<span title="¡Racha de ${racha}!" style="margin-left:4px; font-size:14px; position:absolute; bottom:-6px; right:-6px; z-index:15; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px var(--cesped));">🔥</span>`;
 }
 
-// Flechas de tendencia
 function getArrow(tendencia) {
     if (tendencia > 0) return `<span style="color:var(--cesped); font-size:12px; filter:drop-shadow(0 0 4px var(--cesped));">▲</span>`;
     if (tendencia < 0) return `<span style="color:var(--tarjeta-roja); font-size:12px; filter:drop-shadow(0 0 4px var(--tarjeta-roja));">▼</span>`;
     return `<span style="color:var(--grada); font-size:12px;">=</span>`;
 }
 
-// Navegación mágica Torneo
 function irATorneoEquipo(equipo) {
     cerrarModalFull();
     irA('torneo');
@@ -484,11 +481,6 @@ function esPartidoPuntuable(p) {
     return !primeros4.includes(p.id);
   }
   return true;
-}
-
-async function sha256(texto){
-  const data = new TextEncoder().encode(texto); const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
 init();
@@ -537,7 +529,6 @@ async function cargarTodo(){
   }
 }
 
-// FIX DDOS: Inyectamos el mensaje directamente
 function suscribirRealtime(){
   db.channel("cambios")
     .on("postgres_changes", { event:"*", schema:"public", table:"partidos" }, refrescar)
@@ -574,7 +565,6 @@ async function llamarSync(){
   } catch(e){ return { ok: false, error: "Error de red" }; } 
 }
 
-// FIX UX INTERRUPT: Comprueba que no estés escribiendo
 function programarSync(){
   const hayPartido = () => partidos.some(p => esVivo(p.estado) || (p.fecha_utc && Date.now() >= new Date(p.fecha_utc).getTime() - 5*60e3 && Date.now() <= new Date(p.fecha_utc).getTime() + 4*3600e3));
   if (partidos.length === 0 || hayPartido()) llamarSync();
@@ -1196,13 +1186,18 @@ function vistaTabla(){
       const arrow = getArrow(f.tendencia);
 
       podiumHtml += `
-      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle}">
-          <div class="podio-medalla">${medalla}</div>
-          <div class="podio-tendencia">${arrow}</div>
-          <div class="podio-avatar">${avatarHtml(f.u)}</div>
-          <div class="podio-nombre">${esc(f.u.nombre)} ${fuego}</div>
-          <div class="podio-pts">${f.total} pts</div>
-          <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
+      <div class="podio-col rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')">
+          <div class="podio-pedestal" style="${bgStyle} ${borderStyle}">
+              <div class="podio-avatar-wrapper">
+                  <div class="podio-medalla">${medalla}</div>
+                  <div class="podio-avatar">${avatarHtml(f.u)}</div>
+                  ${fuego}
+              </div>
+              <div class="podio-nombre">${esc(f.u.nombre)}</div>
+              <div class="podio-pts">${f.total} pts</div>
+              <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
+              <div style="margin-top:6px;">${arrow}</div>
+          </div>
       </div>`;
   });
   podiumHtml += '</div>';
@@ -1223,6 +1218,49 @@ function vistaTabla(){
   return `${partidos.some(p => esVivo(p.estado)) ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}${podiumHtml}${listaHtml}<p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></p>`;
 }
 
+function htmlModalPerfil(uid) {
+  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
+  const esMio = (me && uid === me.id);
+  const f = clasificacion().find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
+  }
+  
+  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
+  const headerStyle = getEstiloFavPerfil(targetUser.extras?.favorito);
+  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
+
+  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="${headerStyle}">
+          <div class="perfil-avatar" style="${esMio ? 'cursor:pointer' : ''}" onclick="${esMio ? "document.getElementById('input-cambiar-foto').click()" : ""}">${avatarHtml(targetUser)}</div>
+          ${esMio ? `<div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div><input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">` : ''}
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
+      </div>
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
+          <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
+      </div>
+      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+      ${extrasHtml}`;
+}
+
 function vistaPerfil(){
   if (!me) return vistaAcceso();
   const filas = clasificacion();
@@ -1231,16 +1269,18 @@ function vistaPerfil(){
   
   const misProns = pronosticos.filter(x => x.usuario_id === me.id);
   const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && misProns.some(pr => pr.partido_id === p.id));
+  
   let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(misProns.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
   const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
   const ultimos5 = partidosJugados.sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc)).slice(-5);
   let htmlForma = '';
   for(let i=0; i<5; i++){
-      if(ultimos5[i]) {
-          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
-          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      if(ultimos5[i]) { 
+          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]); 
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`; 
       } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
   }
+  
   const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
   const headerStyle = getEstiloFavPerfil(me.extras?.favorito);
   const extrasHtml = generarHtmlSeccionExtras(me.id, true, me, me.extras || {});
@@ -1321,7 +1361,8 @@ async function registrarse(){
   const { data, error } = await db.rpc('registrarse_seguro', { p_porra: porra.id, p_nombre: nombre, p_pin: pin, p_avatar: avatarUrl });
   if (error) return mostrarToast(esc(error.message), "error");
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
-  await cargarTodo(); mostrarToast("¡Bienvenido!", "ok"); render();
+  await cargarTodo(); mostrarToast("¡Bienvenido!", "ok"); 
+  if (tab === "perfil") render(); else irA("inicio");
 }
 
 async function iniciarSesion(){
@@ -1331,7 +1372,8 @@ async function iniciarSesion(){
   const { data, error } = await db.rpc('iniciar_sesion_seguro', { p_porra: porra.id, p_nombre: nombreInput, p_pin: pin });
   if (error) return mostrarToast(esc(error.message), "error"); 
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
-  await cargarTodo(); mostrarToast("¡Sesión iniciada!", "ok"); render();
+  await cargarTodo(); mostrarToast("¡Sesión iniciada!", "ok"); 
+  if (tab === "perfil") render(); else irA("inicio");
 }
 
 function actualizarCabecera(){
@@ -1444,7 +1486,9 @@ async function guardarResultado(id, estado){
   const { error } = await db.rpc("set_resultado", { p_id: id, gl, gv, p_estado: estado, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast("Error: " + error.message, "error"); await cargarTodo(); render();
 }
+
 async function sincronizarAhora(){ mostrarToast("Sincronizando...", "nota"); const r = await llamarSync(); if (!r || !r.ok) mostrarToast(esc((r && r.error) ? r.error : "Error desconocido"), "error"); else mostrarToast("Sincronizado ✓", "ok"); await cargarTodo(); setTimeout(render, 900); }
+
 async function calcularYAsignarExtras() {
   if (!confirm("¿Seguro? Sumará puntos a los que acertaron el cuadro.")) return;
   const vCam = $("adm-cam").value, vSub = $("adm-sub").value, vTer = $("adm-ter").value, vCua = $("adm-cua").value;
@@ -1457,13 +1501,16 @@ async function calcularYAsignarExtras() {
   }
   mostrarToast("¡Puntos repartidos! 🏆", "ok"); await cargarTodo(); setTimeout(render, 1000);
 }
+
 function salirAdmin(){ adminPin = null; try{sessionStorage.removeItem("adminPin");}catch(e){} render(); }
+
 async function darPuntos(){
   const uid = $("adm-puntos-usr").value, pts = parseInt($("adm-puntos-val").value, 10);
   if (!uid || isNaN(pts)) return mostrarToast("Faltan datos.", "error");
   const { error } = await db.rpc("asignar_puntos_extra", { p_usuario: uid, p_puntos: pts, p_porra: porra.id, pin: adminPin });
   if (error) return mostrarToast(esc(error.message), "error"); mostrarToast("Puntos asignados ✓", "ok"); await cargarTodo(); setTimeout(render, 800);
 }
+
 async function resetearPin(){
   const uid = $("adm-puntos-usr").value; if (!uid) return;
   if (!confirm(`¿Resetear a "0000"?`)) return;

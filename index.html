@@ -172,6 +172,7 @@
   .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
   .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
+  .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(16,185,129,.1); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
@@ -283,8 +284,8 @@
   .mobile-chat-btn { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--trofeo); color: #0B1120; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(245,158,11,0.4); z-index: 40; border: none; cursor: pointer; transition: transform 0.1s;}
   .mobile-chat-btn:active { transform: scale(0.9); }
 
-  /* Clase universal para escalar imágenes dentro de contenedores de avatar circulares */
-  .scaled-img { width: 100%; height: 100%; object-fit: cover; }
+  /* CLASE DE ESCALADO UNIVERSAL PARA AVATARES (Corrige el recorte) */
+  .scaled-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 </style>
 </head>
 <body class="sin-porra">
@@ -341,7 +342,7 @@
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
-// FECHAS EN EL PASADO (BLOQUEA EDICIÓN Y PERMITE VER A LOS DEMÁS)
+// FECHA LÍMITE (En el pasado, para bloquear los extras importantes)
 const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-06-18T15:00:00+02:00").getTime(); 
 const LIMITE_OTROS_EXTRAS = new Date("2026-06-18T15:00:00+02:00").getTime();       
 
@@ -400,21 +401,17 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-// Estilo para lista normal (Clasificación, etc.)
-// Get style based on team favorite
+// Estilo de Relleno para lista normal
 function getEstiloFav(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    // Elegant subtle vertical fill showing both colors, and integrated border.
-    return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.1)} 0%, ${hexToRgba(c2, 0.1)} 100%); border: 1px solid ${hexToRgba(c1, 0.3)};`;
+    return `background: linear-gradient(90deg, ${hexToRgba(c1, 0.15)} 0%, ${hexToRgba(c2, 0.05)} 50%, var(--campo-2) 100%); border: 1px solid ${hexToRgba(c1, 0.3)};`;
 }
 
-// Estilo para Perfil Personal (Profile tab)
-// Style for personal profile (Profile tab)
+// Estilo de Relleno para el Perfil
 function getEstiloFavPerfil(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    // New elegant vertical blend and integrated subtle border.
     return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.15)} 0%, ${hexToRgba(c2, 0.15)} 100%); border: 1px solid ${hexToRgba(c1, 0.4)}; border-radius: var(--radius); overflow: hidden;`;
 }
 
@@ -551,7 +548,7 @@ function clasificacion(){
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
       
-      // NUEVO ALGORITMO ON FIRE (Calcula la racha real exacta)
+      // NUEVO ALGORITMO ON FIRE (Calcula la racha real exacta, no se queda en 4)
       let rachaActual = 0;
       for (let i = jugadosUser.length - 1; i >= 0; i--) {
           if (puntosDe(pronsUser.find(x => x.partido_id === jugadosUser[i].id), jugadosUser[i]) > 0) {
@@ -718,7 +715,7 @@ function vistaInicio() {
     onFire.forEach(f => { html += `<div class="resumen-item" onclick="abrirPerfil('${f.u.id}')"><span>🚀 <b style="color:var(--cal)">${esc(f.u.nombre)}</b> tiene racha de ${f.rachaFuego} partidos</span></div>`; });
     terminados.forEach(p => {
         const prons = pronosticos.filter(x => x.partido_id === p.id); let plenos = 0, aciertos = 0;
-        prons.forEach(pr => { const pts = puntos De(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
+        prons.forEach(pr => { const pts = puntosDe(pr, p); if(pts === 5) plenos++; else if(pts === 3) aciertos++; });
         let textoAciertos = [];
         if(plenos > 0) textoAciertos.push(`<span style="color:var(--trofeo)">${plenos} Plenos</span>`);
         if(aciertos > 0) textoAciertos.push(`<span style="color:var(--cesped)">${aciertos} Aciertos</span>`);
@@ -963,7 +960,7 @@ function htmlModalPerfil(uid) {
   const headerStyle = getEstiloFavPerfil(u.extras?.favorito);
 
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-      <div class="perfil-header" style="margin-bottom:16px; ${headerStyle}">
+      <div class="perfil-header" style="${headerStyle}">
           <div class="perfil-avatar">${avatarHtml(u)}</div>
           <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
           <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>

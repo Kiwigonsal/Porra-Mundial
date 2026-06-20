@@ -78,7 +78,6 @@
   .marca h1{font-family:var(--display); font-size:clamp(22px,6vw,28px); letter-spacing:.02em; font-weight:400; text-transform:uppercase}
   .yo{ display:flex; align-items:center; gap:8px; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:999px; padding:7px 13px 7px 9px; font-size:13px; font-weight:600; color:var(--cal); cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
   .yo-emoji-container { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .yo-emoji-container img { width: 100%; height: 100%; object-fit: cover; }
   .yo .pts{font-family:var(--display); color:var(--trofeo); font-size:15px; letter-spacing:.05em}
 
   #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 90%; max-width: 400px;}
@@ -172,7 +171,6 @@
   .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
   .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
-  .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(16,185,129,.1); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(239,68,68,.1); opacity:0.8; }
@@ -283,9 +281,6 @@
   .chat-input-area button:active { transform: scale(0.9); }
   .mobile-chat-btn { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--trofeo); color: #0B1120; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(245,158,11,0.4); z-index: 40; border: none; cursor: pointer; transition: transform 0.1s;}
   .mobile-chat-btn:active { transform: scale(0.9); }
-
-  /* CLASE DE ESCALADO UNIVERSAL PARA AVATARES (Corrige el recorte) */
-  .scaled-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 </style>
 </head>
 <body class="sin-porra">
@@ -342,9 +337,9 @@
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
-// FECHA LÍMITE (En el pasado, para bloquear los extras importantes)
-const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-06-18T15:00:00+02:00").getTime(); 
-const LIMITE_OTROS_EXTRAS = new Date("2026-06-18T15:00:00+02:00").getTime();       
+// FECHAS LÍMITE (En formato Date robusto para que iOS Safari no falle)
+const LIMITE_PRONOSTICOS_TORNEO = new Date(2026, 5, 18, 15, 0, 0).getTime(); 
+const LIMITE_OTROS_EXTRAS = new Date(2026, 5, 18, 15, 0, 0).getTime();       
 
 const ETAPAS = { GROUP_STAGE: "Fase de grupos", LAST_32: "Dieciseisavos", LAST_16: "Octavos", QUARTER_FINALS: "Cuartos", SEMI_FINALS: "Semifinales", THIRD_PLACE: "3er puesto", FINAL: "FINAL" };
 const COLORES_EQUIPOS = {
@@ -385,8 +380,8 @@ function comprimirImagen(file, maxWidth=300, maxHeight=300, quality=0.8) {
   });
 }
 
-function avatarHtml(u){ return (!u) ? '⚽' : (u.avatar_url ? `<img src="${esc(u.avatar_url)}" class="scaled-img">` : esc(u.emoji || '⚽')); }
-function avatarHtmlMini(u){ return (!u) ? '⚽' : (u.avatar_url ? `<img src="${esc(u.avatar_url)}" class="scaled-img">` : esc(u.emoji || '⚽')); }
+function avatarHtml(u){ return (!u) ? '⚽' : (u.avatar_url ? `<img src="${esc(u.avatar_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : esc(u.emoji || '⚽')); }
+function avatarHtmlMini(u){ return (!u) ? '⚽' : (u.avatar_url ? `<img src="${esc(u.avatar_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : esc(u.emoji || '⚽')); }
 function esVivo(estado) { return ["IN_PLAY", "PAUSED", "EXTRA_TIME", "PENALTY_SHOOTOUT", "LIVE", "1H", "2H", "HT", "ET", "BT", "P"].includes(estado); }
 function esFin(estado) { return ["FINISHED", "AWARDED", "FT", "AET", "PEN"].includes(estado); }
 function empezado(p){ return p.fecha_utc && new Date(p.fecha_utc).getTime() <= Date.now(); }
@@ -405,14 +400,14 @@ function hexToRgba(hex, alpha) {
 function getEstiloFav(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    return `background: linear-gradient(90deg, ${hexToRgba(c1, 0.15)} 0%, ${hexToRgba(c2, 0.05)} 50%, var(--campo-2) 100%); border: 1px solid ${hexToRgba(c1, 0.3)};`;
+    return `background: linear-gradient(135deg, ${hexToRgba(c1, 0.25)} 0%, ${hexToRgba(c2, 0.1)} 100%); border: 1px solid ${hexToRgba(c1, 0.5)};`;
 }
 
 // Estilo de Relleno para el Perfil
 function getEstiloFavPerfil(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.15)} 0%, ${hexToRgba(c2, 0.15)} 100%); border: 1px solid ${hexToRgba(c1, 0.4)}; border-radius: var(--radius); overflow: hidden;`;
+    return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.3)} 0%, ${hexToRgba(c2, 0.15)} 100%); border: 1px solid ${hexToRgba(c1, 0.6)}; border-radius: var(--radius); overflow: hidden;`;
 }
 
 function esPartidoPuntuable(p) {
@@ -542,13 +537,13 @@ function clasificacion(){
   const antSorted = [...filas].sort((a,b) => b.totalAnt - a.totalAnt || b.plenosAnt - a.plenosAnt || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   antSorted.forEach((f, idx) => f.rankAnt = idx + 1);
 
-  const actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
+  actSorted = filas.sort((a,b) => b.total - a.total || b.plenos - a.plenos || (a.u.nombre || "").localeCompare(b.u.nombre || ""));
   actSorted.forEach((f, idx) => {
       f.rank = idx + 1; f.tendencia = f.rankAnt - f.rank;
       const pronsUser = pronosticos.filter(x => x.usuario_id === f.u.id);
       const jugadosUser = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
       
-      // NUEVO ALGORITMO ON FIRE (Calcula la racha real exacta, no se queda en 4)
+      // NUEVO ALGORITMO ON FIRE (Calcula la racha real exacta)
       let rachaActual = 0;
       for (let i = jugadosUser.length - 1; i >= 0; i--) {
           if (puntosDe(pronsUser.find(x => x.partido_id === jugadosUser[i].id), jugadosUser[i]) > 0) {
@@ -1157,8 +1152,8 @@ function vistaTabla(){
       let bgStyle = "", borderStyle = "";
       if (f.u.extras?.favorito && COLORES_EQUIPOS[f.u.extras.favorito]) {
           const c1 = COLORES_EQUIPOS[f.u.extras.favorito][0], c2 = COLORES_EQUIPOS[f.u.extras.favorito][1];
-          bgStyle = `background: linear-gradient(180deg, ${hexToRgba(c1, 0.3)} 0%, ${hexToRgba(c2, 0.1)} 100%);`;
-          borderStyle = `border-color: ${c1};`;
+          bgStyle = `background: linear-gradient(135deg, ${hexToRgba(c1, 0.4)} 0%, ${hexToRgba(c2, 0.15)} 100%);`;
+          borderStyle = `border-color: ${hexToRgba(c1, 0.8)};`;
       } else {
           if(isFirst) { bgStyle = `background: linear-gradient(180deg, rgba(245,158,11,0.25) 0%, var(--campo-2) 100%);`; borderStyle = `border-color: var(--trofeo);`; }
           else if(isSecond) { bgStyle = `background: linear-gradient(180deg, rgba(248,250,252,0.15) 0%, var(--campo-2) 100%);`; borderStyle = `border-color: var(--cal);`; }

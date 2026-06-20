@@ -14,15 +14,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --campo: #030712;          /* Ultra dark cyber-blue */
-    --campo-2: #0f172a;        /* Slate 900 */
-    --campo-3: #1e293b;        /* Slate 800 */
+    --campo: #030712;          
+    --campo-2: #0f172a;        
+    --campo-3: #1e293b;        
     --cal: #ffffff;            
     --cal-suave: #94a3b8;
     --cal-tenue: rgba(255, 255, 255, 0.1);
-    --cesped: #00f0ff;         /* Neon Cyan */
-    --trofeo: #ffea00;         /* Neon Yellow/Gold */
-    --tarjeta-roja: #ff0055;   /* Cyberpunk Pink/Red */
+    --cesped: #00ff66;         /* Verde Neón para aciertos */
+    --trofeo: #ffea00;         /* Oro Brillante */
+    --tarjeta-roja: #ff0055;   /* Magenta Cyberpunk */
     --grada: #64748b;          
     --radius: 16px;
     --display: 'Anton', Impact, sans-serif;
@@ -34,7 +34,7 @@
     font-family:var(--body); background:var(--campo); color:var(--cal);
     min-height:100dvh;
     background-image:
-      radial-gradient(1200px 500px at 50% -200px, rgba(0,240,255,0.05), transparent 70%),
+      radial-gradient(1200px 500px at 50% -200px, rgba(0,255,102,0.05), transparent 70%),
       linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 100% 100%, 30px 30px, 30px 30px;
@@ -71,7 +71,7 @@
   .btn.oro { background: var(--trofeo); color: #000; box-shadow: 0 4px 15px rgba(255,234,0,0.3); }
 
   input[type=text], input[type=password], input[type=number], select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--cal-tenue); background: var(--campo-3); color: var(--cal); font-size: 15px; font-family: var(--body); outline: none; box-sizing: border-box; -webkit-appearance: none; appearance: none; transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s; margin-bottom: 16px; }
-  input:focus, select:focus { border-color: var(--cesped); background: var(--campo-2); box-shadow: 0 0 10px rgba(0,240,255,0.2);}
+  input:focus, select:focus { border-color: var(--cesped); background: var(--campo-2); box-shadow: 0 0 10px rgba(0,255,102,0.2);}
   label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--grada); margin: 0 0 8px 4px; }
   input[type=file]::file-selector-button { border:none; padding:8px 14px; border-radius:8px; background:var(--campo-3); color:var(--cal); font-weight:800; font-family:var(--body); cursor:pointer; }
 
@@ -79,8 +79,9 @@
   .marca{display:flex; flex-direction:column; line-height:1}
   .marca .anyo{font-family:var(--display); font-size:13px; letter-spacing:.35em; color:var(--cal-suave); text-transform:uppercase}
   .marca h1{font-family:var(--display); font-size:clamp(22px,6vw,28px); letter-spacing:.02em; font-weight:400; text-transform:uppercase; text-shadow: 0 0 15px rgba(255,255,255,0.2);}
-  .yo{ display:flex; align-items:center; gap:8px; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:999px; padding:7px 13px 7px 9px; font-size:13px; font-weight:600; color:var(--cal); cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  .yo{ display:flex; align-items:center; gap:8px; background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:999px; padding:7px 13px 7px 9px; font-size:13px; font-weight:600; color:var(--cal); cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
   .yo-emoji-container { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .yo-emoji-container img { width: 100%; height: 100%; object-fit: cover; }
   .yo .pts{font-family:var(--display); color:var(--trofeo); font-size:15px; letter-spacing:.05em; text-shadow: 0 0 8px rgba(255,234,0,0.4);}
 
   #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 90%; max-width: 400px;}
@@ -95,7 +96,7 @@
   .dia-titulo{ font-size:11px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--grada); margin:24px 4px 12px; display:flex; align-items:center; gap:10px; }
   .dia-titulo::after{content:""; flex:1; height:1px; background:var(--cal-tenue)}
   
-  .partido{ background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:14px; margin-bottom:12px; position:relative; overflow:hidden; cursor:pointer; transition: transform 0.1s, border-color 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  .partido{ background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:var(--radius); padding:14px; margin-bottom:12px; position:relative; overflow:hidden; cursor:pointer; transition: transform 0.1s, border-color 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
   .partido:active{ transform:scale(0.98); }
   .partido::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--cal-tenue); }
   .partido.en-vivo{ border-color:rgba(255,0,85,.5); box-shadow: 0 0 15px rgba(255,0,85,0.15);}
@@ -106,13 +107,14 @@
   .chip{ font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:var(--campo-3); color:var(--cal); }
   .chip.vivo{color:#fff; background:var(--tarjeta-roja); box-shadow: 0 0 8px rgba(255,0,85,0.4);}
   .chip.vivo::before{content:"●"; margin-right:5px; animation:lat 1.1s infinite}
-  .chip.fin{color:var(--cesped); background:rgba(0,240,255,.1);}
+  .chip.fin{color:var(--campo); font-weight:800; background:var(--cesped); box-shadow: 0 0 8px rgba(0,255,102,0.4);}
   @keyframes lat{50%{opacity:.25}}
 
   .marcador-feed{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; }
-  .equipo-feed{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:800; }
+  .equipo-feed{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:800; cursor:pointer; transition: opacity 0.2s;}
+  .equipo-feed:hover { opacity: 0.8; }
   .equipo-feed.der { flex-direction: row-reverse; text-align:right;}
-  .equipo-feed img{ width:28px; height:28px; object-fit:contain; filter:drop-shadow(0 2px 5px rgba(0,0,0,.6)); }
+  .equipo-feed img{ width:28px; height:28px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
   .equipo-feed .sin-escudo{ width:28px; height:28px; border-radius:50%; background:var(--campo); border:1px dashed var(--cal-tenue); display:flex; align-items:center; justify-content:center; font-size:12px; }
   .tanteo-feed{ font-family:var(--display); font-size:26px; letter-spacing:.06em; text-align:center; min-width:60px; line-height:1; text-shadow: 0 0 10px rgba(255,255,255,0.2);}
   .tanteo-feed .vs{ color:var(--cal-tenue); font-size:18px; text-shadow: none;}
@@ -148,13 +150,14 @@
   .modal-header { text-align:center; margin-top: 20px;}
   .modal-meta { font-size:11px; font-weight:800; letter-spacing:.15em; color:var(--grada); text-transform:uppercase; margin-bottom:16px; display:block;}
   .modal-marcador { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px;}
-  .modal-eq { display:flex; flex-direction:column; align-items:center; gap:8px; font-size:14px; font-weight:800;}
+  .modal-eq { display:flex; flex-direction:column; align-items:center; gap:8px; font-size:14px; font-weight:800; cursor:pointer; transition:opacity 0.2s;}
+  .modal-eq:hover { opacity:0.8; }
   .modal-eq img { width:50px; height:50px; object-fit:contain; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));}
   .modal-tanteo { font-family:var(--display); font-size:48px; min-width:80px; text-align:center; line-height:1; text-shadow: 0 0 15px rgba(255,255,255,0.15);}
   .modal-tanteo small{display:block; font-family:var(--body); font-size:11px; letter-spacing:.18em; color:var(--grada); margin-top:6px; text-transform:uppercase; text-shadow:none;}
   .banner-resultado { background:var(--campo-2); border:1px solid var(--cal-tenue); border-radius:12px; padding:14px; text-align:center; font-size:13px; font-weight:600;}
   .banner-resultado.exito { border-color:var(--trofeo); background:rgba(255,234,0,.05); color:var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.1);}
-  .banner-resultado.ok { border-color:var(--cesped); background:rgba(0,240,255,.05); color:var(--cesped); box-shadow: 0 0 10px rgba(0,240,255,0.1);}
+  .banner-resultado.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); color:var(--cesped); box-shadow: 0 0 10px rgba(0,255,102,0.1);}
   .banner-resultado.error { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); color:var(--tarjeta-roja); box-shadow: 0 0 10px rgba(255,0,85,0.1);}
   
   details { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 14px; overflow: hidden; }
@@ -175,14 +178,14 @@
   .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
-  .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,240,255,.05); }
+  .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(255,234,0,.05); }
 
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s;}
   .pron-item:active { transform:scale(0.98); }
   .pron-item.pleno-bg { background: rgba(255,234,0,0.08); border-color: var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.1); }
-  .pron-item.ok-bg { background: rgba(0,240,255,0.08); border-color: var(--cesped); box-shadow: 0 0 10px rgba(0,240,255,0.1);}
+  .pron-item.ok-bg { background: rgba(0,255,102,0.08); border-color: var(--cesped); box-shadow: 0 0 10px rgba(0,255,102,0.1);}
   .pron-item.bad-bg { background: rgba(255,0,85,0.08); border-color: var(--tarjeta-roja); }
   .pron-item-eq { display: flex; align-items: center; justify-content:center; flex-shrink:0; }
   .pron-item-info { flex: 1; min-width: 0; border-left:1px dashed var(--cal-tenue); padding-left:10px; }
@@ -193,34 +196,34 @@
   .pron-item-pts.vivo { font-family: var(--body); font-size: 11px; font-weight: 800; text-transform: uppercase; animation: lat 1.1s infinite; text-align:right;}
   .pron-item-pts.pending { font-size:16px; color:var(--cal-tenue); }
 
-  /* PODIO ESPECTACULAR */
-  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 32px 0 24px; padding: 0 8px; }
+  /* DISEÑO DEL PODIO DE 3 PRIMEROS (Desaplastado) */
+  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 32px 0 24px; padding: 0 6px; }
   .podio-item { 
     flex: 1; min-width:0; display: flex; flex-direction: column; align-items: center; 
-    border-radius: 16px; padding: 24px 4px 12px; position: relative; cursor: pointer; transition: transform 0.1s; 
+    border-radius: 16px; padding: 24px 8px 12px; position: relative; cursor: pointer; transition: transform 0.1s; 
     border: 1px solid var(--cal-tenue); box-shadow: 0 8px 25px rgba(0,0,0,0.5);
   }
   .podio-item:active { transform: scale(0.96); }
-  .podio-item.rank-1 { height: 180px; z-index: 3; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); }
-  .podio-item.rank-2 { height: 150px; z-index: 2; border-color: var(--cal-suave); margin-bottom: 0; }
-  .podio-item.rank-3 { height: 130px; z-index: 1; border-color: #d97706; margin-bottom: 0; }
+  .podio-item.rank-1 { z-index: 3; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); margin-bottom: 20px; padding-top: 32px; }
+  .podio-item.rank-2 { z-index: 2; border-color: var(--cal-suave); margin-bottom: 0; }
+  .podio-item.rank-3 { z-index: 1; border-color: #d97706; margin-bottom: 0; }
   
   .podio-avatar { 
     width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--campo); 
     background: var(--campo-3); display: flex; align-items: center; justify-content: center; 
     font-size: 20px; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
-  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
-  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin-bottom: 4px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}
-  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8);}
+  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);}
+  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin-bottom: 6px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8);}
+  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; text-shadow: 0 1px 3px rgba(0,0,0,0.8);}
   .podio-medalla { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 32px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); z-index: 10;}
 
   /* LISTA NORMAL CLASIFICACIÓN */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
   .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s; position: relative; overflow: hidden;}
   .rank-card:active { transform:scale(0.98); }
-  .rank-card.yo { border-color: var(--cesped); box-shadow: 0 0 15px rgba(0,240,255,0.1); }
-  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; }
+  .rank-card.yo { border-color: var(--cesped); box-shadow: 0 0 15px rgba(0,255,102,0.1); }
+  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; display:flex; flex-direction:column; align-items:center; gap:2px;}
   .rank-avatar { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0;}
   .rank-info { flex: 1; min-width: 0; z-index:2;}
   .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display: flex; align-items: center;}
@@ -250,7 +253,7 @@
   .forma-row { display: flex; gap: 6px; margin-bottom: 12px; }
   .forma-box { width: 24px; height: 24px; border-radius: 6px; }
   .forma-oro { background: var(--trofeo); box-shadow: 0 0 8px rgba(255,234,0,0.4);}
-  .forma-verde { background: var(--cesped); box-shadow: 0 0 8px rgba(0,240,255,0.4);}
+  .forma-verde { background: var(--cesped); box-shadow: 0 0 8px rgba(0,255,102,0.4);}
   .forma-roja { background: var(--tarjeta-roja); box-shadow: 0 0 8px rgba(255,0,85,0.4);}
   .forma-vacia { background: var(--campo); border: 1px dashed var(--cal-tenue); }
   .forma-txt { font-size: 12px; color: var(--cal); font-weight: 600; }
@@ -282,9 +285,9 @@
   .msg-content { background: var(--campo-2); padding: 8px 12px; border-radius: 4px 12px 12px 12px; font-size: 13px; color: var(--cal); line-height: 1.4; border: 1px solid rgba(255,255,255,0.05); }
   .msg-content strong { color: var(--trofeo); font-size: 10px; display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
   .msg-row.mio { flex-direction: row-reverse; }
-  .msg-row.mio .msg-content { background: rgba(0,240,255, 0.1); border-color: var(--cesped); border-radius: 12px 4px 12px 12px; box-shadow: 0 0 10px rgba(0,240,255,0.05);}
+  .msg-row.mio .msg-content { background: rgba(0,255,102, 0.1); border-color: var(--cesped); border-radius: 12px 4px 12px 12px; box-shadow: 0 0 10px rgba(0,255,102,0.05);}
   .msg-row.mio .msg-content strong { text-align: right; color: var(--cesped); }
-  .chat-input-area { padding: 12px; border-top: 1px solid var(--cal-tenue); display: flex; gap: 8px; background: rgba(0,0,0,0.4); }
+  .chat-input-area { padding: 12px; border-top: 1px solid var(--cal-tenue); display: flex; gap: 8px; background: rgba(3,7,18,0.8); }
   .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid var(--cal-tenue); background: var(--campo); color: var(--cal); font-size: 13px; outline: none; transition: border 0.2s; margin-bottom:0;}
   .chat-input-area input:focus { border-color: var(--cesped); }
   .chat-input-area button { background: var(--trofeo); color: #0B1120; border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; font-size: 16px; transition: transform 0.1s;}
@@ -349,7 +352,6 @@
 const SUPABASE_URL = "https://aazygqkknksqnksyzhtq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhenlncWtrbmtzcW5rc3l6aHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODU0NTQsImV4cCI6MjA5Njg2MTQ1NH0.EUn5OtrZMB_rhFcSpvXuCRTQGGiiirPMzCfX-Neuw-E";
 
-// FECHAS LÍMITE INFALIBLES PARA IOS/SAFARI (18 Junio 2026, 15:00h España)
 const LIMITE_PRONOSTICOS_TORNEO = new Date("2026-06-18T13:00:00Z").getTime(); 
 const LIMITE_OTROS_EXTRAS = new Date("2026-06-18T13:00:00Z").getTime();       
 
@@ -422,13 +424,54 @@ function hexToRgba(hex, alpha) {
 function getEstiloFav(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    return `background: linear-gradient(90deg, ${hexToRgba(c1, 0.2)} 0%, ${hexToRgba(c2, 0.05)} 100%); border: 1px solid ${hexToRgba(c1, 0.3)}; border-left: 4px solid ${c1};`;
+    return `background: linear-gradient(135deg, ${hexToRgba(c1, 0.3)} 0%, ${hexToRgba(c2, 0.3)} 100%); border: 1px solid ${hexToRgba(c1, 0.5)};`;
 }
 
 function getEstiloFavPerfil(fav) {
     if(!fav || !COLORES_EQUIPOS[fav]) return "";
     const c1 = COLORES_EQUIPOS[fav][0], c2 = COLORES_EQUIPOS[fav][1];
-    return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.25)} 0%, ${hexToRgba(c2, 0.05)} 100%); border: 1px solid ${hexToRgba(c1, 0.4)}; border-top: 4px solid ${c1}; border-radius: var(--radius); overflow: hidden;`;
+    return `background: linear-gradient(180deg, ${hexToRgba(c1, 0.3)} 0%, ${hexToRgba(c2, 0.3)} 100%); border: 1px solid ${hexToRgba(c1, 0.6)}; border-radius: var(--radius); overflow: hidden;`;
+}
+
+function getFuegoHtml(racha) {
+    if(!racha) return '';
+    return `<span title="¡Racha de ${racha}!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #ffea00);">🔥</span>`;
+}
+
+function getArrow(tendencia) {
+    if (tendencia > 0) return `<span style="color:var(--cesped); font-size:12px;">▲</span>`;
+    if (tendencia < 0) return `<span style="color:var(--tarjeta-roja); font-size:12px;">▼</span>`;
+    return `<span style="color:var(--grada); font-size:12px;">=</span>`;
+}
+
+function irATorneoEquipo(equipo) {
+    cerrarModalFull();
+    irA('torneo');
+    setTimeout(() => {
+        const els = Array.from(document.querySelectorAll('td'));
+        const td = els.find(el => el.textContent.trim() === equipo);
+        if(td) {
+            const card = td.closest('.grupo-card');
+            if(card) {
+                card.scrollIntoView({behavior: 'smooth', block: 'center'});
+                card.style.transition = 'box-shadow 0.3s';
+                card.style.boxShadow = '0 0 20px var(--trofeo)';
+                setTimeout(() => card.style.boxShadow = 'none', 2000);
+            }
+        } else {
+            const feeds = Array.from(document.querySelectorAll('.equipo-feed span'));
+            const span = feeds.find(el => el.textContent.trim() === equipo);
+            if(span) {
+                const art = span.closest('.partido');
+                if(art) {
+                    art.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    art.style.transition = 'box-shadow 0.3s';
+                    art.style.boxShadow = '0 0 20px var(--trofeo)';
+                    setTimeout(() => art.style.boxShadow = 'none', 2000);
+                }
+            }
+        }
+    }, 400);
 }
 
 function esPartidoPuntuable(p) {
@@ -441,11 +484,6 @@ function esPartidoPuntuable(p) {
     return !primeros4.includes(p.id);
   }
   return true;
-}
-
-async function sha256(texto){
-  const data = new TextEncoder().encode(texto); const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
 init();
@@ -871,20 +909,18 @@ function renderCurrentModal() {
   if(state.view === 'partido') { partidoAbiertoId = state.pid; content = htmlModalPartido(state.pid); }
   else if(state.view === 'perfil') content = htmlModalPerfil(state.uid);
   else if(state.view === 'pronosticos') content = htmlModalPronosticos(state.uid);
-  else if(state.view === 'extras') content = htmlModalExtras(state.uid);
   else if(state.view === 'chat') content = htmlModalChat();
   
   if(!content) return;
   let backBtn = modalStack.length > 1 ? `<div class="modal-back" onclick="backModal()">← Atrás</div>` : ``;
   content = content.replace(`<div class="modal-close"`, `${backBtn}\n<div class="modal-close"`);
   $("modal-content").innerHTML = content;
-  if(state.view === 'extras') setExtrasSelects(state.uid);
+  if(state.view === 'perfil') setExtrasSelects(state.uid);
 }
 
 function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
 function abrirPerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
 function abrirModalPronosticos(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'pronosticos', uid: uid }); }
-function abrirModalExtras(uid) { if(!uid && me) uid = me.id; pushModal({ view: 'extras', uid: uid }); }
 function abrirChatModal() { pushModal({ view: 'chat' }); }
 
 function htmlModalChat() {
@@ -961,9 +997,9 @@ function htmlModalPartido(id) {
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header"><span class="modal-meta">${etiqueta} · ${txtHora}</span>
       <div class="modal-marcador">
-        <div class="modal-eq">${escudo(p.local_crest)} <span style="color:var(--cal-suave)">${esc(p.local || "?")}</span></div>
+        <div class="modal-eq" style="cursor:pointer" onclick="irATorneoEquipo('${esc(p.local)}')">${escudo(p.local_crest)} <span style="color:var(--cal-suave)">${esc(p.local || "?")}</span></div>
         ${scoreHTML}
-        <div class="modal-eq">${escudo(p.visitante_crest)} <span style="color:var(--cal-suave)">${esc(p.visitante || "?")}</span></div>
+        <div class="modal-eq" style="cursor:pointer" onclick="irATorneoEquipo('${esc(p.visitante)}')">${escudo(p.visitante_crest)} <span style="color:var(--cal-suave)">${esc(p.visitante || "?")}</span></div>
       </div>
     </div>
     ${bannerMio}
@@ -971,7 +1007,8 @@ function htmlModalPartido(id) {
 }
 
 function htmlModalPerfil(uid) {
-  const u = usuarios.find(x => x.id === uid); if(!u) return "";
+  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
+  const esMio = (me && uid === me.id);
   const f = clasificacion().find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
   const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
   const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
@@ -988,12 +1025,14 @@ function htmlModalPerfil(uid) {
       } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
   }
   const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de ${f.rachaFuego}!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
-  const headerStyle = getEstiloFavPerfil(u.extras?.favorito);
+  const headerStyle = getEstiloFavPerfil(targetUser.extras?.favorito);
+  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
 
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
       <div class="perfil-header" style="${headerStyle}">
-          <div class="perfil-avatar">${avatarHtml(u)}</div>
-          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(u.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-avatar" style="${esMio ? 'cursor:pointer' : ''}" onclick="${esMio ? "document.getElementById('input-cambiar-foto').click()" : ""}">${avatarHtml(targetUser)}</div>
+          ${esMio ? `<div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div><input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">` : ''}
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
           <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
       </div>
       <div class="perfil-stats-row">
@@ -1005,55 +1044,13 @@ function htmlModalPerfil(uid) {
           <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
           <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
       </div>
-      <div style="display:flex; gap:10px; margin-bottom:24px;">
-          <button class="btn secundario" onclick="abrirModalPronosticos('${uid}')">📋 PARTIDOS</button>
-          <button class="btn oro" onclick="abrirModalExtras('${uid}')">🔮 EXTRAS</button>
-      </div>`;
+      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+      ${extrasHtml}
+      ${esMio ? `<div style="display:flex; gap:10px; margin-top:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button></div>` : ''}
+      ${(esMio && (me.nombre || "").toLowerCase() === "kiwi" && adminPin) ? vistaAdmin() : ((esMio && (me.nombre || "").toLowerCase() === "kiwi") ? `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off" style="margin-bottom:0;"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>` : '')}`;
 }
 
-function htmlModalPronosticos(uid) {
-  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
-  const esMio = (me && uid === me.id);
-  const userProns = pronosticos.filter(x => x.usuario_id === uid);
-  const userPartidosId = userProns.map(x => x.partido_id);
-  const userPartidos = partidos.filter(p => userPartidosId.includes(p.id) && esPartidoPuntuable(p)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
-
-  const generarHtmlProns = (lista) => {
-    if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico aquí.</div>`;
-    return lista.map(p => {
-      const pr = userProns.find(x => x.partido_id === p.id);
-      const fin = esFin(p.estado), vivo = esVivo(p.estado);
-      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
-      let badgePts = "", realScore = "", bgClass = "";
-      if (fin || vivo) { bgClass = pts === 5 ? "pleno-bg" : (pts === 3 ? "ok-bg" : "bad-bg"); }
-      if (fin) {
-          badgePts = `<div class="pron-item-pts" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')}); font-weight:800;">${pts===0?'0':'+'+pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
-      } else if (vivo) {
-          badgePts = `<div class="pron-item-pts vivo" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">Live ${pts===0?'0':'+'+pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local ?? 0}-${p.goles_visitante ?? 0}</b>`;
-      } else badgePts = `<div class="pron-item-pts pending">-</div>`;
-
-      const predScore = (pr.goles_local === null || pr.goles_visitante === null) ? `<span style="color:var(--trofeo); font-size:11px; letter-spacing:0.05em">🔒 Secreto</span>` : `<b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b>`;
-      return `<div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
-          <div class="pron-item-eq"><img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;"></div>
-          <div class="pron-item-info"><div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div><div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> ${predScore} &nbsp;&nbsp; ${realScore}</div></div>${badgePts}
-      </div>`;
-    }).join("");
-  };
-
-  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-    <div class="modal-header" style="margin-bottom:20px;"><h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "MIS PRONÓSTICOS" : `PRON. DE ${esc(targetUser.nombre)}`}</h2></div>
-    ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4><div style="margin-bottom:24px;">${generarHtmlProns(userPartidos.filter(p => !empezado(p)))}</div>` : ''}
-    <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
-    <div>${generarHtmlProns(userPartidos.filter(p => empezado(p)).reverse())}</div>`;
-}
-
-function htmlModalExtras(uid) {
-  const targetUser = usuarios.find(x => x.id === uid) || me; if(!targetUser) return "";
-  const esMio = (me && targetUser.id === me.id);
-  const dataExt = targetUser.extras || {};
-  
+function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
   const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
   const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
   
@@ -1061,9 +1058,9 @@ function htmlModalExtras(uid) {
   const opts = `<option value="">Selecciona equipo...</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
   const optsFav = `<option value="">Selecciona equipo...</option>` + Object.keys(COLORES_EQUIPOS).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
 
-  let content = `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
-    <div class="modal-header" style="margin-bottom:20px;">
-      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "TUS PREDICCIONES EXTRA" : `EXTRAS DE ${esc(targetUser.nombre)}`}</h2>
+  let content = `
+    <div style="margin-bottom:20px; text-align:center;">
+      <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">EXTRAS</h2>
       <p class="nota">10pts Campeón · 7pts Subcampeón · 5pts 3º · 3pts 4º</p>
     </div>`;
 
@@ -1115,17 +1112,53 @@ function htmlModalExtras(uid) {
 
   content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
     <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo</h3>
-    ${formTorneo}`;
-
-  content += `<h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Premios Individuales</h3>
+    ${formTorneo}
+    <h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Premios Individuales</h3>
     ${formOtros}`;
 
   if (esMio && (!cerradoTorneo || !cerradoOtros)) {
       content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Guardar Predicciones</button>`;
   }
-
   content += `</div>`;
   return content;
+}
+
+function htmlModalPronosticos(uid) {
+  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
+  const esMio = (me && uid === me.id);
+  const userProns = pronosticos.filter(x => x.usuario_id === uid);
+  const userPartidosId = userProns.map(x => x.partido_id);
+  const userPartidos = partidos.filter(p => userPartidosId.includes(p.id) && esPartidoPuntuable(p)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+
+  const generarHtmlProns = (lista) => {
+    if(lista.length === 0) return `<div class="vacio" style="padding:15px; background:var(--campo-2); border-radius:12px; font-size:12px;">Ningún pronóstico aquí.</div>`;
+    return lista.map(p => {
+      const pr = userProns.find(x => x.partido_id === p.id);
+      const fin = esFin(p.estado), vivo = esVivo(p.estado);
+      const pts = (fin || vivo) ? puntosDe(pr, p) : null;
+      let badgePts = "", realScore = "", bgClass = "";
+      if (fin || vivo) { bgClass = pts === 5 ? "pleno-bg" : (pts === 3 ? "ok-bg" : "bad-bg"); }
+      if (fin) {
+          badgePts = `<div class="pron-item-pts" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')}); font-weight:800;">${pts===0?'0':'+'+pts}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
+      } else if (vivo) {
+          badgePts = `<div class="pron-item-pts vivo" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">Live ${pts===0?'0':'+'+pts}</div>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local ?? 0}-${p.goles_visitante ?? 0}</b>`;
+      } else badgePts = `<div class="pron-item-pts pending">-</div>`;
+
+      const predScore = (pr.goles_local === null || pr.goles_visitante === null) ? `<span style="color:var(--trofeo); font-size:11px; letter-spacing:0.05em">🔒 Secreto</span>` : `<b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b>`;
+      return `<div class="pron-item ${bgClass}" style="cursor:pointer" onclick="abrirModal(${p.id})">
+          <div class="pron-item-eq"><img src="${esc(p.local_crest)}" style="width:22px; height:22px; object-fit:contain;"> <span style="font-size:8.5px;color:var(--cal-tenue); margin:0 4px;">vs</span> <img src="${esc(p.visitante_crest)}" style="width:22px; height:22px; object-fit:contain;"></div>
+          <div class="pron-item-info"><div class="pron-item-nombres">${esc(p.local || "?")} · ${esc(p.visitante || "?")}</div><div class="pron-item-scores"><span style="font-weight:400;color:var(--grada)">pred</span> ${predScore} &nbsp;&nbsp; ${realScore}</div></div>${badgePts}
+      </div>`;
+    }).join("");
+  };
+
+  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-header" style="margin-bottom:20px;"><h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">${esMio ? "MIS PRONÓSTICOS" : `PRON. DE ${esc(targetUser.nombre)}`}</h2></div>
+    ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4><div style="margin-bottom:24px;">${generarHtmlProns(userPartidos.filter(p => !empezado(p)))}</div>` : ''}
+    <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
+    <div>${generarHtmlProns(userPartidos.filter(p => empezado(p)).reverse())}</div>`;
 }
 
 function setExtrasSelects(uid) {
@@ -1177,18 +1210,19 @@ function vistaTabla(){
   const filas = clasificacion();
   if (!filas.length) return `<div class="vacio">Todavía no hay nadie en la tabla.</div>`;
   
-  // PODIO DE LOS 3 PRIMEROS
+  // PODIO DE LOS 3 PRIMEROS (Reescrito para que no se aplaste)
   let podiumHtml = '<div class="podio-container">';
-  const top3 = [filas[1], filas[0], filas[2]]; // Segundo, Primero, Tercero
+  const top3 = [filas[1], filas[0], filas[2]]; // Orden del podio: Segundo, Primero, Tercero
   top3.forEach((f, idx) => {
       if(!f) return;
       const isFirst = idx === 1, isSecond = idx === 0, isThird = idx === 2;
       const rankPos = isFirst ? 1 : (isSecond ? 2 : 3);
+      const arrow = getArrow(f.tendencia);
       
       let bgStyle = "", borderStyle = "";
       if (f.u.extras?.favorito && COLORES_EQUIPOS[f.u.extras.favorito]) {
           const c1 = COLORES_EQUIPOS[f.u.extras.favorito][0], c2 = COLORES_EQUIPOS[f.u.extras.favorito][1];
-          bgStyle = `background: linear-gradient(180deg, ${hexToRgba(c1, 0.35)} 0%, ${hexToRgba(c2, 0.1)} 100%);`;
+          bgStyle = `background: linear-gradient(180deg, ${hexToRgba(c1, 0.4)} 0%, ${hexToRgba(c2, 0.15)} 100%);`;
           borderStyle = `border-color: ${c1}; box-shadow: 0 0 15px ${hexToRgba(c1, 0.2)};`;
       } else {
           if(isFirst) { bgStyle = `background: linear-gradient(180deg, rgba(255,234,0,0.15) 0%, var(--campo-2) 100%);`; borderStyle = `border-color: var(--trofeo); box-shadow: 0 0 15px rgba(255,234,0,0.1);`; }
@@ -1196,15 +1230,16 @@ function vistaTabla(){
           else if(isThird) { bgStyle = `background: linear-gradient(180deg, rgba(217,119,6,0.15) 0%, var(--campo-2) 100%);`; borderStyle = `border-color: #d97706;`; }
       }
 
-      const altura = isFirst ? '190px' : (isSecond ? '160px' : '140px');
+      const paddingBottom = isFirst ? '30px' : (isSecond ? '15px' : '0px');
       const medalla = isFirst ? '🥇' : (isSecond ? '🥈' : '🥉');
-      const fuego = f.rachaFuego ? `<div style="font-size:16px; position:absolute; top:-6px; right:-6px; filter:drop-shadow(0 0 6px #f59e0b); animation:lat 1.5s infinite;">🔥</div>` : '';
+      const fuego = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
 
       podiumHtml += `
-      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle} height: ${altura}; margin-top: 24px;">
+      <div class="podio-item rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="${bgStyle} ${borderStyle} padding-bottom: ${paddingBottom}; margin-top: ${isFirst ? '0' : '24px'};">
+          <div style="display:flex; justify-content:center; width:100%; margin-bottom:8px;">${arrow}</div>
           <div class="podio-medalla">${medalla}</div>
-          <div class="podio-avatar">${avatarHtml(f.u)}${fuego}</div>
-          <div class="podio-nombre">${esc(f.u.nombre)}</div>
+          <div class="podio-avatar">${avatarHtml(f.u)}</div>
+          <div class="podio-nombre">${esc(f.u.nombre)}${fuego}</div>
           <div class="podio-pts">${f.total} pts</div>
           <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
       </div>`;
@@ -1213,58 +1248,19 @@ function vistaTabla(){
 
   // RESTO DE LA LISTA (A partir del 4º puesto)
   let listaHtml = `<div class="lista-ranking">` + filas.slice(3).map(f => {
-    const fuegoHTML = f.rachaFuego ? `<span title="¡On Fire!" style="margin-left:4px; font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 4px #f59e0b);">🔥</span>` : '';
+    const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
     const inyectStyle = getEstiloFav(f.u.extras?.favorito);
+    const arrow = getArrow(f.tendencia);
 
     return `<div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle}">
-      <div class="rank-num-small">${f.rank}</div><div class="rank-avatar">${avatarHtml(f.u)}</div>
+      <div class="rank-num-small" style="display:flex; flex-direction:column; align-items:center; gap:2px;">${arrow}<span>${f.rank}</span></div>
+      <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info"><div class="rank-nombre">${esc(f.u.nombre)}${fuegoHTML}</div><div class="rank-stats"><span>⭐ ${f.plenos}</span><span>✅ ${f.signos}</span><span>📝 ${f.jugados}</span></div></div>
       <div class="rank-pts-box"><div class="rank-pts-val">${f.total}</div><div class="rank-pts-lbl">PTS</div></div>
     </div>`;
   }).join("") + `</div>`;
 
   return `${partidos.some(p => esVivo(p.estado)) ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}${podiumHtml}${listaHtml}<p class="nota" style="text-align:center; line-height:1.8; margin-top:24px;">Pleno exacto: <b style="color:var(--trofeo)">5 pts</b> · Solo Ganador/Empate: <b style="color:var(--cesped)">3 pts</b></p>`;
-}
-
-function vistaPerfil(){
-  if (!me) return vistaAcceso();
-  const filas = clasificacion();
-  const f = filas.find(x => x.u.id === me.id) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
-  const dist = (filas.length ? filas[0].total : 0) - f.total;
-  
-  const misProns = pronosticos.filter(x => x.usuario_id === me.id);
-  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && misProns.some(pr => pr.partido_id === p.id));
-  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(misProns.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
-  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
-  const ultimos5 = partidosJugados.sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc)).slice(-5);
-  let htmlForma = '';
-  for(let i=0; i<5; i++){
-      if(ultimos5[i]) {
-          const pts = puntosDe(misProns.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
-          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
-      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
-  }
-  const fuegoHTML = f.rachaFuego ? `<span title="¡Racha de ${f.rachaFuego}!" style="margin-left:6px; font-size:24px; filter:drop-shadow(0 0 10px #f59e0b); animation:lat 1.5s infinite;">🔥</span>` : '';
-  const headerStyle = getEstiloFavPerfil(me.extras?.favorito);
-
-  return `
-  <div class="perfil-header" style="${headerStyle}">
-      <div style="position:relative; width:80px; height:80px; margin: 0 auto 12px;">
-          <div class="perfil-avatar" style="margin:0; width:100%; height:100%; cursor:pointer;" onclick="document.getElementById('input-cambiar-foto').click()">${avatarHtml(me)}</div>
-          <div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; cursor:pointer; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div>
-      </div>
-      <input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">
-      <h2 style="display:flex; align-items:center; justify-content:center;">${esc(me.nombre)} ${fuegoHTML}</h2>
-      <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${misProns.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); }).length} jugados</span></div>
-  </div>
-  <div class="perfil-stats-row"><div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div><div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div><div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div></div>
-  <div class="perfil-dash-row">
-      <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
-      <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
-  </div>
-  <div style="display:flex; gap:10px; margin-bottom:12px;"><button class="btn secundario" onclick="abrirModalPronosticos('${me.id}')">📋 PARTIDOS</button><button class="btn oro" onclick="abrirModalExtras('${me.id}')">🔮 EXTRAS</button></div>
-  <div style="display:flex; gap:10px; margin-bottom:24px;"><button class="btn secundario" onclick="cambiarMiPin()">🔑 Cambiar PIN</button><button class="btn secundario" onclick="cambiarPorra()">🚪 Salir</button></div>
-  ${((me.nombre ? me.nombre : "").toLowerCase() === "kiwi") ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off" style="margin-bottom:0;"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>`) : ''}`;
 }
 
 async function cambiarMiPin() {
@@ -1326,7 +1322,7 @@ function actualizarCabecera(){
   const b = $("btn-yo"); if (!me){ b.hidden = true; return; }
   b.hidden = false; $("yo-emoji").innerHTML = avatarHtmlMini(me);
   const fila = clasificacion().find(f => f.u.id === me.id);
-  $("yo-nombre").innerHTML = esc(me.nombre) + ((fila && fila.rachaFuego) ? ` <span title="¡Racha!" style="font-size:14px; animation:lat 1.5s infinite; filter:drop-shadow(0 0 5px #f59e0b);">🔥</span>` : '');
+  $("yo-nombre").innerHTML = esc(me.nombre) + ((fila && fila.rachaFuego) ? getFuegoHtml(fila.rachaFuego) : '');
   $("yo-pts").textContent = (fila ? fila.total : 0) + " pts";
 }
 

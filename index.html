@@ -174,10 +174,11 @@
   .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1; color:var(--cal);}
   
   .lista-amigos { display:flex; flex-direction:column; gap:8px;}
-  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; cursor:pointer;}
+  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; cursor:pointer; transition: transform 0.1s;}
   .amigo-pick:active { transform:scale(0.98); }
   .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
+  .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); }
   .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); opacity:0.8; }
@@ -200,44 +201,45 @@
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
   /* DISEÑO DEL PODIO REAL ALINEADO A LA BASE (Desaplastado) */
-  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 32px 0 24px; padding: 0 4px; }
+  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 40px 0 24px; padding: 0 4px; }
   .podio-col { 
     flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; 
   }
   .podio-col:active { transform: scale(0.96); }
   
   .podio-pedestal { 
-    width: 100%; border-radius: 16px 16px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    padding: 24px 4px 12px; border: 1px solid var(--cal-tenue); position: relative;
+    width: 100%; border-radius: 16px 16px 8px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    padding: 30px 4px 16px; border: 1px solid var(--cal-tenue); position: relative;
   }
-  .podio-col.rank-1 .podio-pedestal { height: 160px; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); z-index:3; }
-  .podio-col.rank-2 .podio-pedestal { height: 135px; border-color: var(--cal-suave); z-index:2; }
-  .podio-col.rank-3 .podio-pedestal { height: 120px; border-color: #d97706; z-index:1; }
+  .podio-col.rank-1 .podio-pedestal { height: 170px; border-color: var(--trofeo); box-shadow: 0 0 20px rgba(255,234,0,0.15); z-index:3; }
+  .podio-col.rank-2 .podio-pedestal { height: 140px; border-color: var(--cal-suave); z-index:2; }
+  .podio-col.rank-3 .podio-pedestal { height: 125px; border-color: #d97706; z-index:1; }
 
-  .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;}
+  .podio-avatar-wrapper { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10;}
   .podio-avatar { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; }
-  .podio-medalla { position: absolute; top: -14px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12;}
+  .podio-medalla { position: absolute; top: -14px; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12;}
   
-  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin-bottom: 4px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .podio-info-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%; height: 100%; }
+  .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index:2; position:relative;}
+  .podio-pts { font-family: var(--display); font-size: 24px; color: var(--cal); line-height: 1; margin-bottom: 4px; letter-spacing: .05em; text-shadow: 0 2px 5px rgba(0,0,0,0.8); z-index:2; position:relative;}
+  .podio-stats { font-size: 9px; font-weight: 800; color: var(--cal-suave); letter-spacing: .05em; display:flex; gap:6px; margin-bottom: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index:2; position:relative;}
 
   /* LISTA NORMAL CLASIFICACIÓN */
   .lista-ranking { display: flex; flex-direction: column; gap: 10px; }
   .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s; position: relative; overflow: hidden;}
   .rank-card:active { transform:scale(0.98); }
   .rank-card.yo { border-color: var(--cesped); box-shadow: 0 0 15px rgba(0,255,102,0.1); }
-  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; display:flex; flex-direction:column; align-items:center; gap:2px;}
-  .rank-avatar { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden;}
-  .rank-info { flex: 1; min-width: 0; }
+  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; display:flex; flex-direction:column; align-items:center; gap:2px; z-index:2;}
+  .rank-avatar { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden; z-index:2;}
+  .rank-info { flex: 1; min-width: 0; z-index:2;}
   .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display: flex; align-items: center;}
   .rank-stats { font-size: 11px; color: var(--grada); display: flex; gap: 8px; font-weight: 600; }
-  .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center; position:relative; }
+  .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center; position:relative; z-index:2;}
   .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
   .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
 
   .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; position: relative; overflow: hidden; }
-  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden;}
+  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden; position:relative; z-index:2;}
   .perfil-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top:12px; position:relative; z-index:2;}
   .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
   .badge-pos { background: rgba(255,234,0,0.1); border: 1px solid var(--trofeo); color: var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.15);}
@@ -984,9 +986,9 @@ function htmlModalPartido(id) {
   return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
     <div class="modal-header"><span class="modal-meta">${etiqueta} · ${txtHora}</span>
       <div class="modal-marcador">
-        <div class="modal-eq" onclick="irATorneoEquipo('${esc(p.local)}')">${escudo(p.local_crest)} <span style="color:var(--cal-suave)">${esc(p.local || "?")}</span></div>
+        <div class="modal-eq" style="cursor:pointer" onclick="irATorneoEquipo('${esc(p.local)}')">${escudo(p.local_crest)} <span style="color:var(--cal-suave)">${esc(p.local || "?")}</span></div>
         ${scoreHTML}
-        <div class="modal-eq" onclick="irATorneoEquipo('${esc(p.visitante)}')">${escudo(p.visitante_crest)} <span style="color:var(--cal-suave)">${esc(p.visitante || "?")}</span></div>
+        <div class="modal-eq" style="cursor:pointer" onclick="irATorneoEquipo('${esc(p.visitante)}')">${escudo(p.visitante_crest)} <span style="color:var(--cal-suave)">${esc(p.visitante || "?")}</span></div>
       </div>
     </div>
     ${bannerMio}
@@ -1082,7 +1084,7 @@ function htmlModalPronosticos(uid) {
           realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--cal)">${p.goles_local}-${p.goles_visitante}</b>`;
       } else if (vivo) {
           badgePts = `<div class="pron-item-pts vivo" style="color:var(--${pts===5?'trofeo':(pts===3?'cesped':'tarjeta-roja')})">Live ${pts===0?'0':'+'+pts}</div>`;
-          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${(p.goles_local != null ? p.goles_local : 0)}-${(p.goles_visitante != null ? p.goles_visitante : 0)}</b>`;
+          realScore = `<span style="font-weight:400;color:var(--grada)">real</span> <b style="color:var(--tarjeta-roja)">${p.goles_local != null ? p.goles_local : 0}-${p.goles_visitante != null ? p.goles_visitante : 0}</b>`;
       } else badgePts = `<div class="pron-item-pts pending">-</div>`;
 
       const predScore = (pr.goles_local === null || pr.goles_visitante === null) ? `<span style="color:var(--trofeo); font-size:11px; letter-spacing:0.05em">🔒 Secreto</span>` : `<b style="color:var(--cal)">${pr.goles_local}-${pr.goles_visitante}</b>`;
@@ -1179,10 +1181,12 @@ function vistaTabla(){
                   <div class="podio-avatar">${avatarHtml(f.u)}</div>
                   ${fuego}
               </div>
-              <div class="podio-nombre">${esc(f.u.nombre)}</div>
-              <div class="podio-pts">${f.total} pts</div>
-              <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
-              <div style="margin-top:6px;">${arrow}</div>
+              <div class="podio-info-wrapper" style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; width:100%; height:100%;">
+                  <div class="podio-nombre">${esc(f.u.nombre)}</div>
+                  <div class="podio-pts">${f.total} pts</div>
+                  <div class="podio-stats">⭐${f.plenos} ✅${f.signos}</div>
+                  <div style="margin-top:6px;">${arrow}</div>
+              </div>
           </div>
       </div>`;
   });
@@ -1194,7 +1198,7 @@ function vistaTabla(){
     const arrow = getArrow(f.tendencia);
 
     return `<div class="rank-card ${me && f.u.id === me.id ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle} cursor:pointer;">
-      <div class="rank-num-small">${arrow}<span>${f.rank}</span></div>
+      <div class="rank-num-small" style="display:flex; flex-direction:column; align-items:center; gap:2px;">${arrow}<span>${f.rank}</span></div>
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info"><div class="rank-nombre">${esc(f.u.nombre)}${fuegoHTML}</div><div class="rank-stats"><span>⭐ ${f.plenos}</span><span>✅ ${f.signos}</span><span>📝 ${f.jugados}</span></div></div>
       <div class="rank-pts-box"><div class="rank-pts-val">${f.total}</div><div class="rank-pts-lbl">PTS</div></div>
@@ -1219,6 +1223,48 @@ function vistaTabla(){
   </div>`;
 
   return `${partidos.some(p => esVivo(p.estado)) ? `<div class="live-banner">🔴 Live — posiciones proyectadas con el partido en curso</div>` : ''}${podiumHtml}${listaHtml}${panelDesempate}`;
+}
+
+function htmlModalPerfil(uid) {
+  const targetUser = usuarios.find(x => x.id === uid); if(!targetUser) return "";
+  const esMio = (me && uid === me.id);
+  const f = clasificacion().find(x => x.u.id === uid) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const pronsUser = pronosticos.filter(x => x.usuario_id === uid);
+  const pronsValidos = pronsUser.filter(pr => { const p = partidos.find(x => x.id === pr.partido_id); return p && esPartidoPuntuable(p); });
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => pr.partido_id === p.id)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => x.partido_id === p.id), p) > 0) aciertos++; });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => x.partido_id === ultimos5[i].id), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts === 5 ? 'forma-oro' : (pts === 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
+  }
+  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
+  const headerStyle = getEstiloFavPerfil(targetUser.extras ? targetUser.extras.favorito : null);
+  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
+
+  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="${headerStyle}">
+          <div class="perfil-avatar" style="${esMio ? 'cursor:pointer' : ''}" onclick="${esMio ? "document.getElementById('input-cambiar-foto').click()" : ""}">${avatarHtml(targetUser)}</div>
+          ${esMio ? `<div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div><input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">` : ''}
+          <h2 style="display:flex; align-items:center; justify-content:center;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${pronsValidos.length} jugados</span></div>
+      </div>
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
+          <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div></div>
+      </div>
+      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+      ${extrasHtml}`;
 }
 
 function vistaPerfil(){

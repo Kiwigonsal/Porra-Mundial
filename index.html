@@ -174,14 +174,14 @@
   .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1; color:var(--cal);}
   
   .lista-amigos { display:flex; flex-direction:column; gap:8px;}
-  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
-  .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800; cursor:pointer; transition: opacity 0.2s;}
-  .amigo-info:active { opacity: 0.7; }
+  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; cursor:pointer; transition: transform 0.1s;}
+  .amigo-pick:active { transform:scale(0.98); }
+  .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
   .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); }
-  .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); }
+  .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); opacity:0.8; }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(255,234,0,.05); }
 
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s; cursor:pointer;}
@@ -238,7 +238,7 @@
   .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
 
   .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; position: relative; overflow: hidden; }
-  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden;}
+  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden; position:relative; z-index:2;}
   .perfil-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top:12px; position:relative; z-index:2;}
   .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
   .badge-pos { background: rgba(255,234,0,0.1); border: 1px solid var(--trofeo); color: var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.15);}
@@ -390,6 +390,11 @@ let modalStack = [];
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function sha256(texto){
+  const data = new TextEncoder().encode(texto); const hash = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,"0")).join("");
+}
 
 function mostrarToast(msg, tipo = 'nota') {
   const container = $("toast-container"); if (!container) return;
@@ -597,10 +602,13 @@ function clasificacion(){
   const terminados = partidos.filter(p => esFin(p.estado)).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
   const idUltimo = terminados.length ? terminados[terminados.length-1].id : null;
   const filas = usuarios.map(u => ({ u: u, total: u.puntos_extra || 0, totalAnt: u.puntos_extra || 0, plenos:0, plenosAnt:0, signos:0, jugados:0, ptsUltimo: 0, rachaFuego: false }));
-  const porUsuario = Object.fromEntries(filas.map(f => [String(f.u.id), f]));
+  
+  const porUsuario = {};
+  filas.forEach(f => { porUsuario[String(f.u.id)] = f; });
 
   for (const pr of pronosticos){
-    const p = partidos.find(x => String(x.id) === String(pr.partido_id)); const f = porUsuario[String(pr.usuario_id)];
+    const p = partidos.find(x => String(x.id) === String(pr.partido_id)); 
+    const f = porUsuario[String(pr.usuario_id)];
     if (!p || !f || !esPartidoPuntuable(p) || (!esFin(p.estado) && !esVivo(p.estado))) continue;
     const pts = puntosDe(pr, p); if (pts == null) continue;
     
@@ -1249,7 +1257,7 @@ function tablaGrupo(letra, ps){
       if (p.goles_local > p.goles_visitante) L.pts += 3; else if (p.goles_local < p.goles_visitante) V.pts += 3; else { L.pts++; V.pts++; }
     }
   }
-  const filas = Object.values(t).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
+  const filas = Object.keys(t).map(k => t[k]).sort((a,b) => b.pts - a.pts || (b.gf-b.gc) - (a.gf-a.gc) || b.gf - a.gf || (a.n||"").localeCompare(b.n||""));
   let htmlPartidos = ps.sort((a,b)=> new Date(a.fecha_utc) - new Date(b.fecha_utc)).map(p => {
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid rgba(248,250,252,.06); font-size:12px; cursor:pointer;" onclick="abrirModal(${p.id})"><span style="flex:1; font-weight:600; color:var(--cal-suave)">${esc(p.local||'?')}</span><span style="padding:4px 10px; background:var(--campo); border-radius:8px; font-family:var(--display); letter-spacing:.05em">${(p.goles_local!=null) ? `<b>${p.goles_local}-${p.goles_visitante}</b>` : `<span style="color:var(--cal-tenue)">vs</span>`}</span><span style="flex:1; text-align:right; font-weight:600; color:var(--cal-suave)">${esc(p.visitante||'?')}</span></div>`;
   }).join("");
@@ -1553,7 +1561,15 @@ async function entrarAdmin(){
 function vistaAdmin(){
   const pendientes = partidos.filter(p => empezado(p) && !esFin(p.estado));
   const recientes = partidos.filter(p => esFin(p.estado)).slice(-5).reverse();
-  const opts = `<option value="">---</option>` + Array.from(new Set(partidos.reduce((acc, p) => acc.concat([p.local, p.visitante]), []).filter(e => e && e !== "?"))).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+  
+  const equiposSet = {};
+  partidos.forEach(p => { 
+      if(p.local && p.local !== "?") equiposSet[p.local] = true;
+      if(p.visitante && p.visitante !== "?") equiposSet[p.visitante] = true;
+  });
+  const equiposArr = Object.keys(equiposSet).sort();
+  const opts = `<option value="">---</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+  
   return `<div class="panel"><h2>🛠️ Panel de admin</h2><button class="btn secundario" onclick="sincronizarAhora()" style="margin-bottom:24px;">🔄 Sincronizar ahora</button>
     <label>🏆 Cerrar Torneo (Puntos Auto)</label>
     <div style="background:var(--campo); padding:16px; border-radius:12px; border:1px solid var(--cal-tenue); margin-bottom:24px;">

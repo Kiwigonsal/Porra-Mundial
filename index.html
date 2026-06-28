@@ -174,14 +174,14 @@
   .stepper .num{font-family:var(--display); font-size:36px; min-width:40px; text-align:center; line-height:1; color:var(--cal);}
   
   .lista-amigos { display:flex; flex-direction:column; gap:8px;}
-  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px; cursor:pointer; transition: transform 0.1s;}
-  .amigo-pick:active { transform:scale(0.98); }
-  .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800;}
+  .amigo-pick { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--campo); border:1px solid var(--cal-tenue); border-radius:12px;}
+  .amigo-info { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800; cursor:pointer; transition: opacity 0.2s;}
+  .amigo-info:active { opacity: 0.7; }
   .amigo-avatar { width:28px; height:28px; border-radius:50%; background:var(--campo-3); display:flex; align-items:center; justify-content:center; font-size:16px; overflow:hidden;}
   .amigo-avatar img { width:100%; height:100%; object-fit:cover; }
   .amigo-score { font-family:var(--display); font-size:20px; letter-spacing:.05em;}
   .amigo-pick.ok { border-color:var(--cesped); background:rgba(0,255,102,.05); }
-  .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); opacity:0.8; }
+  .amigo-pick.bad { border-color:var(--tarjeta-roja); background:rgba(255,0,85,.05); }
   .amigo-pick.pleno { border-color:var(--trofeo); background:rgba(255,234,0,.05); }
 
   .pron-item { background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; margin-bottom:8px; transition: transform 0.1s; cursor:pointer;}
@@ -201,7 +201,7 @@
   .live-banner { background: rgba(239,68,68,.15); color: var(--tarjeta-roja); text-align: center; font-size: 11px; font-weight: 800; padding: 8px; border-radius: 8px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: .05em; animation: lat 1.5s infinite; border:1px solid rgba(239,68,68,0.3);}
   
   /* DISEÑO DEL PODIO REAL ALINEADO A LA BASE */
-  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 32px 0 24px; padding: 0 4px; }
+  .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 40px 0 24px; padding: 0 4px; }
   .podio-col { 
     flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; transition: transform 0.1s; 
   }
@@ -216,7 +216,7 @@
   .podio-col.rank-3 .podio-pedestal { height: 120px; border-color: #d97706; z-index:1; }
 
   .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%; pointer-events: none;}
-  .podio-avatar { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden;}
+  .podio-avatar { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; pointer-events: auto;}
   .podio-medalla { position: absolute; top: -14px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12;}
   
   .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index:2; position:relative;}
@@ -238,7 +238,7 @@
   .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
 
   .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; position: relative; overflow: hidden; }
-  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden; position:relative; z-index:2;}
+  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden;}
   .perfil-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top:12px; position:relative; z-index:2;}
   .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
   .badge-pos { background: rgba(255,234,0,0.1); border: 1px solid var(--trofeo); color: var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.15);}
@@ -301,6 +301,8 @@
   .mobile-chat-btn:active { transform: scale(0.9); }
 
   .scaled-img { width: 100%; height: 100%; object-fit: cover; }
+  
+  select option { background: var(--campo-2); color: var(--cal); }
 </style>
 </head>
 <body class="sin-porra">
@@ -662,7 +664,7 @@ function renderChat(containerId) {
         const u = usuarios.find(x => String(x.id) === String(m.usuario_id)); if (!u) return;
         const esMio = (String(m.usuario_id) === String(me.id));
         html += `<div class="msg-row ${esMio ? 'mio' : ''}">
-            <div class="msg-avatar" onclick="abrirPerfil('${u.id}')">${avatarHtmlMini(u)}</div>
+            <div class="msg-avatar" onclick="abrirPerfil('${u.id}')" style="cursor:pointer;">${avatarHtmlMini(u)}</div>
             <div class="msg-content"><strong>${esc(u.nombre)}</strong>${esc(m.texto)}</div>
         </div>`;
     });
@@ -807,8 +809,8 @@ function vistaInicio() {
     html += `<div style="background:var(--campo-2); border:1px solid var(--trofeo); border-radius:12px; padding:12px 16px; margin-bottom:16px; cursor:pointer; display:flex; align-items:center; gap:12px; box-shadow:0 0 10px rgba(255,234,0,0.1);" onclick="abrirReglasPenaltis()">
         <div style="font-size:24px;">💡</div>
         <div>
-            <div style="color:var(--cal); font-size:13px; font-weight:800; margin-bottom:2px;">¿Cómo se pronostica en eliminación?</div>
-            <div style="color:var(--cal-suave); font-size:11px;">Ahora puedes predecir empate + quién gana los penales.</div>
+            <div style="color:var(--cal); font-size:13px; font-weight:800; margin-bottom:2px;">¿Cómo son prodes en eliminación?</div>
+            <div style="color:var(--cal-suave); font-size:11px;">Ahora podés predecir empate + quién gana los penales.</div>
         </div>
     </div>`;
     
@@ -1210,75 +1212,6 @@ function htmlModalPronosticos(uid) {
     <div>${generarHtmlProns(userPartidos.filter(p => empezado(p)).reverse(), userProns)}</div>`;
 }
 
-function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
-  const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
-  const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
-  
-  const equiposArr = Array.from(new Set(partidos.reduce((acc, p) => acc.concat([p.local, p.visitante]), []).filter(e => e && e !== "?"))).sort();
-  const opts = `<option value="">Selecciona equipo...</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
-  const optsFav = `<option value="">Selecciona equipo...</option>` + Object.keys(COLORES_EQUIPOS).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
-
-  let content = `<div style="margin-top: 24px;"></div>`;
-
-  if (esMio) {
-      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
-        <label>❤️ Equipo Favorito (Siempre Abierto)</label>
-        <select id="ext-fav" style="margin-bottom:12px;">${optsFav}</select>
-        <button class="btn oro" onclick="guardarMiFavorito()">Actualizar Favorito</button>
-      </div>`;
-  } else {
-      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ EQUIPO FAVORITO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
-      </div>`;
-  }
-
-  let formTorneo = "";
-  if (esMio && !cerradoTorneo) {
-      formTorneo = `
-        <label>🥇 Campeón (10 pts)</label><select id="ext-cam">${opts}</select>
-        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub">${opts}</select>
-        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter">${opts}</select>
-        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua">${opts}</select>
-      `;
-  } else if (!esMio && !cerradoTorneo) {
-      formTorneo = `<div class="vacio" style="padding:10px 0;">Pronósticos de Torneo secretos 🔒</div>`;
-  } else {
-      formTorneo = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b></div>
-      `;
-  }
-
-  let formOtros = "";
-  if (esMio && !cerradoOtros) {
-      formOtros = `
-        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador...">
-        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador...">
-      `;
-  } else if (!esMio && !cerradoOtros) {
-      formOtros = `<div class="vacio" style="padding:10px 0;">Pronósticos individuales secretos 🔒</div>`;
-  } else {
-      formOtros = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b></div>
-        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🏆 MVP</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.mvp || "—")}</b></div>
-      `;
-  }
-
-  content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
-    <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo</h3>
-    ${formTorneo}
-    <h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Premios Individuales</h3>
-    ${formOtros}`;
-
-  if (esMio && (!cerradoTorneo || !cerradoOtros)) {
-      content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Guardar Predicciones</button>`;
-  }
-  content += `</div>`;
-  return content;
-}
-
 function setExtrasSelects(uid) {
   const targetUser = usuarios.find(x => String(x.id) === String(uid)) || me; if(!targetUser) return;
   if (me && String(targetUser.id) === String(me.id)) {
@@ -1351,7 +1284,7 @@ function vistaTabla(){
       const arrow = getArrow(f.tendencia);
 
       podiumHtml += `
-      <div class="podio-col rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')">
+      <div class="podio-col rank-${rankPos}" onclick="abrirPerfil('${f.u.id}')" style="cursor:pointer;">
           <div class="podio-pedestal" style="${bgStyle} ${borderStyle}">
               <div class="podio-avatar-wrapper">
                   <div class="podio-medalla">${medalla}</div>
@@ -1372,7 +1305,7 @@ function vistaTabla(){
     const inyectStyle = getEstiloFav(f.u.extras ? f.u.extras.favorito : null);
     const arrow = getArrow(f.tendencia);
 
-    return `<div class="rank-card ${me && String(f.u.id) === String(me.id) ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle}">
+    return `<div class="rank-card ${me && String(f.u.id) === String(me.id) ? 'yo' : ''}" onclick="abrirPerfil('${f.u.id}')" style="${inyectStyle} cursor:pointer;">
       <div class="rank-num-small" style="display:flex; flex-direction:column; align-items:center; gap:2px;">${arrow}<span>${f.rank}</span></div>
       <div class="rank-avatar">${avatarHtml(f.u)}</div>
       <div class="rank-info"><div class="rank-nombre">${esc(f.u.nombre)}${fuegoHTML}</div><div class="rank-stats"><span>⭐ ${f.plenos}</span><span>✅ ${f.signos}</span><span>📝 ${f.jugados}</span></div></div>
@@ -1397,9 +1330,9 @@ function vistaTabla(){
 
 function vistaPerfil(){
   if (!me) return vistaAcceso();
-  const filas = clasificacion();
-  const f = filas.find(x => String(x.u.id) === String(me.id)) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
-  const dist = (filas.length ? filas[0].total : 0) - f.total;
+  const filasClas = clasificacion();
+  const f = filasClas.find(x => String(x.u.id) === String(me.id)) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const dist = (filasClas.length ? filasClas[0].total : 0) - f.total;
   
   const misProns = pronosticos.filter(x => String(x.usuario_id) === String(me.id));
   const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && misProns.some(pr => String(pr.partido_id) === String(p.id)));
@@ -1422,12 +1355,12 @@ function vistaPerfil(){
 
   return `
   <div class="perfil-header" style="${headerStyle}">
-      <div style="position:relative; width:80px; height:80px; margin: 0 auto 12px;">
+      <div style="position:relative; width:80px; height:80px; margin: 0 auto 12px; z-index:2;">
           <div class="perfil-avatar" style="margin:0; width:100%; height:100%; cursor:pointer;" onclick="document.getElementById('input-cambiar-foto').click()">${avatarHtml(me)}</div>
           <div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; cursor:pointer; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div>
       </div>
       <input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">
-      <h2 style="display:flex; align-items:center; justify-content:center; position:relative;">${esc(me.nombre)} ${fuegoHTML}</h2>
+      <h2 style="display:flex; align-items:center; justify-content:center; position:relative; z-index:2;">${esc(me.nombre)} ${fuegoHTML}</h2>
       <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${partidosJugados.length} jugados</span></div>
   </div>
   <div class="perfil-stats-row">
@@ -1437,7 +1370,7 @@ function vistaPerfil(){
   </div>
   <div class="perfil-dash-row">
       <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
-      <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
+      <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filasClas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
   </div>
   
   <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${me.id}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
@@ -1451,6 +1384,50 @@ function vistaPerfil(){
   
   ${isKiwi ? (adminPin ? vistaAdmin() : `<div class="panel"><h2>🛠️ Panel de admin</h2><label>PIN de admin</label><input type="password" id="pin-admin" inputmode="numeric" autocomplete="off" style="margin-bottom:0;"><button class="btn oro" onclick="entrarAdmin()" style="margin-top:12px;">Entrar</button></div>`) : ''}
   `;
+}
+
+function htmlModalPerfil(uid) {
+  const targetUser = usuarios.find(x => String(x.id) === String(uid)); if(!targetUser) return "";
+  const esMio = (me && String(uid) === String(me.id));
+  const filasClas = clasificacion();
+  const f = filasClas.find(x => String(x.u.id) === String(uid)) || { total:0, plenos:0, signos:0, jugados:0, rank: '-', rachaFuego: false };
+  const dist = (filasClas.length ? filasClas[0].total : 0) - f.total;
+  
+  const pronsUser = pronosticos.filter(x => String(x.usuario_id) === String(uid));
+  const partidosJugados = partidos.filter(p => esFin(p.estado) && esPartidoPuntuable(p) && pronsUser.some(pr => String(pr.partido_id) === String(p.id))).sort((a,b) => new Date(a.fecha_utc) - new Date(b.fecha_utc));
+  
+  let aciertos = 0; partidosJugados.forEach(p => { if (puntosDe(pronsUser.find(x => String(x.partido_id) === String(p.id)), p) > 0) aciertos++; });
+  const eficiencia = partidosJugados.length ? Math.round((aciertos / partidosJugados.length) * 100) : 0;
+  const ultimos5 = partidosJugados.slice(-5);
+  let htmlForma = '';
+  for(let i=0; i<5; i++){
+      if(ultimos5[i]) {
+          const pts = puntosDe(pronsUser.find(x => String(x.partido_id) === String(ultimos5[i].id)), ultimos5[i]);
+          htmlForma += `<div class="forma-box ${pts >= 5 ? 'forma-oro' : (pts >= 3 ? 'forma-verde' : 'forma-roja')}"></div>`;
+      } else htmlForma += `<div class="forma-box forma-vacia"></div>`;
+  }
+  const fuegoHTML = f.rachaFuego ? getFuegoHtml(f.rachaFuego) : '';
+  const headerStyle = getEstiloFavPerfil(targetUser.extras ? targetUser.extras.favorito : null);
+  const extrasHtml = generarHtmlSeccionExtras(uid, esMio, targetUser, targetUser.extras || {});
+
+  return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+      <div class="perfil-header" style="${headerStyle}">
+          <div class="perfil-avatar" style="${esMio ? 'cursor:pointer' : ''}" onclick="${esMio ? "document.getElementById('input-cambiar-foto').click()" : ""}">${avatarHtml(targetUser)}</div>
+          ${esMio ? `<div style="position:absolute; bottom:-2px; right:-2px; background:var(--campo-2); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--cal-tenue); font-size:14px; pointer-events:none; box-shadow: 0 2px 5px rgba(0,0,0,0.5)">📷</div><input type="file" id="input-cambiar-foto" accept="image/*" style="display:none" onchange="subirNuevaFoto(this)">` : ''}
+          <h2 style="display:flex; align-items:center; justify-content:center; position:relative; z-index:2;">${esc(targetUser.nombre)} ${fuegoHTML}</h2>
+          <div class="perfil-badges"><span class="badge badge-pos">🏅 #${f.rank}</span><span class="badge badge-jugados">⚽ ${partidosJugados.length} jugados</span></div>
+      </div>
+      <div class="perfil-stats-row">
+          <div class="p-stat-card"><div class="v">${f.total}</div><div class="k">PUNTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--trofeo)">⭐ ${f.plenos}</div><div class="k">EXACTOS</div></div>
+          <div class="p-stat-card"><div class="v" style="color:var(--cesped)">✅ ${f.signos}</div><div class="k">CORRECTOS</div></div>
+      </div>
+      <div class="perfil-dash-row">
+          <div class="p-dash-card efi-card"><div class="efi-circle" style="background: conic-gradient(var(--trofeo) ${eficiencia}%, var(--cal-tenue) 0);"><span>${eficiencia}%</span></div><div class="k">EFICIENCIA</div></div>
+          <div class="p-dash-card"><div class="k" style="text-align:left; margin-bottom:8px; color:var(--grada)">FORMA</div><div class="forma-row">${htmlForma}</div><div class="forma-txt">${(dist === 0 && filasClas.length > 1) ? "¡Líder de la porra!" : (dist > 0 ? `🔥 a ${dist} pts del 1º` : "Empieza a sumar")}</div></div>
+      </div>
+      <button class="btn secundario" style="margin-bottom:24px;" onclick="abrirModalPronosticos('${uid}')">📋 VER PRONÓSTICOS DE PARTIDOS</button>
+      ${extrasHtml}`;
 }
 
 async function cambiarMiPin() {

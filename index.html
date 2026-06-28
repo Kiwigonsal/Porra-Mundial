@@ -215,8 +215,8 @@
   .podio-col.rank-2 .podio-pedestal { height: 135px; border-color: var(--cal-suave); z-index:2; }
   .podio-col.rank-3 .podio-pedestal { height: 120px; border-color: #d97706; z-index:1; }
 
-  .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%; pointer-events: none;}
-  .podio-avatar { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; pointer-events: auto;}
+  .podio-avatar-wrapper { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; width: 100%;}
+  .podio-avatar { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 3px solid var(--campo); background: var(--campo-3); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); overflow: hidden; }
   .podio-medalla { position: absolute; top: -14px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 12;}
   
   .podio-nombre { font-size: 13px; font-weight: 800; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index:2; position:relative;}
@@ -228,17 +228,17 @@
   .rank-card { display: flex; align-items: center; background: var(--campo-2); border: 1px solid var(--cal-tenue); border-radius: 16px; padding: 12px 14px; gap: 12px; cursor:pointer; transition:transform 0.1s; position: relative; overflow: hidden;}
   .rank-card:active { transform:scale(0.98); }
   .rank-card.yo { border-color: var(--cesped); box-shadow: 0 0 15px rgba(0,255,102,0.1); }
-  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; display:flex; flex-direction:column; align-items:center; gap:2px; z-index:2;}
-  .rank-avatar { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden; z-index:2;}
-  .rank-info { flex: 1; min-width: 0; z-index:2;}
+  .rank-num-small { font-family: var(--display); font-size: 18px; color: var(--grada); line-height:1; min-width: 32px; text-align: center; display:flex; flex-direction:column; align-items:center; gap:2px;}
+  .rank-avatar { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; background: var(--campo); border: 1px solid var(--cal-tenue); flex-shrink: 0; overflow:hidden;}
+  .rank-info { flex: 1; min-width: 0; }
   .rank-nombre { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; display: flex; align-items: center;}
   .rank-stats { font-size: 11px; color: var(--grada); display: flex; gap: 8px; font-weight: 600; }
-  .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center; position:relative; z-index:2;}
+  .rank-pts-box { background: var(--campo); border: 1px solid var(--cal-tenue); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 55px; justify-content: center; position:relative;}
   .rank-pts-val { font-family: var(--display); font-size: 20px; color: var(--cal); line-height: 1; }
   .rank-pts-lbl { font-size: 9px; font-weight: 800; color: var(--grada); letter-spacing: .1em; margin-top: 2px; }
 
   .perfil-header { background: linear-gradient(180deg, var(--campo-3), var(--campo-2)); border: 1px solid var(--cal-tenue); border-radius: var(--radius); padding: 30px 14px 20px; text-align: center; position: relative; overflow: hidden; }
-  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden; position:relative; z-index:2;}
+  .perfil-avatar { width: 70px; height: 70px; background: var(--campo); border: 2px solid var(--cal-tenue); border-radius: 50%; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); overflow:hidden;}
   .perfil-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top:12px; position:relative; z-index:2;}
   .badge { font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; letter-spacing: .05em; }
   .badge-pos { background: rgba(255,234,0,0.1); border: 1px solid var(--trofeo); color: var(--trofeo); box-shadow: 0 0 10px rgba(255,234,0,0.15);}
@@ -736,14 +736,12 @@ function seleccionarPenalti(id, ganador) {
     const btnLocal = document.getElementById("btn-pen-local-" + id);
     const btnVis = document.getElementById("btn-pen-vis-" + id);
     if(btnLocal && btnVis) {
-        btnLocal.style.borderColor = ganador === 'local' ? 'var(--cesped)' : 'var(--cal-tenue)';
-        btnLocal.style.background = ganador === 'local' ? 'rgba(0,255,102,0.05)' : 'transparent';
-        btnLocal.style.boxShadow = ganador === 'local' ? '0 0 10px rgba(0,255,102,0.2)' : 'none';
+        btnLocal.style.borderColor = ganador === 'local' ? 'var(--cesped)' : 'transparent';
+        btnLocal.style.background = ganador === 'local' ? 'rgba(0,255,102,0.1)' : 'transparent';
         btnLocal.querySelector('span').style.color = ganador === 'local' ? 'var(--cal)' : 'var(--grada)';
         
-        btnVis.style.borderColor = ganador === 'visitante' ? 'var(--cesped)' : 'var(--cal-tenue)';
-        btnVis.style.background = ganador === 'visitante' ? 'rgba(0,255,102,0.05)' : 'transparent';
-        btnVis.style.boxShadow = ganador === 'visitante' ? '0 0 10px rgba(0,255,102,0.2)' : 'none';
+        btnVis.style.borderColor = ganador === 'visitante' ? 'var(--cesped)' : 'transparent';
+        btnVis.style.background = ganador === 'visitante' ? 'rgba(0,255,102,0.1)' : 'transparent';
         btnVis.querySelector('span').style.color = ganador === 'visitante' ? 'var(--cal)' : 'var(--grada)';
     }
 }
@@ -1079,18 +1077,17 @@ function htmlModalPartido(id) {
           </div>
           
           <div id="bloque-penaltis-${p.id}" style="display: ${isKnockoutTie ? 'block' : 'none'}; margin-top: 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
-              <div style="font-size: 11px; font-weight: 800; color: var(--cal-suave); margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase;">SELECCIONÁ AL GANADOR EN PENALTIS</div>
-              <div style="display: flex; gap: 10px; justify-content: center; align-items:center;">
-                  <div id="btn-pen-local-${p.id}" onclick="seleccionarPenalti(${p.id}, 'local')" style="flex:1; padding: 12px 8px; border: 1px solid ${d.penaltis === 'local' ? 'var(--cesped)' : 'var(--cal-tenue)'}; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; background: ${d.penaltis === 'local' ? 'rgba(0,255,102,0.05)' : 'transparent'}; box-shadow: ${d.penaltis === 'local' ? '0 0 10px rgba(0,255,102,0.2)' : 'none'}; transition:0.2s;">
-                      <img src="${esc(p.local_crest)}" style="width:20px; height:20px; object-fit:contain;">
+              <div style="font-size: 11px; font-weight: 800; color: var(--cal-suave); margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase;">Ve a penales y seleccioná al ganador 🎯</div>
+              <div style="display: flex; justify-content: center; align-items:center; gap:8px; background:var(--campo-3); border-radius:12px; padding:12px;">
+                  <div id="btn-pen-local-${p.id}" onclick="seleccionarPenalti(${p.id}, 'local')" style="flex:1; padding: 12px 8px; border: 1px solid ${d.penaltis === 'local' ? 'var(--cesped)' : 'transparent'}; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; background: ${d.penaltis === 'local' ? 'rgba(0,255,102,0.1)' : 'transparent'}; transition:0.2s;">
                       <span style="font-size:12px; font-weight:800; color:${d.penaltis === 'local' ? 'var(--cal)' : 'var(--grada)'};">${esc(p.local || "LOCAL")}</span>
                   </div>
-                  <span style="font-size:12px; color:var(--cal-tenue); font-family:var(--display);">VS</span>
-                  <div id="btn-pen-vis-${p.id}" onclick="seleccionarPenalti(${p.id}, 'visitante')" style="flex:1; padding: 12px 8px; border: 1px solid ${d.penaltis === 'visitante' ? 'var(--cesped)' : 'var(--cal-tenue)'}; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; background: ${d.penaltis === 'visitante' ? 'rgba(0,255,102,0.05)' : 'transparent'}; box-shadow: ${d.penaltis === 'visitante' ? '0 0 10px rgba(0,255,102,0.2)' : 'none'}; transition:0.2s;">
+                  <span style="font-family:var(--display); font-size:20px; color:var(--cal);">1 - 1</span>
+                  <div id="btn-pen-vis-${p.id}" onclick="seleccionarPenalti(${p.id}, 'visitante')" style="flex:1; padding: 12px 8px; border: 1px solid ${d.penaltis === 'visitante' ? 'var(--cesped)' : 'transparent'}; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; background: ${d.penaltis === 'visitante' ? 'rgba(0,255,102,0.1)' : 'transparent'}; transition:0.2s;">
                       <span style="font-size:12px; font-weight:800; color:${d.penaltis === 'visitante' ? 'var(--cal)' : 'var(--grada)'};">${esc(p.visitante || "VISIT.")}</span>
-                      <img src="${esc(p.visitante_crest)}" style="width:20px; height:20px; object-fit:contain;">
                   </div>
               </div>
+              <div style="font-size:9px; color:var(--grada); margin-top:8px;">👆 Tocá quién gana el pase si se van a penales</div>
           </div>
 
           <button class="btn oro" style="margin-top:16px;" onclick="guardarPronostico(${p.id})">GUARDAR</button>
@@ -1218,6 +1215,81 @@ function htmlModalPronosticos(uid) {
     ${esMio ? `<h4 style="color:var(--trofeo); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PRÓXIMOS</h4><div style="margin-bottom:24px;">${generarHtmlProns(userPartidos.filter(p => !empezado(p)), userProns)}</div>` : ''}
     <h4 style="color:var(--grada); font-size:11px; font-weight:800; letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;">PASADOS / EN JUEGO</h4>
     <div>${generarHtmlProns(userPartidos.filter(p => empezado(p)).reverse(), userProns)}</div>`;
+}
+
+function generarHtmlSeccionExtras(uid, esMio, targetUser, dataExt) {
+  const cerradoTorneo = Date.now() > LIMITE_PRONOSTICOS_TORNEO;
+  const cerradoOtros = Date.now() > LIMITE_OTROS_EXTRAS;
+  
+  const equiposSet = {};
+  partidos.forEach(p => { 
+      if(p.local && p.local !== "?") equiposSet[p.local] = true;
+      if(p.visitante && p.visitante !== "?") equiposSet[p.visitante] = true;
+  });
+  const equiposArr = Object.keys(equiposSet).sort();
+
+  const opts = `<option value="">Selecciona equipo...</option>` + equiposArr.map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+  const optsFav = `<option value="">Selecciona equipo...</option>` + Object.keys(COLORES_EQUIPOS).sort().map(eq => `<option value="${esc(eq)}">${esc(eq)}</option>`).join("");
+
+  let content = `<div style="margin-top: 24px;"></div>`;
+
+  if (esMio) {
+      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
+        <label>❤️ Equipo Favorito (Siempre Abierto)</label>
+        <select id="ext-fav" style="margin-bottom:12px;">${optsFav}</select>
+        <button class="btn oro" onclick="guardarMiFavorito()">Actualizar Favorito</button>
+      </div>`;
+  } else {
+      content += `<div style="background:var(--campo-2); padding:16px; border-radius:16px; border:1px solid var(--cal-tenue); margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">❤️ EQUIPO FAVORITO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.favorito || "—")}</b></div>
+      </div>`;
+  }
+
+  let formTorneo = "";
+  if (esMio && !cerradoTorneo) {
+      formTorneo = `
+        <label>🥇 Campeón (10 pts)</label><select id="ext-cam">${opts}</select>
+        <label>🥈 Subcampeón (7 pts)</label><select id="ext-sub">${opts}</select>
+        <label>🥉 3er Puesto (5 pts)</label><select id="ext-ter">${opts}</select>
+        <label>🍫 4º Puesto (3 pts)</label><select id="ext-cua">${opts}</select>
+      `;
+  } else if (!esMio && !cerradoTorneo) {
+      formTorneo = `<div class="vacio" style="padding:10px 0;">Pronósticos de Torneo secretos 🔒</div>`;
+  } else {
+      formTorneo = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥇 CAMPEÓN</span><b style="color:var(--trofeo); font-size:14px;">${esc(dataExt.cam || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥈 SUBCAMPEÓN</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.sub || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🥉 TERCERO</span><b style="color:#d97706; font-size:14px;">${esc(dataExt.ter || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🍫 CUARTO</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.cua || "—")}</b></div>
+      `;
+  }
+
+  let formOtros = "";
+  if (esMio && !cerradoOtros) {
+      formOtros = `
+        <label>⚽ Pichichi (Libre)</label><input type="text" id="ext-pic" value="${esc(dataExt.pic || "")}" placeholder="Nombre del jugador...">
+        <label>🏆 Mejor Jugador MVP (Libre)</label><input type="text" id="ext-mvp" value="${esc(dataExt.mvp || "")}" placeholder="Nombre del jugador...">
+      `;
+  } else if (!esMio && !cerradoOtros) {
+      formOtros = `<div class="vacio" style="padding:10px 0;">Pronósticos individuales secretos 🔒</div>`;
+  } else {
+      formOtros = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;"><span style="color:var(--grada); font-size:12px; font-weight:800;">⚽ PICHICHI</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.pic || "—")}</b></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--grada); font-size:12px; font-weight:800;">🏆 MVP</span><b style="color:var(--cal); font-size:14px;">${esc(dataExt.mvp || "—")}</b></div>
+      `;
+  }
+
+  content += `<div style="background:var(--campo-2); padding:20px; border-radius:16px; border:1px solid var(--cal-tenue);">
+    <h3 style="font-size:12px; color:var(--trofeo); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase;">Torneo</h3>
+    ${formTorneo}
+    <h3 style="font-size:12px; color:var(--cesped); margin:20px 0 12px; letter-spacing:0.1em; text-transform:uppercase;">Premios Individuales</h3>
+    ${formOtros}`;
+
+  if (esMio && (!cerradoTorneo || !cerradoOtros)) {
+      content += `<button class="btn oro" onclick="guardarMisExtras()" style="margin-top:20px;">Guardar Predicciones</button>`;
+  }
+  content += `</div>`;
+  return content;
 }
 
 function setExtrasSelects(uid) {
@@ -1481,7 +1553,7 @@ async function registrarse(){
   if (error) return mostrarToast(esc(error.message), "error");
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
   await cargarTodo(); mostrarToast("¡Bienvenido!", "ok"); 
-  if (tab === "perfil") render(); else irA("inicio");
+  render();
 }
 
 async function iniciarSesion(){
@@ -1492,7 +1564,7 @@ async function iniciarSesion(){
   if (error) return mostrarToast(esc(error.message), "error"); 
   me = data; miPinClaro = pin; try { localStorage.setItem("porra_usuario", JSON.stringify(me)); localStorage.setItem("miPinClaro", pin); } catch(e){}
   await cargarTodo(); mostrarToast("¡Sesión iniciada!", "ok"); 
-  if (tab === "perfil") render(); else irA("inicio");
+  render();
 }
 
 function actualizarCabecera(){

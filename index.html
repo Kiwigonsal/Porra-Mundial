@@ -703,10 +703,13 @@ function renderGraficoEvolucion() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            plugins: { 
+                legend: { display: true, position: 'bottom', labels: { color: '#fff', boxWidth: 12, font: {size: 11} } }, 
+                tooltip: { enabled: true, mode: 'index', intersect: false } 
+            },
             scales: {
-                y: { reverse: true, min: 1, max: usuarios.length, ticks: { display: false, stepSize: 1 }, grid: { display: false, drawBorder: false } },
-                x: { ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                y: { reverse: true, min: 1, max: usuarios.length, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
             },
             layout: { padding: 0 }
         }
@@ -730,10 +733,7 @@ function render(){
     if (tab === "inicio") v.innerHTML = vistaInicio();
     else if (tab === "partidos") v.innerHTML = vistaPartidos();
     else if (tab === "torneo") v.innerHTML = vistaTorneo();
-    else if (tab === "tabla") { 
-        v.innerHTML = vistaTabla(); 
-        setTimeout(renderGraficoEvolucion, 100); 
-    }
+    else if (tab === "tabla") v.innerHTML = vistaTabla();
     else { v.innerHTML = vistaPerfil(); if(me) setTimeout(() => setExtrasSelects(me.id), 50); }
 
     renderChat('chat-container-desktop'); renderMiniTabla();
@@ -1087,6 +1087,7 @@ function renderCurrentModal() {
   else if(state.view === 'pronosticos') content = htmlModalPronosticos(state.uid);
   else if(state.view === 'chat') content = htmlModalChat();
   else if(state.view === 'reglas_penaltis') content = htmlModalReglasPenaltis();
+  else if(state.view === 'grafico') { content = htmlModalGrafico(); setTimeout(renderGraficoEvolucion, 100); }
   
   if(!content) return;
   let backBtn = modalStack.length > 1 ? `<div class="modal-back" onclick="backModal()">← Atrás</div>` : ``;
@@ -1095,6 +1096,20 @@ function renderCurrentModal() {
   if(state.view === 'perfil') setExtrasSelects(state.uid);
 }
 
+function abrirGrafico() { pushModal({ view: 'grafico' }); }
+
+function htmlModalGrafico() {
+    return `<div class="modal-close" onclick="cerrarModal(event)">✕</div>
+    <div class="modal-header" style="margin-bottom:20px;">
+        <h2 style="font-family:var(--display); font-size:24px; letter-spacing:.05em; color:var(--cal); text-transform:uppercase;">EVOLUCIÓN</h2>
+    </div>
+    <div style="height:60vh; width:100%; position:relative; background:var(--campo-2); border-radius:12px; padding:10px; border:1px solid var(--cal-tenue); overflow-x:auto;">
+        <div style="min-width:600px; height:100%;">
+            <canvas id="graficoEvolucion"></canvas>
+        </div>
+    </div>
+    <p style="text-align:center; font-size:10px; color:var(--grada); margin-top:12px;">Desliza hacia los lados para explorar la progresión.</p>`;
+}
 function aprireModal(id) { pushModal({ view: 'partido', pid: id }); }
 function abrirModal(id) { pushModal({ view: 'partido', pid: id }); }
 function aprirePerfil(uid) { pushModal({ view: 'perfil', uid: uid }); }
@@ -1191,13 +1206,14 @@ function htmlModalPartido(id) {
       if (ganador === 'local') nombreVis = `<del style="opacity:0.4">${nombreVis}</del>`;
       
       if (p.penales_local != null && p.penales_visitante != null) {
-          scoreStr = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><span style="font-family:var(--display); font-size:48px;">${scoreStr}</span><span style="font-size:12px; color:#a855f7; font-family:var(--body); margin-top:2px; font-weight:800; letter-spacing:0.05em;">${p.penales_local}-${p.penales_visitante}</span></div>`;
+          scoreStr = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1;"><span style="font-family:var(--display); font-size:48px;">${scoreStr}</span><span style="font-size:14px; color:#a855f7; font-family:var(--body); margin-top:4px; font-weight:800; letter-spacing:0.05em;">(${p.penales_local}-${p.penales_visitante})</span></div>`;
       } else {
-          scoreStr = `<div class="modal-tanteo">${scoreStr}<small>${fin?'final':'en juego'}</small></div>`;
+          scoreStr = `<div class="modal-tanteo">${scoreStr}</div>`;
       }
   } else {
-       scoreStr = hayResultado ? `<div class="modal-tanteo">${scoreStr}<small>${fin?'final':'en juego'}</small></div>` : `<div class="modal-tanteo"><span style="color:var(--cal-tenue); font-size:32px">vs</span><small>${fmtHora(p)}</small></div>`;
+       scoreStr = hayResultado ? `<div class="modal-tanteo">${scoreStr}</div>` : `<div class="modal-tanteo"><span style="color:var(--cal-tenue); font-size:32px">vs</span></div>`;
   }
+  let scoreHTML = scoreStr + `<small style="display:block; font-family:var(--body); font-size:11px; letter-spacing:.18em; color:var(--grada); margin-top:6px; text-transform:uppercase; text-align:center;">${fin?'final':(vivo?'en juego':fmtHora(p))}</small>`;
   
   let bannerMio = "";
   if (me) {
@@ -1246,9 +1262,9 @@ function htmlModalPartido(id) {
         const pts = puntosDe(mio, p);
         
         let pronScoreStr = `<b>${mio.goles_local}-${mio.goles_visitante}</b>`;
-        if (p.etapa !== "GROUP_STAGE" && mio.goles_local === mio.goles_visitante && mio.ganador_penaltis) {
+        if (p.etapa !== "GROUP_STAGE" && mio && mio.goles_local === mio.goles_visitante && mio.ganador_penaltis) {
             const teamPasa = mio.ganador_penaltis === 'local' ? p.local : p.visitante;
-            pronScoreStr += `<span style="font-size:10px; font-weight:800; color:var(--cesped); margin-left:6px;">(Passa ${esc(teamPasa)})</span>`;
+            pronScoreStr += `<span style="font-size:10px; font-weight:800; color:var(--cesped); margin-left:6px;">(Pasa ${esc(teamPasa)})</span>`;
         }
         
         if (!puntua) bannerMio = `<div class="banner-resultado" style="border-color:var(--cal-tenue); background:rgba(255,255,255,0.02); color:var(--grada)">Tu pronóstico: ${pronScoreStr}<br><span style="font-size:11px; margin-top:4px; display:block; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;">🛑 Prueba (No suma)</span></div>`;
@@ -1256,7 +1272,7 @@ function htmlModalPartido(id) {
             let clBanner = pts >= 5 ? 'exito' : (pts >= 3 ? 'ok' : 'error');
             let msgPts = "";
             if (pts === 7) msgPts = "⭐ ¡Pleno + Aciertas pase! +7 puntos";
-            else if (pts === 5 && p.etapa !== "GROUP_STAGE" && mio.goles_local === mio.goles_visitante) {
+            else if (pts === 5 && p.etapa !== "GROUP_STAGE" && mio && mio.goles_local === mio.goles_visitante) {
                 if (mio.ganador_penaltis === p.ganador_penaltis) msgPts = "✅ Acierto empate + Aciertas pase +5 puntos";
                 else msgPts = "⭐ Pleno empate, pero errás pase +5 puntos";
             }
@@ -1517,14 +1533,9 @@ function vistaTabla(){
   if (!filas.length) return `<div class="vacio">Todavía no hay nadie en la tabla.</div>`;
   
   let chartHtml = `
-  <div class="panel" style="margin-top:0; margin-bottom:24px; padding:16px; background:var(--campo-2);">
-      <h3 style="font-size:11px; font-weight:800; color:var(--cal-suave); text-transform:uppercase; letter-spacing:.15em; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
-          <span style="font-size:16px;">📈</span> Evolución de la tabla
-      </h3>
-      <div style="height:250px; width:100%; position:relative;">
-          <canvas id="graficoEvolucion"></canvas>
-      </div>
-  </div>`;
+  <button class="btn secundario" style="margin-bottom:24px; border-color:var(--trofeo); color:var(--trofeo);" onclick="abrirGrafico()">
+      📈 Ver Evolución de la Tabla
+  </button>`;
 
   let podiumHtml = '<div class="podio-container">';
   const top3 = [filas[1], filas[0], filas[2]]; 
